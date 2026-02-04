@@ -92,6 +92,7 @@ model Organization {
   members    OrganizationMember[]
   branches   Branch[]
   courses    Course[]
+  enquiries  Enquiry[]
 
   @@index([slug])
   @@index([ownerId])
@@ -135,6 +136,7 @@ model Branch {
   organizationId String
   userBranches  UserBranch[]
   students      Student[]
+  enquiries     Enquiry[]
 
   @@index([organizationId])
 }
@@ -169,9 +171,19 @@ model Student {
   state         String?
   country       String?
   zipCode       String?
+  enrollmentNo  String?  @unique
+  paymentStatus String   @default("pending") // paid, pending, partial, overdue
   enrollmentDate DateTime @default(now())
   status        String   @default("active") // active, inactive, graduated, dropped
   notes         String?
+  
+  // Admission Details
+  fathersName   String?
+  fathersPhone  String?
+  imageUrl      String?
+  schoolCollege String?
+  referredBy    String?
+  
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -180,11 +192,14 @@ model Student {
   branchId      String
   course        Course?  @relation(fields: [courseId], references: [id])
   courseId      String?
+  batch         Batch?   @relation(fields: [batchId], references: [id])
+  batchId       String?
 
   @@index([branchId])
   @@index([courseId])
-  @@index([status])
+  @@index([batchId])
   @@index([email])
+  @@index([status])
 }
 
 // Course model for coaching management
@@ -206,9 +221,25 @@ model Course {
   organizationId  String
   subjects        Subject[]
   students        Student[]
+  batches         Batch[]
+  enquiries       Enquiry[]
 
   @@index([organizationId])
   @@index([status])
+}
+
+model Batch {
+  id        String   @id @default(cuid())
+  name      String
+  startDate DateTime?
+  endDate   DateTime?
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId  String
+  students  Student[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([courseId])
 }
 
 // Subject model for courses
@@ -224,6 +255,35 @@ model Subject {
   courseId    String
 
   @@index([courseId])
+}
+
+model Enquiry {
+  id          String   @id @default(cuid())
+  firstName   String
+  lastName    String
+  mobile      String
+  email       String?
+  description String?
+  status      String   @default("new") // new, contacted, interested, admitted, lost
+  source      String?  // web, referral, walk-in
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId String
+  
+  branch      Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  branchId    String
+  
+  course      Course?  @relation(fields: [courseId], references: [id])
+  courseId    String?
+
+  @@index([organizationId])
+  @@index([branchId])
+  @@index([courseId])
+  @@index([status])
 }
 
 // Keep Post model for future use

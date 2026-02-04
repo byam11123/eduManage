@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
 
     console.log('[API /auth/login] Database query:', { email: email.toLowerCase() })
     console.log('[API /auth/login] User found:', !!user)
-    
+
     if (!user) {
       console.log('[API /auth/login] ❌ User not found in database')
       return NextResponse.json(
@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
         defaultBranchId
       },
       hasOrganization: !!organization,
-      redirectTo: !organization ? '/organization' : (userRole === 'super_admin' ? '/admin' : '/branch')
+      redirectTo: (userRole === 'super_admin' && !organization) ? '/organization' : (userRole === 'super_admin' ? '/admin' : '/branch')
     })
   } catch (error) {
     console.error('[API /auth/login] Error:', error)

@@ -35,6 +35,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getUserInitials } from '@/lib/utils'
+import { TopNav } from '@/components/admin/TopNav'
 
 interface User {
   id: string
@@ -46,14 +47,6 @@ interface User {
   image?: string
 }
 
-interface NavItem {
-  title: string
-  url: string
-  icon: React.ElementType
-  badge?: string
-  children?: { title: string; url: string }[]
-}
-
 export default function AdminLayout({
   children,
 }: {
@@ -63,6 +56,7 @@ export default function AdminLayout({
   const [user, setUser] = useState<User | null>(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [expandedItems, setExpandedItems] = useState<string[]>([])
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false) // New state for desktop collapse if needed
   const pathname = usePathname()
 
   // Hydration fix
@@ -107,12 +101,21 @@ export default function AdminLayout({
   const navItems: NavItem[] = [
     { title: 'Dashboard', url: '/admin', icon: LayoutDashboard },
     {
+      title: 'Branches',
+      url: '/admin/branches',
+      icon: Building2,
+      children: [
+        { title: 'All Branches', url: '/admin/branches' },
+        { title: 'Create Branch', url: '/admin/branches/new' },
+      ]
+    },
+    {
       title: 'Student',
       url: '/admin/students',
       icon: GraduationCap,
       children: [
         { title: 'All Students', url: '/admin/students' },
-        { title: 'Add Student', url: '/admin/students/add' },
+        { title: 'Student Admission', url: '/admin/students/add' },
         { title: 'Bulk Upload', url: '/admin/students/upload' },
       ]
     },
@@ -183,32 +186,23 @@ export default function AdminLayout({
             </div>
           </div>
         </aside>
-        <main className="flex-1 overflow-auto">
-          {children}
-        </main>
+        <div className="flex-1 flex flex-col h-screen overflow-hidden">
+          <header className="h-16 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800" />
+          <main className="flex-1 overflow-auto" >{children}</main>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Mobile sidebar trigger */}
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden">
+      {/* Mobile sidebar trigger handled in TopNav or here? TopNav has menu button. */}
+      {/* Mobile Drawer */}
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-        <SheetTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden fixed top-4 left-4 z-50 bg-white dark:bg-gray-800 shadow-md"
-          >
-            <Menu className="h-5 w-5" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="w-64 p-0">
+        <SheetContent side="left" className="w-64 p-0 border-r border-gray-200 dark:border-gray-800">
           <SidebarContent
-            user={user}
             navItems={navItems}
             pathname={pathname}
-            handleLogout={handleLogout}
             expandedItems={expandedItems}
             toggleExpanded={toggleExpanded}
           />
@@ -216,62 +210,104 @@ export default function AdminLayout({
       </Sheet>
 
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex w-64 flex-col bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 h-screen overflow-hidden">
+      <aside className={`hidden lg:flex flex-col bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 h-screen transition-all duration-300 ${isSidebarCollapsed ? 'w-20' : 'w-64'}`}>
         <SidebarContent
-          user={user}
           navItems={navItems}
           pathname={pathname}
-          handleLogout={handleLogout}
           expandedItems={expandedItems}
           toggleExpanded={toggleExpanded}
+          isCollapsed={isSidebarCollapsed}
+          toggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
         />
       </aside>
 
-      {/* Main content */}
-      <main className="flex-1 overflow-auto">
-        {children}
-      </main>
+      {/* Main content wrapper */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Top Navigation */}
+        <TopNav
+          user={user}
+          handleLogout={handleLogout}
+          onSidebarToggle={() => setIsSidebarOpen(true)}
+        />
+
+        {/* Scrollable Content */}
+        <main className="flex-1 overflow-y-auto bg-gray-50/50 dark:bg-gray-900">
+          {children}
+        </main>
+      </div>
     </div>
   )
 }
 
 function SidebarContent({
-  user,
   navItems,
   pathname,
-  handleLogout,
   expandedItems,
-  toggleExpanded
+  toggleExpanded,
+  isCollapsed = false,
+  toggleCollapse
 }: {
-  user: User | null
   navItems: NavItem[]
   pathname: string
-  handleLogout: () => void
   expandedItems: string[]
   toggleExpanded: (title: string) => void
+  isCollapsed?: boolean
+  toggleCollapse?: () => void
 }) {
   return (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="px-4 py-5 border-b border-gray-200 dark:border-gray-700">
-        <Link href="/admin" className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-            <GraduationCap className="h-5 w-5 text-white" />
+      <div className="px-4 h-16 flex items-center justify-between border-b border-gray-200 dark:border-gray-800">
+        {!isCollapsed && (
+          <Link href="/admin" className="flex items-center gap-2 overflow-hidden">
+            <div className="h-8 w-8 min-w-[2rem] rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+              <GraduationCap className="h-5 w-5 text-white" />
+            </div>
+            <span className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent whitespace-nowrap">
+              EduManage
+            </span>
+          </Link>
+        )}
+        {isCollapsed && (
+          <div className="w-full flex justify-center">
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+              <GraduationCap className="h-5 w-5 text-white" />
+            </div>
           </div>
-          <span className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-            EduManage
-          </span>
-        </Link>
+        )}
+
+        {/* Collapse Toggle Button - visible only on desktop passed down? Or handled here */}
+        {toggleCollapse && (
+          <button onClick={toggleCollapse} className="hidden lg:flex p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500">
+            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <div className="h-6 w-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center"><ChevronDown className="h-4 w-4 rotate-90" /></div>}
+          </button>
+        )}
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-4 px-3">
+      <nav className={`flex-1 overflow-y-auto py-4 ${isCollapsed ? 'px-2' : 'px-3'} scrollbar-thin`}>
         <ul className="space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon
             const isActive = pathname === item.url || pathname.startsWith(item.url + '/')
             const hasChildren = item.children && item.children.length > 0
             const isExpanded = expandedItems.includes(item.title)
+
+            if (isCollapsed) {
+              return (
+                <li key={item.title} title={item.title}>
+                  <Link
+                    href={item.url}
+                    className={`flex justify-center p-2 rounded-lg transition-all duration-200 ${isActive
+                      ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
+                      : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700/50'
+                      }`}
+                  >
+                    <Icon className={`h-5 w-5 ${isActive ? 'text-indigo-600' : 'text-gray-400'}`} />
+                  </Link>
+                </li>
+              )
+            }
 
             return (
               <li key={item.title}>
@@ -325,36 +361,7 @@ function SidebarContent({
           })}
         </ul>
       </nav>
-
-      {/* User Footer */}
-      {user && (
-        <div className="border-t border-gray-200 dark:border-gray-700 p-4">
-          <div className="flex items-center gap-3">
-            <Avatar className="h-10 w-10 ring-2 ring-gray-100 dark:ring-gray-700">
-              <AvatarImage src={user.image || ''} alt={user.fullName} />
-              <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-sm font-medium">
-                {getUserInitials(user.fullName)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                {user.fullName}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">
-                {user.role?.replace('_', ' ')}
-              </p>
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleLogout}
-              className="text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
-            >
-              <LogOut className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      )}
+      {/* Footer removed, moved to TopNav */}
     </div>
   )
 }

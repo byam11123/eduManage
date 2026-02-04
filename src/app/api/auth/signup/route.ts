@@ -89,6 +89,7 @@ export async function POST(request: NextRequest) {
     console.log('OTP verified successfully, checking if user exists...')
 
     // Check if user already exists
+    console.log('Checking existing user...')
     const existingUser = await db.user.findUnique({
       where: { email: email.toLowerCase() },
     })
@@ -101,52 +102,65 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log('Creating new user...')
-
+    console.log('Hashing password...')
     // Hash password
     const hashedPassword = await hashPassword(password)
+    console.log('Password hashed successfully')
 
+    console.log('Creating new user in DB...')
     // Create user
-    const user = await db.user.create({
-      data: {
-        fullName: fullName.trim(),
-        email: email.toLowerCase(),
-        password: hashedPassword,
-        isVerified: true,
-        emailVerified: new Date(),
-      },
-      select: {
-        id: true,
-        fullName: true,
-        email: true,
-        isVerified: true,
-        createdAt: true,
-      },
-    })
-
-    console.log('User created:', user.id)
+    let user
+    try {
+      user = await db.user.create({
+        data: {
+          fullName: fullName.trim(),
+          email: email.toLowerCase(),
+          password: hashedPassword,
+          isVerified: true,
+          emailVerified: new Date(),
+        },
+        select: {
+          id: true,
+          fullName: true,
+          email: true,
+          isVerified: true,
+          createdAt: true,
+        },
+      })
+      console.log('User created:', user.id)
+    } catch (dbError) {
+      console.error('DB User Create Error:', dbError)
+      throw dbError
+    }
 
     // Delete used OTP
+    console.log('Deleting OTP...')
     await db.otp.deleteMany({
       where: { email },
     })
 
-    console.log('OTP deleted for email:', email)
-
+    console.log('Sending welcome email...')
     // Send welcome email
-    await sendWelcomeEmail(user.email, user.fullName)
-
-    console.log('Welcome email sent')
+    try {
+      await sendWelcomeEmail(user.email, user.fullName)
+      console.log('Welcome email sent')
+    } catch (emailError) {
+      console.error('Email sending failed (non-blocking):', emailError)
+    }
 
     return NextResponse.json({
       success: true,
       message: 'Account created successfully',
       user,
     })
-  } catch (error) {
-    console.error('Signup error:', error)
+  } catch (error: any) {
+    console.error('Signup error (Detailed):', {
+      message: error.message,
+      stack: error.stack,
+      details: error
+    })
     return NextResponse.json(
-      { success: false, error: 'Internal server error' },
+      { success: false, error: `Internal server error: ${error.message || 'Unknown'}` },
       { status: 500 }
     )
   }

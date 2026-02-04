@@ -27,8 +27,7 @@ export async function POST(request: NextRequest) {
     const otpRecord = await db.otp.findFirst({
       where: {
         email: {
-          equals: email,  // Case-insensitive comparison
-          mode: 'insensitive',
+          equals: email,  // Case-sensitive for now or rely on consistent casing
         },
         code: otp,
         expiresAt: {
