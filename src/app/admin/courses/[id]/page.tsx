@@ -14,6 +14,13 @@ import {
     DialogTrigger,
     DialogFooter
 } from '@/components/ui/dialog'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
 import {
     Table,
@@ -40,6 +47,7 @@ import {
     Loader2
 } from 'lucide-react'
 import { useParams } from 'next/navigation'
+import Link from 'next/link'
 
 interface Subject {
     id: string
@@ -85,10 +93,40 @@ export default function CourseDetailsPage() {
     const [newSubject, setNewSubject] = useState({ name: '', description: '' })
     const [savingSubject, setSavingSubject] = useState(false)
 
+    // Edit Course Dialog
+    const [isEditCourseOpen, setIsEditCourseOpen] = useState(false)
+    const [savingCourse, setSavingCourse] = useState(false)
+    const [editFormData, setEditFormData] = useState({
+        name: '',
+        description: '',
+        fee: '',
+        feeDescription: '',
+        durationYears: '0',
+        durationMonths: '0',
+        maxInstallments: '1',
+        status: 'active'
+    })
+
     useEffect(() => {
         setMounted(true)
         fetchCourseDetails()
     }, [])
+
+    // Initialize edit form when course loads
+    useEffect(() => {
+        if (course) {
+            setEditFormData({
+                name: course.name || '',
+                description: course.description || '',
+                fee: course.fee?.toString() || '',
+                feeDescription: (course as any).feeDescription || '',
+                durationYears: ((course as any).durationYears || 0).toString(),
+                durationMonths: ((course as any).durationMonths || 0).toString(),
+                maxInstallments: ((course as any).maxInstallments || 1).toString(),
+                status: course.status || 'active'
+            })
+        }
+    }, [course])
 
     const fetchCourseDetails = async () => {
         try {
@@ -127,6 +165,27 @@ export default function CourseDetailsPage() {
             console.error('Error adding subject:', error)
         } finally {
             setSavingSubject(false)
+        }
+    }
+
+    const handleEditCourse = async () => {
+        if (!editFormData.name || !editFormData.fee) return
+        try {
+            setSavingCourse(true)
+            const res = await fetch(`/api/courses/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(editFormData)
+            })
+            const data = await res.json()
+            if (data.success) {
+                setIsEditCourseOpen(false)
+                fetchCourseDetails()
+            }
+        } catch (error) {
+            console.error('Error updating course:', error)
+        } finally {
+            setSavingCourse(false)
         }
     }
 
@@ -170,9 +229,9 @@ export default function CourseDetailsPage() {
 
     return (
         <div className="min-h-screen bg-gray-50/50 dark:bg-gray-900 p-6">
-            {/* Breadcrumb - mocked via text for now */}
+            {/* Breadcrumb - with navigation */}
             <div className="mb-6 text-sm text-gray-500">
-                <span className="cursor-pointer hover:text-indigo-600">Courses</span> &gt; <span className="cursor-pointer hover:text-indigo-600">Course list</span> &gt; <span className="font-medium text-gray-900 dark:text-gray-200">Single course</span>
+                <Link href="/admin/courses" className="cursor-pointer hover:text-indigo-600">Courses</Link> &gt; <Link href="/admin/courses" className="cursor-pointer hover:text-indigo-600">Course list</Link> &gt; <span className="font-medium text-gray-900 dark:text-gray-200">{course.name}</span>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -190,9 +249,106 @@ export default function CourseDetailsPage() {
                             <div className="w-full text-left space-y-4">
                                 <div className="flex items-center justify-between">
                                     <h3 className="font-semibold text-gray-700 dark:text-gray-300">Course Details</h3>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-indigo-600">
-                                        <Pencil className="h-4 w-4" />
-                                    </Button>
+                                    <Dialog open={isEditCourseOpen} onOpenChange={setIsEditCourseOpen}>
+                                        <DialogTrigger asChild>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-indigo-600">
+                                                <Pencil className="h-4 w-4" />
+                                            </Button>
+                                        </DialogTrigger>
+                                        <DialogContent className="max-w-2xl">
+                                            <DialogHeader>
+                                                <DialogTitle className="text-xl font-semibold">Edit Course</DialogTitle>
+                                            </DialogHeader>
+                                            <div className="grid grid-cols-2 gap-4 py-4">
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="editName">Course name *</Label>
+                                                    <Input
+                                                        id="editName"
+                                                        value={editFormData.name}
+                                                        onChange={e => setEditFormData({ ...editFormData, name: e.target.value })}
+                                                        placeholder="Enter course name"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="editDesc">Description</Label>
+                                                    <Input
+                                                        id="editDesc"
+                                                        value={editFormData.description}
+                                                        onChange={e => setEditFormData({ ...editFormData, description: e.target.value })}
+                                                        placeholder="Enter description"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label htmlFor="editFee">Course fee *</Label>
+                                                    <Input
+                                                        id="editFee"
+                                                        type="number"
+                                                        value={editFormData.fee}
+                                                        onChange={e => setEditFormData({ ...editFormData, fee: e.target.value })}
+                                                        placeholder="Enter fee"
+                                                    />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label>Status</Label>
+                                                    <Select
+                                                        value={editFormData.status}
+                                                        onValueChange={val => setEditFormData({ ...editFormData, status: val })}
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select status" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="active">Active</SelectItem>
+                                                            <SelectItem value="inactive">Inactive</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label>Duration (Years)</Label>
+                                                    <Select
+                                                        value={editFormData.durationYears}
+                                                        onValueChange={val => setEditFormData({ ...editFormData, durationYears: val })}
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select Year" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {[0, 1, 2, 3, 4, 5].map(y => (
+                                                                <SelectItem key={y} value={y.toString()}>{y} Year</SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label>Duration (Months)</Label>
+                                                    <Select
+                                                        value={editFormData.durationMonths}
+                                                        onValueChange={val => setEditFormData({ ...editFormData, durationMonths: val })}
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select Month" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {Array.from({ length: 12 }).map((_, i) => (
+                                                                <SelectItem key={i} value={i.toString()}>{i} Month</SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+                                            </div>
+                                            <DialogFooter>
+                                                <Button variant="outline" onClick={() => setIsEditCourseOpen(false)}>Cancel</Button>
+                                                <Button
+                                                    className="bg-indigo-600 hover:bg-indigo-700"
+                                                    onClick={handleEditCourse}
+                                                    disabled={savingCourse || !editFormData.name || !editFormData.fee}
+                                                >
+                                                    {savingCourse ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                                                    Update Course
+                                                </Button>
+                                            </DialogFooter>
+                                        </DialogContent>
+                                    </Dialog>
                                 </div>
                                 <div className="grid grid-cols-3 gap-2 text-sm">
                                     <span className="text-gray-500 font-medium">Name</span>

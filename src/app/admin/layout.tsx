@@ -31,7 +31,7 @@ import {
   Search
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
 import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getUserInitials } from '@/lib/utils'
@@ -139,15 +139,7 @@ export default function AdminLayout({
     },
     { title: 'Lead Management', url: '/admin/leads', icon: Users },
     { title: 'Forms', url: '/admin/forms', icon: FileText },
-    {
-      title: 'Courses',
-      url: '/admin/courses',
-      icon: BookOpen,
-      children: [
-        { title: 'All Courses', url: '/admin/courses' },
-        { title: 'Add Course', url: '/admin/courses/add' },
-      ]
-    },
+    { title: 'Courses', url: '/admin/courses', icon: BookOpen },
     { title: 'Batch', url: '/admin/batch', icon: Users },
     { title: 'Chat', url: '/admin/chat', icon: MessageSquare },
     { title: 'Time Table', url: '/admin/timetable', icon: Clock },
@@ -200,6 +192,7 @@ export default function AdminLayout({
       {/* Mobile Drawer */}
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
         <SheetContent side="left" className="w-64 p-0 border-r border-gray-200 dark:border-gray-800">
+          <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
           <SidebarContent
             navItems={navItems}
             pathname={pathname}
