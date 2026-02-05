@@ -1,13 +1,8 @@
-// ============================================
-// HOOKS INDEX
-// Re-export all custom hooks from a single entry point
-// ============================================
-
-export { useCourses } from './useCourses'
-export { useStudents } from './useStudents'
-export { useBatches } from './useBatches'
-export { useBranches } from './useBranches'
-export { useAuth } from './useAuth'
-export { useDashboard } from './useDashboard'
-export { useMobile } from './use-mobile'
-export { useToast, toast } from './use-toast'
+export * from './useCourses'
+export * from './useStudents'
+export * from './useBatches'
+export * from './useBranches'
+export * from './useAuth'
+export * from './useDashboard'
+export * from './useAttendance'
+export * from './useLeads'

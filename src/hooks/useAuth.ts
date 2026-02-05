@@ -7,25 +7,30 @@ import { useEffect } from 'react'
 import { useAuthStore } from '@/lib/stores'
 
 export function useAuth() {
-    const store = useAuthStore()
+    const user = useAuthStore((state) => state.user)
+    const isLoading = useAuthStore((state) => state.isLoading)
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+    const login = useAuthStore((state) => state.login)
+    const logout = useAuthStore((state) => state.logout)
+    const fetchUser = useAuthStore((state) => state.fetchUser)
+    const setUser = useAuthStore((state) => state.setUser)
 
     // Auto-fetch user on mount if not already loaded
     useEffect(() => {
-        if (!store.user && store.isLoading) {
-            store.fetchUser()
+        // Only fetch if we don't have a user and we haven't checked yet (isLoading is true by default)
+        // OR simply fetch on mount if no user.
+        if (!user) {
+            fetchUser()
         }
-    }, [store])
+    }, [fetchUser]) // Only depend on fetchUser (stable)
 
     return {
-        // State
-        user: store.user,
-        isLoading: store.isLoading,
-        isAuthenticated: store.isAuthenticated,
-
-        // Actions
-        login: store.login,
-        logout: store.logout,
-        fetchUser: store.fetchUser,
-        setUser: store.setUser
+        user,
+        isLoading,
+        isAuthenticated,
+        login,
+        logout,
+        fetchUser,
+        setUser
     }
 }

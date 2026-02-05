@@ -87,12 +87,12 @@ export function StudentFilters({
 
             {/* Branch Filter */}
             {branches.length > 0 && (
-                <Select value={studentBranchId} onValueChange={setStudentBranchId}>
+                <Select value={studentBranchId || "all"} onValueChange={(val) => setStudentBranchId(val === "all" ? "" : val)}>
                     <SelectTrigger className="w-[150px] h-9">
                         <SelectValue placeholder="All Branches" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="">All Branches</SelectItem>
+                        <SelectItem value="all">All Branches</SelectItem>
                         {branches.map((branch) => (
                             <SelectItem key={branch.id} value={branch.id}>
                                 {branch.name}
@@ -104,12 +104,12 @@ export function StudentFilters({
 
             {/* Course Filter */}
             {courses.length > 0 && (
-                <Select value={studentCourseId} onValueChange={setStudentCourseId}>
+                <Select value={studentCourseId || "all"} onValueChange={(val) => setStudentCourseId(val === "all" ? "" : val)}>
                     <SelectTrigger className="w-[150px] h-9">
                         <SelectValue placeholder="All Courses" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="">All Courses</SelectItem>
+                        <SelectItem value="all">All Courses</SelectItem>
                         {courses.map((course) => (
                             <SelectItem key={course.id} value={course.id}>
                                 {course.name}

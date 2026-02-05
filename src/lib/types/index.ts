@@ -262,6 +262,74 @@ export interface FilterState {
     pageSize: number
 }
 
+// ============================================
+// LEAD MANAGEMENT TYPES
+// ============================================
+
+export type LeadStage = 'new' | 'contacted' | 'qualified' | 'proposal' | 'negotiation' | 'won' | 'lost'
+export type LeadSource = 'website' | 'referral' | 'social_media' | 'campaign' | 'other'
+
+export interface Lead {
+    id: string
+    firstName: string
+    lastName: string
+    email: string
+    phone: string
+    source: LeadSource
+    stage: LeadStage
+    assignedTo?: string // userId
+    company?: string
+    value?: number
+    notes?: string
+    tags?: string[]
+    lastContactedAt?: string
+    createdAt: string
+    updatedAt: string
+}
+
+export interface LeadFormData {
+    firstName: string
+    lastName: string
+    email: string
+    phone: string
+    source: string
+    stage: string
+    company?: string
+    value?: string
+    notes?: string
+    assignedTo?: string
+}
+
+// ============================================
+// ATTENDANCE TYPES
+// ============================================
+
+export type AttendanceStatus = 'present' | 'absent' | 'leave' | 'half-day' | 'holiday'
+export type AttendanceType = 'student' | 'employee'
+
+export interface AttendanceRecord {
+    id: string
+    date: string
+    status: AttendanceStatus
+    type: AttendanceType
+    entityId: string // studentId or employeeId
+    name: string
+    rollNo?: string // for students
+    designation?: string // for employees
+    remarks?: string
+    checkIn?: string
+    checkOut?: string
+}
+
+export interface AttendanceStats {
+    present: number
+    absent: number
+    leave: number
+    halfDay: number
+    holiday: number
+    total: number
+}
+
 // ===========================================
 // UTILITY TYPES
 // ===========================================
