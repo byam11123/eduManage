@@ -63,7 +63,7 @@ export async function PATCH(
 
         const { id } = await params
         const body = await request.json()
-        const { status } = body
+        const { firstName, lastName, mobile, email, description, status, source, courseId } = body
 
         // Verify enquiry exists
         const enquiry = await db.enquiry.findUnique({
@@ -77,10 +77,19 @@ export async function PATCH(
             )
         }
 
-        // Update enquiry status
+        // Update enquiry
         const updated = await db.enquiry.update({
             where: { id },
-            data: { status }
+            data: {
+                ...(firstName && { firstName }),
+                ...(lastName && { lastName }),
+                ...(mobile && { mobile }),
+                ...(email !== undefined && { email }),
+                ...(description !== undefined && { description }),
+                ...(status && { status }),
+                ...(source && { source }),
+                ...(courseId !== undefined && { courseId })
+            }
         })
 
         return NextResponse.json({

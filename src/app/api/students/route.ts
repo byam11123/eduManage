@@ -128,7 +128,8 @@ export async function POST(request: NextRequest) {
             address, city, state, country, zipCode, branchId, notes,
             fathersName, fathersPhone, enrollmentNo,
             mothersName, category, maritalStatus,
-            aadhaarNumber, alternatePhone, addressLine1, addressLine2, district
+            aadhaarNumber, alternatePhone, addressLine1, addressLine2, district,
+            imageUrl
         } = body
 
         // Validation
@@ -177,6 +178,7 @@ export async function POST(request: NextRequest) {
                 country,
                 zipCode,
                 branchId,
+                imageUrl,
                 notes,
                 status: 'active'
             },

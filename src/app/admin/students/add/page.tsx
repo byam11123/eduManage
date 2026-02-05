@@ -71,12 +71,14 @@ export default function StudentAdmissionPage() {
         addressLine1: '',
         addressLine2: '',
         district: '',
+        city: '',
+        state: '',
         pinCode: '',
         country: 'India',
         gender: '',
         referredBy: '',
         admissionDate: '',
-        studentImage: null as File | null,
+        imageUrl: '',
 
         // Step 2: Qualification Details
         highestQualification: '', // 'high_school' | 'higher_secondary' | 'graduation' | 'post_graduation'
@@ -175,6 +177,17 @@ export default function StudentAdmissionPage() {
         setFormData(prev => ({ ...prev, installmentPlan: newPlan }))
     }
 
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (file) {
+            const reader = new FileReader()
+            reader.onloadend = () => {
+                setFormData(prev => ({ ...prev, imageUrl: reader.result as string }))
+            }
+            reader.readAsDataURL(file)
+        }
+    }
+
     useEffect(() => {
         // Update installment rows when count changes
         const count = Number(formData.installments) || 1
@@ -230,6 +243,7 @@ export default function StudentAdmissionPage() {
                 referredBy: formData.referredBy,
                 enrollmentDate: formData.admissionDate,
                 branchId: formData.branchId || defaultBranch?.id, // REQUIRED by API
+                imageUrl: formData.imageUrl,
                 status: 'active',
                 paymentStatus: formData.isPartPayment === 'yes' ? 'partial' : 'pending'
             }
@@ -338,6 +352,44 @@ export default function StudentAdmissionPage() {
                             {/* Section 1: Student Basic Details */}
                             <div className="space-y-4">
                                 <h3 className="text-md font-semibold text-gray-700 dark:text-gray-300 border-b pb-2">Basic Details</h3>
+
+                                {/* Image Upload & Preview */}
+                                <div className="flex flex-col md:flex-row items-center gap-6 pb-6">
+                                    <div className="relative group">
+                                        <div className="h-32 w-32 rounded-full border-4 border-indigo-50 overflow-hidden bg-gray-100 flex items-center justify-center">
+                                            {formData.imageUrl ? (
+                                                <img src={formData.imageUrl} alt="Student" className="h-full w-full object-cover" />
+                                            ) : (
+                                                <User className="h-12 w-12 text-gray-300" />
+                                            )}
+                                        </div>
+                                        <label htmlFor="student-image" className="absolute bottom-0 right-0 h-10 w-10 bg-indigo-600 rounded-full flex items-center justify-center border-4 border-white cursor-pointer hover:bg-indigo-700 transition-colors">
+                                            <Upload className="h-4 w-4 text-white" />
+                                            <input
+                                                id="student-image"
+                                                type="file"
+                                                accept="image/*"
+                                                className="hidden"
+                                                onChange={handleImageUpload}
+                                            />
+                                        </label>
+                                    </div>
+                                    <div className="flex-1 space-y-1">
+                                        <h4 className="font-medium text-gray-900">Student Profile Image</h4>
+                                        <p className="text-xs text-gray-500">Upload a professional portrait. Max size 2MB. Supports JPG, PNG.</p>
+                                        {formData.imageUrl && (
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="text-red-600 hover:text-red-700 hover:bg-red-50 p-0 h-auto font-medium text-xs mt-2"
+                                                onClick={() => setFormData(prev => ({ ...prev, imageUrl: '' }))}
+                                            >
+                                                Remove Image
+                                            </Button>
+                                        )}
+                                    </div>
+                                </div>
+
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
                                         <Label htmlFor="firstName">First Name <span className="text-red-500">*</span></Label>

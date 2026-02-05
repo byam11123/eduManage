@@ -180,6 +180,7 @@ export interface StudentFormData {
     branchId: string
     courseId: string
     batchId: string
+    imageUrl: string
 }
 
 // ===========================================
@@ -218,17 +219,31 @@ export interface BatchFormData {
 
 export interface Enquiry {
     id: string
-    name: string
+    firstName: string
+    lastName: string
     email?: string
-    phone: string
-    message?: string
-    status: 'new' | 'contacted' | 'converted' | 'closed'
+    mobile: string
+    description?: string
+    status: 'new' | 'contacted' | 'interested' | 'admitted' | 'lost' | 'dropped'
     source?: string
     courseId?: string
     branchId: string
+    organizationId: string
     course?: Course
+    branch?: Branch
     createdAt: string
     updatedAt: string
+}
+
+export interface EnquiryFormData {
+    firstName: string
+    lastName: string
+    email: string
+    mobile: string
+    description: string
+    courseId: string
+    status: string
+    source: string
 }
 
 // ===========================================

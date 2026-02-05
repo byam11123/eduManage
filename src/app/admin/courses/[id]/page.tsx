@@ -122,26 +122,6 @@ export default function CourseDetailsPage() {
         status: 'active'
     })
 
-    // Handlers
-    const handleUpdate = async () => {
-        if (!course) return
-        const success = await updateCourse(course.id, editFormData)
-        if (success) {
-            setIsEditOpen(false)
-            // Refresh course data
-            const updated = await fetchCourseById(id)
-            if (updated) setCourse(updated)
-        }
-    }
-
-    const handleDelete = async () => {
-        if (!course) return
-        const success = await deleteCourse(course.id)
-        if (success) {
-            router.push('/admin/courses')
-        }
-    }
-
     // Batch Handlers
     const handleBatchEdit = (batch: Batch) => {
         setSelectedBatch(batch)

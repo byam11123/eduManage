@@ -41,9 +41,10 @@ export function useBranches(): UseBranchesReturn {
             const response = await branchService.getAll()
             if (response.success && response.data) {
                 setBranches(response.data)
-                // Set first branch as default if none set
-                if (!defaultBranch && response.data.length > 0) {
-                    setDefaultBranchState(response.data[0])
+                // Set first branch as default if none set (using state getter to avoid dep)
+                const currentBranches = response.data
+                if (currentBranches.length > 0) {
+                    setDefaultBranchState(prevDefault => prevDefault || currentBranches[0])
                 }
             }
         } catch (error) {
@@ -51,7 +52,7 @@ export function useBranches(): UseBranchesReturn {
         } finally {
             setLoading(false)
         }
-    }, [defaultBranch])
+    }, [])
 
     // Fetch single branch by ID
     const fetchBranchById = useCallback(async (id: string): Promise<Branch | null> => {

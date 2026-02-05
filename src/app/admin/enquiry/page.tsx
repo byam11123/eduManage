@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
     Search,
@@ -13,7 +12,8 @@ import {
     ChevronRight,
     List as ListIcon,
     LayoutGrid,
-    GraduationCap
+    GraduationCap,
+    Plus
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -32,57 +32,54 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
-
-interface Enquiry {
-    id: string
-    firstName: string
-    lastName: string
-    mobile: string
-    email: string
-    status: string
-    source: string
-    course: { name: string } | null
-    branch: { name: string }
-    createdAt: string
-}
+import { useEnquiries, useCourses, useBranches } from '@/hooks'
+import { EditEnquiryDialog, DeleteEnquiryDialog, AddEnquiryDialog } from '@/components/admin/enquiry'
+import type { Enquiry, EnquiryFormData } from '@/lib/types'
 
 export default function EnquiryListPage() {
     const router = useRouter()
-    const [enquiries, setEnquiries] = useState<Enquiry[]>([])
-    const [loading, setLoading] = useState(true)
+    const { enquiries, loading, saving, fetchEnquiries, createEnquiry, updateEnquiry, deleteEnquiry } = useEnquiries()
+    const { courses } = useCourses()
+
     const [search, setSearch] = useState('')
     const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list')
     const [activeTab, setActiveTab] = useState('all')
 
-    // Counts for tabs (mocked for now, can be calculated from data)
+    // Dialog states
+    const [isAddOpen, setIsAddOpen] = useState(false)
+    const [isEditOpen, setIsEditOpen] = useState(false)
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false)
+    const [selectedEnquiry, setSelectedEnquiry] = useState<Enquiry | null>(null)
+    const [addFormData, setAddFormData] = useState<EnquiryFormData>({
+        firstName: '',
+        lastName: '',
+        mobile: '',
+        email: '',
+        description: '',
+        courseId: '',
+        status: 'new',
+        source: 'web'
+    })
+    const [editFormData, setEditFormData] = useState<EnquiryFormData>({
+        firstName: '',
+        lastName: '',
+        mobile: '',
+        email: '',
+        description: '',
+        courseId: '',
+        status: 'new',
+        source: 'web'
+    })
+
+    // Counts for tabs
     const counts = {
         all: enquiries.length,
         new: enquiries.filter(e => e.status === 'new').length,
         active: enquiries.filter(e => ['new', 'contacted', 'interested'].includes(e.status)).length,
         inactive: enquiries.filter(e => ['lost', 'dropped'].includes(e.status)).length,
         successful: enquiries.filter(e => e.status === 'admitted').length
-    }
-
-    useEffect(() => {
-        fetchEnquiries()
-    }, [])
-
-    const fetchEnquiries = async () => {
-        try {
-            setLoading(true)
-            const res = await fetch('/api/enquiries')
-            const data = await res.json()
-            if (data.success) {
-                setEnquiries(data.enquiries)
-            }
-        } catch (error) {
-            console.error('Error fetching enquiries:', error)
-        } finally {
-            setLoading(false)
-        }
     }
 
     const filteredEnquiries = enquiries.filter(enquiry => {
@@ -92,7 +89,6 @@ export default function EnquiryListPage() {
             enquiry.mobile.includes(search) ||
             (enquiry.email && enquiry.email.toLowerCase().includes(search.toLowerCase()))
 
-        // Simple tab filtering logic
         let matchesTab = true
         if (activeTab === 'new') matchesTab = enquiry.status === 'new'
         if (activeTab === 'active') matchesTab = ['new', 'contacted', 'interested'].includes(enquiry.status)
@@ -101,6 +97,76 @@ export default function EnquiryListPage() {
 
         return matchesSearch && matchesTab
     })
+
+    // Handlers
+    const handleEdit = (enquiry: Enquiry) => {
+        setSelectedEnquiry(enquiry)
+        setEditFormData({
+            firstName: enquiry.firstName,
+            lastName: enquiry.lastName,
+            mobile: enquiry.mobile,
+            email: enquiry.email || '',
+            description: enquiry.description || '',
+            courseId: enquiry.courseId || 'none',
+            status: enquiry.status,
+            source: enquiry.source || 'web'
+        })
+        setIsEditOpen(true)
+    }
+
+    const onAddSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+
+        // Clean up courseId if "none"
+        const dataToSubmit = {
+            ...addFormData,
+            courseId: addFormData.courseId === 'none' ? null : addFormData.courseId
+        } as EnquiryFormData
+
+        const success = await createEnquiry(dataToSubmit)
+        if (success) {
+            setIsAddOpen(false)
+            setAddFormData({
+                firstName: '',
+                lastName: '',
+                mobile: '',
+                email: '',
+                description: '',
+                courseId: '',
+                status: 'new',
+                source: 'web'
+            })
+        }
+    }
+
+    const handleDelete = (enquiry: Enquiry) => {
+        setSelectedEnquiry(enquiry)
+        setIsDeleteOpen(true)
+    }
+
+    const onEditSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!selectedEnquiry) return
+
+        // Clean up courseId if "none"
+        const dataToSubmit = {
+            ...editFormData,
+            courseId: editFormData.courseId === 'none' ? null : editFormData.courseId
+        } as Partial<EnquiryFormData>
+
+        const success = await updateEnquiry(selectedEnquiry.id, dataToSubmit)
+        if (success) {
+            setIsEditOpen(false)
+        }
+    }
+
+    const onDeleteConfirm = async () => {
+        if (!selectedEnquiry) return
+        const success = await deleteEnquiry(selectedEnquiry.id)
+        if (success) {
+            setIsDeleteOpen(false)
+        }
+    }
 
     return (
         <div className="p-6 space-y-6 bg-gray-50/50 min-h-screen">
@@ -134,6 +200,14 @@ export default function EnquiryListPage() {
                         KANBAN
                     </button>
                 </div>
+
+                <Button
+                    onClick={() => setIsAddOpen(true)}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2 font-semibold"
+                >
+                    <Plus className="w-4 h-4" />
+                    ADD NEW ENQUIRY
+                </Button>
             </div>
 
             {/* Main Content Card */}
@@ -145,7 +219,7 @@ export default function EnquiryListPage() {
                     <div className="flex items-center gap-3 w-full xl:w-auto">
                         {/* Refresh */}
                         <Button variant="outline" size="icon" onClick={fetchEnquiries} className="h-10 w-10 text-indigo-600 border-indigo-100 bg-indigo-50 hover:bg-indigo-100 hover:text-indigo-700">
-                            <RotateCw className="h-4 w-4" />
+                            <RotateCw className={cn("h-4 w-4", loading && "animate-spin")} />
                         </Button>
 
                         {/* Date Picker Placeholder */}
@@ -163,17 +237,6 @@ export default function EnquiryListPage() {
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2 w-full xl:w-auto">
-                        {/* Action Buttons */}
-                        <Button className="bg-indigo-500 hover:bg-indigo-600 text-white font-medium uppercase text-xs h-9">
-                            STATUS
-                        </Button>
-                        <Button className="bg-indigo-500 hover:bg-indigo-600 text-white font-medium uppercase text-xs h-9">
-                            ASSIGN
-                        </Button>
-                        <Button className="bg-indigo-500 hover:bg-indigo-600 text-white font-medium uppercase text-xs h-9">
-                            ANNOUNCEMENT
-                        </Button>
-
                         <div className="h-6 w-px bg-gray-200 mx-2 hidden md:block"></div>
 
                         {/* Chart Button */}
@@ -236,15 +299,24 @@ export default function EnquiryListPage() {
                                 <TableHead className="text-xs font-bold text-gray-500 uppercase tracking-wider">Mobile Number</TableHead>
                                 <TableHead className="text-xs font-bold text-gray-500 uppercase tracking-wider">Email ID</TableHead>
                                 <TableHead className="text-xs font-bold text-gray-500 uppercase tracking-wider">Status</TableHead>
-                                <TableHead className="text-xs font-bold text-gray-500 uppercase tracking-wider">Manager</TableHead>
-                                <TableHead className="text-xs font-bold text-gray-500 uppercase tracking-wider">Group Name</TableHead>
+                                <TableHead className="text-xs font-bold text-gray-500 uppercase tracking-wider">Branch</TableHead>
+                                <TableHead className="text-xs font-bold text-gray-500 uppercase tracking-wider">Source</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {filteredEnquiries.length === 0 ? (
+                            {loading ? (
                                 <TableRow>
-                                    <TableCell colSpan={9} className="text-center py-10 text-gray-500">
-                                        No enquiries found.
+                                    <TableCell colSpan={9} className="text-center py-10">
+                                        <div className="flex items-center justify-center gap-2 text-gray-500 text-sm">
+                                            <RotateCw className="h-4 w-4 animate-spin text-indigo-600" />
+                                            Loading enquiries...
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ) : filteredEnquiries.length === 0 ? (
+                                <TableRow>
+                                    <TableCell colSpan={9} className="text-center py-10 text-gray-500 italic">
+                                        No enquiries found matching your criteria.
                                     </TableCell>
                                 </TableRow>
                             ) : (
@@ -257,9 +329,10 @@ export default function EnquiryListPage() {
                                                         <MoreVertical className="h-4 w-4" />
                                                     </Button>
                                                 </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="start">
-                                                    <DropdownMenuItem>View Details</DropdownMenuItem>
-                                                    <DropdownMenuItem>Edit</DropdownMenuItem>
+                                                <DropdownMenuContent align="start" className="w-48 shadow-lg">
+                                                    <DropdownMenuItem onClick={() => handleEdit(enquiry)}>
+                                                        Edit Enquiry
+                                                    </DropdownMenuItem>
                                                     {enquiry.status !== 'admitted' && (
                                                         <DropdownMenuItem
                                                             className="text-emerald-600 font-medium"
@@ -271,7 +344,7 @@ export default function EnquiryListPage() {
                                                                     lastName: enquiry.lastName || '',
                                                                     phone: enquiry.mobile || '',
                                                                     email: enquiry.email || '',
-                                                                    courseId: enquiry.course?.name || ''
+                                                                    courseId: enquiry.courseId || ''
                                                                 })
                                                                 router.push(`/admin/students/add?${params.toString()}`)
                                                             }}
@@ -280,7 +353,12 @@ export default function EnquiryListPage() {
                                                             Admit as Student
                                                         </DropdownMenuItem>
                                                     )}
-                                                    <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                                                        onClick={() => handleDelete(enquiry)}
+                                                    >
+                                                        Delete Enquiry
+                                                    </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </TableCell>
@@ -290,12 +368,22 @@ export default function EnquiryListPage() {
                                         <TableCell className="text-gray-600 tracking-wide font-mono text-xs">{enquiry.mobile}</TableCell>
                                         <TableCell className="text-gray-600">{enquiry.email || '-'}</TableCell>
                                         <TableCell>
-                                            <Badge variant="secondary" className="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 uppercase text-[10px] font-bold tracking-wider rounded-sm px-2">
+                                            <Badge
+                                                variant="secondary"
+                                                className={cn(
+                                                    "uppercase text-[10px] font-bold tracking-wider rounded-sm px-2",
+                                                    enquiry.status === 'new' && "bg-blue-50 text-blue-600 hover:bg-blue-100",
+                                                    enquiry.status === 'admitted' && "bg-emerald-50 text-emerald-600 hover:bg-emerald-100",
+                                                    enquiry.status === 'lost' && "bg-red-50 text-red-600 hover:bg-red-100",
+                                                    enquiry.status === 'contacted' && "bg-indigo-50 text-indigo-600 hover:bg-indigo-100",
+                                                    enquiry.status === 'interested' && "bg-amber-50 text-amber-600 hover:bg-amber-100"
+                                                )}
+                                            >
                                                 {enquiry.status}
                                             </Badge>
                                         </TableCell>
-                                        <TableCell className="text-gray-400">-</TableCell>
-                                        <TableCell className="text-gray-400">-</TableCell>
+                                        <TableCell className="text-gray-600 text-xs">{enquiry.branch?.name || '-'}</TableCell>
+                                        <TableCell className="text-gray-500 capitalize text-xs">{enquiry.source || '-'}</TableCell>
                                     </TableRow>
                                 ))
                             )}
@@ -326,6 +414,35 @@ export default function EnquiryListPage() {
                     </div>
                 </div>
             </div>
-        </div>
+
+            {/* Dialogs */}
+            <AddEnquiryDialog
+                open={isAddOpen}
+                onOpenChange={setIsAddOpen}
+                formData={addFormData}
+                courses={courses}
+                onChange={setAddFormData}
+                onSubmit={onAddSubmit}
+                saving={saving}
+            />
+
+            <EditEnquiryDialog
+                open={isEditOpen}
+                onOpenChange={setIsEditOpen}
+                formData={editFormData}
+                courses={courses}
+                onChange={setEditFormData}
+                onSubmit={onEditSubmit}
+                saving={saving}
+            />
+
+            <DeleteEnquiryDialog
+                open={isDeleteOpen}
+                onOpenChange={setIsDeleteOpen}
+                enquiry={selectedEnquiry}
+                onConfirm={onDeleteConfirm}
+                saving={saving}
+            />
+        </div >
     )
 }
