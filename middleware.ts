@@ -43,8 +43,7 @@ export function middleware(request: NextRequest) {
     // If no token, redirect to login
     if (!token) {
       const url = request.nextUrl.clone();
-      url.pathname = '/';
-      url.search = '?view=login';
+      url.pathname = '/login';
       return NextResponse.redirect(url);
     }
 
@@ -53,8 +52,7 @@ export function middleware(request: NextRequest) {
 
     if (!payload) {
       const url = request.nextUrl.clone();
-      url.pathname = '/';
-      url.search = '?view=login';
+      url.pathname = '/login';
       return NextResponse.redirect(url);
     }
 

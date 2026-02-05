@@ -10,6 +10,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Plus, Upload, Megaphone } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 // Modular components
 import { StudentList, StudentFilters, StudentStats } from '@/components/admin/students'
@@ -21,11 +22,13 @@ import { useStudents, useCourses, useBranches } from '@/hooks'
 import type { Student } from '@/lib/types'
 
 export default function StudentsPage() {
+    const router = useRouter()
     // Custom hooks for data
     const {
         filteredStudents,
         loading,
         fetchStudents,
+        deleteStudent,
         stats
     } = useStudents()
 
@@ -34,18 +37,17 @@ export default function StudentsPage() {
 
     // Handlers
     const handleEdit = (student: Student) => {
-        // Navigate to edit page or open modal
-        console.log('Edit student:', student.id)
+        router.push(`/admin/students/${student.id}/edit`)
     }
 
-    const handleDelete = (student: Student) => {
-        // Show delete confirmation
-        console.log('Delete student:', student.id)
+    const handleDelete = async (student: Student) => {
+        if (confirm(`Are you sure you want to delete ${student.firstName} ${student.lastName}?`)) {
+            await deleteStudent(student.id)
+        }
     }
 
     const handleView = (student: Student) => {
-        // Navigate to student detail
-        console.log('View student:', student.id)
+        router.push(`/admin/students/${student.id}`)
     }
 
     return (

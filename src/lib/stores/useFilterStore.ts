@@ -65,7 +65,7 @@ const initialState = {
     studentBatchId: '',
     batchSearch: '',
     batchStatus: 'all',
-    batchCourseId: '',
+    batchCourseId: 'all',
     page: 1,
     pageSize: 10
 }
@@ -106,7 +106,7 @@ export const useFilterStore = create<FilterStore>()((set) => ({
     resetBatchFilters: () => set({
         batchSearch: '',
         batchStatus: 'all',
-        batchCourseId: ''
+        batchCourseId: 'all'
     }),
 
     // Pagination Actions

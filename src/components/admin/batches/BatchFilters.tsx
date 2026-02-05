@@ -81,7 +81,7 @@ export function BatchFilters({ onRefresh, loading, courses = [] }: BatchFiltersP
                         <SelectValue placeholder="All Courses" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="">All Courses</SelectItem>
+                        <SelectItem value="all">All Courses</SelectItem>
                         {courses.map((course) => (
                             <SelectItem key={course.id} value={course.id}>
                                 {course.name}

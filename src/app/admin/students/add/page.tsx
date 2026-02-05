@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import {
     User,
     GraduationCap,
@@ -29,6 +31,7 @@ import {
 } from '@/components/ui/select'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { cn } from '@/lib/utils'
+import { useBranches } from '@/hooks'
 
 const steps = [
     { id: 1, title: 'Student Details', description: 'Enter Student Information', icon: User },
@@ -41,7 +44,10 @@ const steps = [
 ]
 
 export default function StudentAdmissionPage() {
+    const router = useRouter()
+    const { defaultBranch, branches } = useBranches()
     const [currentStep, setCurrentStep] = useState(1)
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
     // Form State
     const [formData, setFormData] = useState({
@@ -70,6 +76,7 @@ export default function StudentAdmissionPage() {
 
         // Step 3: Coaching Details
         courseId: '',
+        branchId: '', // Will be set from default branch
 
         // Step 4: Batch Details
         batchId: '',
@@ -101,6 +108,27 @@ export default function StudentAdmissionPage() {
         }
         fetchCourses()
     }, [])
+
+    // Pre-fill from enquiry data if coming from Enquiry page
+    const searchParams = useSearchParams()
+    useEffect(() => {
+        if (searchParams.get('fromEnquiry') === 'true') {
+            setFormData(prev => ({
+                ...prev,
+                firstName: searchParams.get('firstName') || '',
+                lastName: searchParams.get('lastName') || '',
+                phone: searchParams.get('phone') || '',
+                email: searchParams.get('email') || '',
+            }))
+        }
+    }, [searchParams])
+
+    // Set default branch when loaded
+    useEffect(() => {
+        if (defaultBranch && !formData.branchId) {
+            setFormData(prev => ({ ...prev, branchId: defaultBranch.id }))
+        }
+    }, [defaultBranch, formData.branchId])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target
@@ -137,6 +165,67 @@ export default function StudentAdmissionPage() {
 
     const handleBack = () => {
         if (currentStep > 1) setCurrentStep(prev => prev - 1)
+    }
+
+    const handleSubmit = async () => {
+        try {
+            setIsSubmitting(true)
+
+            // Prepare student data
+            const studentData = {
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                email: formData.email,
+                phone: formData.phone,
+                dateOfBirth: formData.dateOfBirth,
+                gender: formData.gender,
+                address: formData.address,
+                fathersName: formData.fathersName,
+                fathersPhone: formData.fathersPhone,
+                courseId: formData.courseId,
+                batchId: formData.batchId,
+                enrollmentNo: formData.enrollmentNo,
+                referredBy: formData.referredBy,
+                enrollmentDate: formData.admissionDate,
+                branchId: formData.branchId || defaultBranch?.id, // REQUIRED by API
+                status: 'active',
+                paymentStatus: formData.isPartPayment === 'yes' ? 'partial' : 'pending'
+            }
+
+            const res = await fetch('/api/students', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(studentData)
+            })
+
+            const data = await res.json()
+
+            if (data.success) {
+                // If this admission came from an enquiry, update status to 'admitted' (preserves for analytics)
+                const enquiryId = searchParams.get('enquiryId')
+                if (enquiryId) {
+                    try {
+                        await fetch(`/api/enquiries/${enquiryId}`, {
+                            method: 'PATCH',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ status: 'admitted' })
+                        })
+                    } catch (e) {
+                        console.warn('Failed to update enquiry status:', e)
+                    }
+                }
+
+                toast.success('Student admitted successfully!')
+                router.push('/admin/students')
+            } else {
+                toast.error(data.error || 'Failed to create student')
+            }
+        } catch (error) {
+            console.error('Submit error:', error)
+            toast.error('Error submitting admission form')
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     return (
@@ -458,10 +547,11 @@ export default function StudentAdmissionPage() {
                         Back
                     </Button>
                     <Button
-                        onClick={handleNext}
+                        onClick={currentStep === steps.length ? handleSubmit : handleNext}
+                        disabled={isSubmitting}
                         className="w-24 bg-indigo-600 hover:bg-indigo-700 text-white uppercase"
                     >
-                        {currentStep === steps.length ? 'Submit' : 'Next'}
+                        {isSubmitting ? 'Saving...' : currentStep === steps.length ? 'Submit' : 'Next'}
                     </Button>
                 </div>
             </div>

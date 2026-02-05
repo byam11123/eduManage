@@ -336,4 +336,102 @@ export interface AttendanceStats {
 
 export type EntityStatus = 'active' | 'inactive'
 export type PaymentStatus = 'paid' | 'pending' | 'overdue' | 'partial'
-export type StudentStatus = 'active' | 'inactive' | 'graduated' | 'dropped'
+// ===========================================
+// STAFF / EMPLOYEE TYPES
+// ===========================================
+
+export interface Education {
+    level: string // 'High School', 'Intermediate', 'Graduation', etc.
+    institution: string
+    boardOrUniversity?: string
+    percentage?: string
+    passingYear?: string
+    address?: string
+    certificateUrl?: string
+}
+
+export interface BankDetails {
+    accountNumber: string
+    accountHolderName: string // Usually same as staff name, but can be different
+    bankName: string
+    ifscCode: string
+    confirmAccountNumber?: string // Only for form validation, mostly not stored
+}
+
+export interface Staff {
+    id: string
+    // Personal Info
+    firstName: string
+    lastName: string
+    employeeCode: string
+    email: string
+    phone: string
+    dateOfBirth: string
+    gender: 'male' | 'female' | 'other'
+    fathersName?: string
+    fathersPhone?: string
+    address?: string
+    profileImage?: string
+
+    // Official Info
+    department?: string
+    designation: string // 'Teacher', 'Admin', 'Staff'
+    dateOfJoining: string
+    status: 'active' | 'inactive' | 'on_leave'
+
+    // Qualification & Experience
+    highestQualification?: string
+    education?: Education[]
+    skills?: string[]
+    experienceYears?: number
+    referredBy?: string
+
+    // Salary Info
+    salaryType: 'fixed' | 'hourly'
+    salaryAmount: number
+
+    // Bank Info
+    bankDetails?: BankDetails
+
+    // Documents
+    aadharCard?: string
+    panCard?: string
+
+    createdAt: string
+    updatedAt: string
+}
+
+export interface StaffFormData {
+    // Personal
+    firstName: string
+    lastName: string
+    employeeCode: string
+    email: string
+    phone: string
+    dateOfBirth: string
+    gender: string
+    fathersName: string
+    fathersPhone: string
+    address: string
+
+    // Official
+    department: string
+    dateOfJoining: string
+
+    // Qualification
+    highestQualification: string
+    education: Education[]
+    experienceYears: string
+    skills: string
+    referredBy: string
+
+    // Salary
+    salaryType: string
+    salaryAmount: string
+
+    // Bank
+    bankName: string
+    accountNumber: string
+    confirmAccountNumber: string
+    ifscCode: string
+}

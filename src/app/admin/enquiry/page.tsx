@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import {
     Search,
     RotateCw,
@@ -11,7 +12,8 @@ import {
     ChevronLeft,
     ChevronRight,
     List as ListIcon,
-    LayoutGrid
+    LayoutGrid,
+    GraduationCap
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -48,6 +50,7 @@ interface Enquiry {
 }
 
 export default function EnquiryListPage() {
+    const router = useRouter()
     const [enquiries, setEnquiries] = useState<Enquiry[]>([])
     const [loading, setLoading] = useState(true)
     const [search, setSearch] = useState('')
@@ -257,6 +260,26 @@ export default function EnquiryListPage() {
                                                 <DropdownMenuContent align="start">
                                                     <DropdownMenuItem>View Details</DropdownMenuItem>
                                                     <DropdownMenuItem>Edit</DropdownMenuItem>
+                                                    {enquiry.status !== 'admitted' && (
+                                                        <DropdownMenuItem
+                                                            className="text-emerald-600 font-medium"
+                                                            onClick={() => {
+                                                                const params = new URLSearchParams({
+                                                                    fromEnquiry: 'true',
+                                                                    enquiryId: enquiry.id,
+                                                                    firstName: enquiry.firstName || '',
+                                                                    lastName: enquiry.lastName || '',
+                                                                    phone: enquiry.mobile || '',
+                                                                    email: enquiry.email || '',
+                                                                    courseId: enquiry.course?.name || ''
+                                                                })
+                                                                router.push(`/admin/students/add?${params.toString()}`)
+                                                            }}
+                                                        >
+                                                            <GraduationCap className="w-4 h-4 mr-2" />
+                                                            Admit as Student
+                                                        </DropdownMenuItem>
+                                                    )}
                                                     <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
@@ -271,8 +294,8 @@ export default function EnquiryListPage() {
                                                 {enquiry.status}
                                             </Badge>
                                         </TableCell>
-                                        <TableCell className="text-gray-400">-</TableCell> {/* Manager Placeholder */}
-                                        <TableCell className="text-gray-400">-</TableCell> {/* Group Name Placeholder */}
+                                        <TableCell className="text-gray-400">-</TableCell>
+                                        <TableCell className="text-gray-400">-</TableCell>
                                     </TableRow>
                                 ))
                             )}

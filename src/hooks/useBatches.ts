@@ -138,7 +138,7 @@ export function useBatches(): UseBatchesReturn {
             : true
 
         const matchesStatus = batchStatus === 'all' || batch.status === batchStatus
-        const matchesCourse = !batchCourseId || batch.courseId === batchCourseId
+        const matchesCourse = !batchCourseId || batchCourseId === 'all' || batch.courseId === batchCourseId
 
         return matchesSearch && matchesStatus && matchesCourse
     })
