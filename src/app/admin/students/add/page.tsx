@@ -33,16 +33,18 @@ import {
 import { INDIAN_STATES } from '@/lib/constants'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { cn } from '@/lib/utils'
-import { useBranches } from '@/hooks'
+import { useBranches, useCourses, useBatches } from '@/hooks'
+import { AddCourseDialog } from '@/components/admin/courses'
+import { AddBatchDialog } from '@/components/admin/batches'
+import type { CourseFormData, BatchFormData } from '@/lib/types'
 
 const steps = [
     { id: 1, title: 'Student Details', description: 'Enter Student Information', icon: User },
     { id: 2, title: 'Qualification Details', description: 'Enter Education Information', icon: GraduationCap },
-    { id: 3, title: 'Coaching Details', description: 'Enter Coaching Information', icon: BookOpen },
-    { id: 4, title: 'Batch Details', description: 'Enter Batch Information', icon: LayoutGrid },
-    { id: 5, title: 'Payment Details', description: 'Enter Payment Information', icon: CreditCard },
-    { id: 6, title: 'Installment Details', description: 'Enter Installment Information', icon: Banknote },
-    { id: 7, title: 'Review Details', description: 'Check your Filled Details', icon: FileCheck },
+    { id: 3, title: 'Course & Batch Details', description: 'Select Course and Batch', icon: BookOpen },
+    { id: 4, title: 'Payment Details', description: 'Enter Payment Information', icon: CreditCard },
+    { id: 5, title: 'Installment Details', description: 'Enter Installment Information', icon: Banknote },
+    { id: 6, title: 'Review Details', description: 'Check your Filled Details', icon: FileCheck },
 ]
 
 export default function StudentAdmissionPage() {
@@ -125,21 +127,85 @@ export default function StudentAdmissionPage() {
         installmentPlan: [] as { date: string, description: string, amount: string }[]
     })
 
-    // Mock Data
-    const [courses, setCourses] = useState<{ id: string, name: string }[]>([])
-    const [batches, setBatches] = useState<{ id: string, name: string }[]>([])
+    const { courses, loading: coursesLoading, createCourse } = useCourses()
+    const { batches, fetchBatches, createBatch } = useBatches()
 
-    useEffect(() => {
-        // Fetch courses on mount
-        const fetchCourses = async () => {
-            try {
-                const res = await fetch('/api/courses')
-                const data = await res.json()
-                if (data.success) setCourses(data.courses)
-            } catch (e) { console.error(e) }
+    // Dialog states for instant creation
+    const [isAddCourseOpen, setIsAddCourseOpen] = useState(false)
+    const [isAddBatchOpen, setIsAddBatchOpen] = useState(false)
+    const [savingNewCourse, setSavingNewCourse] = useState(false)
+    const [savingNewBatch, setSavingNewBatch] = useState(false)
+
+    // Form data for new course/batch
+    const [newCourseData, setNewCourseData] = useState<CourseFormData>({
+        name: '',
+        description: '',
+        fee: 0,
+        registrationFee: 0,
+        courseType: 'academic',
+        mode: 'offline',
+        durationYears: 0,
+        durationMonths: 0,
+        maxInstallments: 1
+    })
+
+    const [newBatchData, setNewBatchData] = useState<BatchFormData>({
+        name: '',
+        description: '',
+        courseId: '',
+        status: 'active'
+    })
+
+    // Handler for instant course creation
+    const handleAddCourse = async () => {
+        try {
+            setSavingNewCourse(true)
+            const success = await createCourse(newCourseData)
+            if (success) {
+                toast.success('Course created successfully!')
+                setIsAddCourseOpen(false)
+                // The useCourses hook will refresh the list, and we can select it once identified
+                // For simplicity, we just keep the form as is, user can select the new one
+            }
+        } catch (error) {
+            toast.error('Failed to create course')
+        } finally {
+            setSavingNewCourse(false)
         }
-        fetchCourses()
-    }, [])
+    }
+
+    // Handler for instant batch creation
+    const handleAddBatch = async (e: React.FormEvent) => {
+        e.preventDefault()
+        try {
+            setSavingNewBatch(true)
+            // Ensure courseId is set
+            const batchToCreate = { ...newBatchData, courseId: formData.courseId }
+            if (!batchToCreate.courseId) {
+                toast.error('Please select a course first')
+                return
+            }
+            const success = await createBatch(batchToCreate)
+            if (success) {
+                toast.success('Batch created successfully!')
+                setIsAddBatchOpen(false)
+                // Refresh batches for the current course
+                fetchBatches(formData.courseId)
+            }
+        } catch (error) {
+            toast.error('Failed to create batch')
+        } finally {
+            setSavingNewBatch(false)
+        }
+    }
+
+    // Fetch batches when course changes
+    useEffect(() => {
+        if (formData.courseId) {
+            fetchBatches(formData.courseId)
+        }
+    }, [formData.courseId, fetchBatches])
+
 
     // Pre-fill from enquiry data if coming from Enquiry page
     const searchParams = useSearchParams()
@@ -667,49 +733,73 @@ export default function StudentAdmissionPage() {
                         </div>
                     )}
 
-                    {/* Step 3: Coaching Details */}
+                    {/* Step 3: Course & Batch Details */}
                     {currentStep === 3 && (
-                        <div className="space-y-6">
-                            <div className="flex items-end gap-3 max-w-xl">
-                                <div className="space-y-2 w-full">
-                                    <Label htmlFor="courseId">Course name *</Label>
-                                    <Select value={formData.courseId} onValueChange={(val) => handleSelectChange('courseId', val)}>
-                                        <SelectTrigger><SelectValue placeholder="Select Course" /></SelectTrigger>
-                                        <SelectContent>
-                                            {courses.map(c => (
-                                                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                                            ))}
-                                            {courses.length === 0 && <SelectItem value="disabled" disabled>No courses available</SelectItem>}
-                                        </SelectContent>
-                                    </Select>
+                        <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
+                            <div className="space-y-4">
+                                <h3 className="text-md font-semibold text-gray-700 dark:text-gray-300 border-b pb-2">Select Batch & Course</h3>
+
+                                <div className="space-y-6 pt-2">
+                                    {/* Course Selection */}
+                                    <div className="flex items-end gap-3 max-w-xl">
+                                        <div className="space-y-2 w-full">
+                                            <Label htmlFor="courseId">Course *</Label>
+                                            <Select value={formData.courseId} onValueChange={(val) => handleSelectChange('courseId', val)}>
+                                                <SelectTrigger className="h-12"><SelectValue placeholder="Select Course" /></SelectTrigger>
+                                                <SelectContent>
+                                                    {courses.map(c => (
+                                                        <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                                    ))}
+                                                    {courses.length === 0 && <SelectItem value="disabled" disabled>No courses available</SelectItem>}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <Button
+                                            type="button"
+                                            size="icon"
+                                            className="h-12 w-12 bg-indigo-600 hover:bg-indigo-700 flex-shrink-0"
+                                            onClick={() => setIsAddCourseOpen(true)}
+                                        >
+                                            <Plus className="h-5 w-5" />
+                                        </Button>
+                                    </div>
+
+                                    {/* Batch Selection */}
+                                    <div className="flex items-end gap-3 max-w-xl">
+                                        <div className="space-y-2 w-full">
+                                            <Label htmlFor="batchId">Batch *</Label>
+                                            <Select
+                                                value={formData.batchId}
+                                                onValueChange={(val) => handleSelectChange('batchId', val)}
+                                                disabled={!formData.courseId}
+                                            >
+                                                <SelectTrigger className="h-12"><SelectValue placeholder={formData.courseId ? "Select Batch" : "Select course first"} /></SelectTrigger>
+                                                <SelectContent>
+                                                    {batches.map(b => (
+                                                        <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+                                                    ))}
+                                                    {batches.length === 0 && formData.courseId && <SelectItem value="disabled" disabled>No cohorts/batches for this course</SelectItem>}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <Button
+                                            type="button"
+                                            size="icon"
+                                            className="h-12 w-12 bg-indigo-600 hover:bg-indigo-700 flex-shrink-0"
+                                            onClick={() => setIsAddBatchOpen(true)}
+                                            disabled={!formData.courseId}
+                                        >
+                                            <Plus className="h-5 w-5" />
+                                        </Button>
+                                    </div>
                                 </div>
-                                <Button type="button" size="icon" className="bg-indigo-600 mb-0.5"><Plus className="h-4 w-4" /></Button>
                             </div>
                         </div>
                     )}
 
-                    {/* Step 4: Batch Details */}
+                    {/* Step 4: Payment Details */}
                     {currentStep === 4 && (
-                        <div className="space-y-6">
-                            <div className="flex items-end gap-3 max-w-xl">
-                                <div className="space-y-2 w-full">
-                                    <Label htmlFor="batchId">Batch name *</Label>
-                                    <Select value={formData.batchId} onValueChange={(val) => handleSelectChange('batchId', val)}>
-                                        <SelectTrigger><SelectValue placeholder="Select Batch" /></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="batch-1">Morning Batch A</SelectItem>
-                                            <SelectItem value="batch-2">Evening Batch B</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <Button type="button" size="icon" className="bg-indigo-600 mb-0.5"><Plus className="h-4 w-4" /></Button>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Step 5: Payment Details */}
-                    {currentStep === 5 && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-right-4 duration-300">
                             <div className="space-y-2">
                                 <Label htmlFor="totalAmount">Total payment amount</Label>
                                 <Input id="totalAmount" name="totalAmount" value={formData.totalAmount} onChange={handleInputChange} disabled className="bg-gray-100" />
@@ -717,7 +807,7 @@ export default function StudentAdmissionPage() {
                             <div className="space-y-2">
                                 <Label htmlFor="isPartPayment">Part payment *</Label>
                                 <Select value={formData.isPartPayment} onValueChange={(val) => handleSelectChange('isPartPayment', val)}>
-                                    <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                                    <SelectTrigger h-12><SelectValue placeholder="Select" /></SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="yes">Yes</SelectItem>
                                         <SelectItem value="no">No</SelectItem>
@@ -739,23 +829,23 @@ export default function StudentAdmissionPage() {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="discountedAmount">Discounted payment amount</Label>
-                                <Input id="discountedAmount" name="discountedAmount" value={formData.discountedAmount} onChange={handleInputChange} />
+                                <Input id="discountedAmount" name="discountedAmount" value={formData.discountedAmount} onChange={handleInputChange} className="h-12" />
                             </div>
                         </div>
                     )}
 
-                    {/* Step 6: Installment Details */}
-                    {currentStep === 6 && (
-                        <div className="space-y-8">
+                    {/* Step 5: Installment Details */}
+                    {currentStep === 5 && (
+                        <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <Label htmlFor="discountedAmountDisplay">Discounted payment amount</Label>
-                                    <Input id="discountedAmountDisplay" value={formData.discountedAmount} disabled className="bg-gray-100" />
+                                    <Input id="discountedAmountDisplay" value={formData.discountedAmount} disabled className="bg-gray-100 h-12" />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="installments">Number of installments *</Label>
                                     <Select value={String(formData.installments)} onValueChange={(val) => handleSelectChange('installments', val)}>
-                                        <SelectTrigger><SelectValue placeholder="Select Count" /></SelectTrigger>
+                                        <SelectTrigger className="h-12"><SelectValue placeholder="Select Count" /></SelectTrigger>
                                         <SelectContent>
                                             {[1, 2, 3, 4, 5, 6].map(num => (
                                                 <SelectItem key={num} value={String(num)}>{num}</SelectItem>
@@ -768,7 +858,7 @@ export default function StudentAdmissionPage() {
                             <div className="space-y-2 max-w-xl">
                                 <Label htmlFor="payFirstInstallmentNow">Are you paying first installment right now ? *</Label>
                                 <Select value={formData.payFirstInstallmentNow} onValueChange={(val) => handleSelectChange('payFirstInstallmentNow', val)}>
-                                    <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                                    <SelectTrigger className="h-12"><SelectValue placeholder="Select" /></SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="yes">Yes</SelectItem>
                                         <SelectItem value="due">Due</SelectItem>
@@ -783,15 +873,15 @@ export default function StudentAdmissionPage() {
                                         <div className="space-y-2">
                                             <Label className="font-semibold text-gray-700">Installment {idx + 1} :</Label>
                                             <Label className="text-xs text-gray-500 block">Installment date *</Label>
-                                            <Input type="date" value={inst.date} onChange={(e) => handleInstallmentChange(idx, 'date', e.target.value)} />
+                                            <Input type="date" value={inst.date} onChange={(e) => handleInstallmentChange(idx, 'date', e.target.value)} className="h-10" />
                                         </div>
                                         <div className="space-y-2">
                                             <Label className="text-xs text-gray-500 block">Payment description *</Label>
-                                            <Input placeholder="Description" value={inst.description} onChange={(e) => handleInstallmentChange(idx, 'description', e.target.value)} />
+                                            <Input placeholder="Description" value={inst.description} onChange={(e) => handleInstallmentChange(idx, 'description', e.target.value)} className="h-10" />
                                         </div>
                                         <div className="space-y-2 relative">
                                             <Label className="text-xs text-gray-500 block">Due payment *</Label>
-                                            <Input placeholder="Amount" value={inst.amount} onChange={(e) => handleInstallmentChange(idx, 'amount', e.target.value)} />
+                                            <Input placeholder="Amount" value={inst.amount} onChange={(e) => handleInstallmentChange(idx, 'amount', e.target.value)} className="h-10" />
                                             <Button variant="ghost" size="sm" className="absolute right-0 bottom-10" disabled>
                                                 SAVE
                                             </Button>
@@ -802,30 +892,45 @@ export default function StudentAdmissionPage() {
                         </div>
                     )}
 
-                    {/* Step 7: Review */}
-                    {currentStep === 7 && (
-                        <div className="space-y-6">
-                            <div className="bg-green-50 p-4 border border-green-200 rounded text-green-800">
-                                Please review the details before submitting.
+                    {/* Step 6: Review */}
+                    {currentStep === 6 && (
+                        <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+                            <div className="bg-green-50 p-6 border border-green-200 rounded-lg text-green-800 flex items-start gap-3">
+                                <div className="mt-0.5"><FileCheck className="h-5 w-5" /></div>
+                                <div>
+                                    <p className="font-semibold">All details are ready!</p>
+                                    <p className="text-sm opacity-90">Please review the summary below before completing the admission process.</p>
+                                </div>
                             </div>
-                            <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <dt className="text-sm font-medium text-gray-500">Full Name</dt>
-                                    <dd className="mt-1 text-sm text-gray-900">{formData.firstName} {formData.lastName}</dd>
+
+                            <dl className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 p-6 border rounded-lg bg-gray-50/50">
+                                <div className="space-y-1">
+                                    <dt className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Full Name</dt>
+                                    <dd className="text-sm font-medium text-gray-900">{formData.firstName} {formData.lastName}</dd>
                                 </div>
-                                <div>
-                                    <dt className="text-sm font-medium text-gray-500">Phone</dt>
-                                    <dd className="mt-1 text-sm text-gray-900">{formData.phone}</dd>
+                                <div className="space-y-1">
+                                    <dt className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Phone</dt>
+                                    <dd className="text-sm font-medium text-gray-900">{formData.phone}</dd>
                                 </div>
-                                <div>
-                                    <dt className="text-sm font-medium text-gray-500">Course</dt>
-                                    <dd className="mt-1 text-sm text-gray-900">
-                                        {courses.find(c => c.id === formData.courseId)?.name || formData.courseId}
+                                <div className="space-y-1">
+                                    <dt className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Course</dt>
+                                    <dd className="text-sm font-medium text-gray-900">
+                                        {courses.find(c => c.id === formData.courseId)?.name || 'Not selected'}
                                     </dd>
                                 </div>
-                                <div>
-                                    <dt className="text-sm font-medium text-gray-500">Total Fee</dt>
-                                    <dd className="mt-1 text-sm text-gray-900">{formData.totalAmount}</dd>
+                                <div className="space-y-1">
+                                    <dt className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Batch</dt>
+                                    <dd className="text-sm font-medium text-gray-900">
+                                        {batches.find(b => b.id === formData.batchId)?.name || 'Not selected'}
+                                    </dd>
+                                </div>
+                                <div className="space-y-1">
+                                    <dt className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Fee</dt>
+                                    <dd className="text-sm font-medium text-gray-900">₹{formData.totalAmount}</dd>
+                                </div>
+                                <div className="space-y-1">
+                                    <dt className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Installments</dt>
+                                    <dd className="text-sm font-medium text-gray-900">{formData.installments}</dd>
                                 </div>
                             </dl>
                         </div>
@@ -837,19 +942,39 @@ export default function StudentAdmissionPage() {
                         variant="outline"
                         onClick={handleBack}
                         disabled={currentStep === 1}
-                        className="w-24 uppercase"
+                        className="w-24 uppercase font-semibold"
                     >
                         Back
                     </Button>
                     <Button
                         onClick={currentStep === steps.length ? handleSubmit : handleNext}
                         disabled={isSubmitting}
-                        className="w-24 bg-indigo-600 hover:bg-indigo-700 text-white uppercase"
+                        className="w-28 bg-indigo-600 hover:bg-indigo-700 text-white uppercase font-semibold"
                     >
-                        {isSubmitting ? 'Saving...' : currentStep === steps.length ? 'Submit' : 'Next'}
+                        {isSubmitting ? 'Saving...' : currentStep === steps.length ? 'Confirm' : 'Next'}
                     </Button>
                 </div>
             </div>
+
+            {/* Dialogs for Instant Creation */}
+            <AddCourseDialog
+                open={isAddCourseOpen}
+                onOpenChange={setIsAddCourseOpen}
+                formData={newCourseData}
+                onChange={setNewCourseData}
+                onSubmit={handleAddCourse}
+                saving={savingNewCourse}
+            />
+
+            <AddBatchDialog
+                open={isAddBatchOpen}
+                onOpenChange={setIsAddBatchOpen}
+                formData={newBatchData}
+                courses={courses}
+                onChange={setNewBatchData}
+                onSubmit={handleAddBatch}
+                saving={savingNewBatch}
+            />
         </div>
     )
 }

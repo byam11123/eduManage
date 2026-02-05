@@ -18,6 +18,46 @@ import { Loader2 } from 'lucide-react'
 import { BatchForm } from './BatchForm'
 import type { Batch, BatchFormData, Course } from '@/lib/types'
 
+// ===== ADD BATCH DIALOG =====
+interface AddBatchDialogProps {
+    open: boolean
+    onOpenChange: (open: boolean) => void
+    formData: BatchFormData
+    courses: Course[]
+    onChange: (data: BatchFormData) => void
+    onSubmit: (e: React.FormEvent) => void
+    saving?: boolean
+}
+
+export function AddBatchDialog({
+    open,
+    onOpenChange,
+    formData,
+    courses,
+    onChange,
+    onSubmit,
+    saving
+}: AddBatchDialogProps) {
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="max-w-3xl">
+                <DialogHeader>
+                    <DialogTitle className="text-xl font-semibold">Add New Batch</DialogTitle>
+                </DialogHeader>
+                <BatchForm
+                    formData={formData}
+                    courses={courses}
+                    onChange={onChange}
+                    onSubmit={onSubmit}
+                    onCancel={() => onOpenChange(false)}
+                    saving={saving}
+                    mode="create"
+                />
+            </DialogContent>
+        </Dialog>
+    )
+}
+
 // ===== EDIT BATCH DIALOG =====
 interface EditBatchDialogProps {
     open: boolean
