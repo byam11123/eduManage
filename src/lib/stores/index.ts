@@ -6,3 +6,4 @@
 export { useAuthStore } from './useAuthStore'
 export { useUIStore } from './useUIStore'
 export { useFilterStore } from './useFilterStore'
+export { useAdmissionDraftStore } from './useAdmissionDraftStore'

@@ -152,6 +152,95 @@ export interface Student {
     updatedAt: string
 }
 
+export interface InstallmentPlanItem {
+    installmentNo: number
+    dueDate: string
+    amount: string
+    paidAmount: string
+    paymentDate: string
+    mode: 'cash' | 'online' | ''
+    receiptNo: string
+    utrNo: string
+    proofImage: string
+    status: 'paid' | 'pending' | 'due'
+    remark: string
+}
+
+export interface StudentAdmissionFormData {
+    // Step 1: Student Details
+    firstName: string
+    lastName: string
+    email: string
+    dateOfBirth: string
+    enrollmentNo: string
+    phone: string
+    fathersName: string
+    mothersName: string
+    category: string
+    maritalStatus: string
+    fathersPhone: string
+    address: string
+    aadhaarNumber: string
+    alternatePhone: string
+    addressLine1: string
+    addressLine2: string
+    district: string
+    city: string
+    state: string
+    pinCode: string
+    country: string
+    gender: string
+    referredBy: string
+    admissionDate: string
+    imageUrl: string
+
+    // Step 2: Qualification Details
+    highestQualification: string
+    hsSchoolName: string
+    hsBoard: string
+    hsPassingYear: string
+    hsPercentage: string
+    hssSchoolName: string
+    hssBoard: string
+    hssStream: string
+    hssPassingYear: string
+    hssPercentage: string
+    gradCollegeName: string
+    gradUniversity: string
+    gradDegree: string
+    gradPassingYear: string
+    gradPercentage: string
+    pgCollegeName: string
+    pgUniversity: string
+    pgDegree: string
+    pgPassingYear: string
+    pgPercentage: string
+
+    // Step 3: Course & Batch Details
+    courseId: string
+    branchId: string
+    batchId: string
+
+    // Step 4: Payment Details
+    totalAmount: string
+    discountAmount: string
+    netPayableFee: string
+    isPartPayment: string
+    applyCoupon: string
+    discountedAmount: string // Keep for compatibility if needed, but netPayableFee is preferred
+    paymentMode: string // for full payment
+    receiptNo: string // for full payment
+    transactionId: string // for full payment
+    paymentDate: string // for full payment
+    proofImage: string // for full payment
+
+    // Step 5: Installment Details
+    divideInstallments: 'preset' | 'equal' | 'custom'
+    installments: number
+    payFirstInstallmentNow: string
+    installmentPlan: InstallmentPlanItem[]
+}
+
 export interface StudentFormData {
     firstName: string
     lastName: string
@@ -181,6 +270,10 @@ export interface StudentFormData {
     courseId: string
     batchId: string
     imageUrl: string
+    status?: string
+    enrollmentNo?: string
+    enrollmentDate?: string
+    paymentStatus?: string
 }
 
 // ===========================================

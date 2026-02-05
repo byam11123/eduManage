@@ -6,7 +6,7 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -44,40 +44,64 @@ export function CourseForm({
         onChange({ ...formData, [field]: value })
     }
 
-    // Update installment amounts array when installments count, fee, or registration fee changes
+    // Use refs to track last known values to avoid overwriting manual edits
+    const lastCalculatedRef = useRef({ count: 0, fee: 0, reg: 0 })
+
+    // Update installment amounts array when master fields change
     useEffect(() => {
         const count = parseInt(formData.maxInstallments) || 1
         const totalFee = parseFloat(formData.fee) || 0
         const registrationFee = parseFloat(formData.registrationFee) || 0
         const currentAmounts = formData.installmentAmounts || []
 
-        // Only auto-fill if count changes or if amounts array is empty/wrong length
-        if (currentAmounts.length !== count || (count > 1 && currentAmounts.every(a => !a))) {
+        const masterFieldsChanged =
+            count !== lastCalculatedRef.current.count ||
+            totalFee !== lastCalculatedRef.current.fee ||
+            registrationFee !== lastCalculatedRef.current.reg
+
+        // Also re-calculate if the array is empty but we have a fee
+        const isMostlyEmpty = currentAmounts.length === 0 || currentAmounts.every(a => !a || a === '0')
+
+        if (masterFieldsChanged || isMostlyEmpty) {
             let newAmounts: string[] = []
 
             if (count === 1) {
-                // Single payment = total fee
                 newAmounts = [totalFee > 0 ? totalFee.toString() : '']
             } else {
-                // 1st installment = registration fee
-                // Remaining installments = (total - registration) / remaining count
-                const remainingBalance = totalFee - registrationFee
-                const remainingCount = count - 1
-                const perInstallment = remainingBalance > 0 ? Math.floor(remainingBalance / remainingCount) : 0
-                const remainder = remainingBalance > 0 ? remainingBalance - (perInstallment * remainingCount) : 0
+                // Logic per user request:
+                // If registration fees is filled -> 1st installment = registration fee
+                // Remaining -> divided equally
+                // If registration fees NOT filled -> all divide equally (including 1st)
 
-                newAmounts = Array.from({ length: count }, (_, i) => {
-                    if (i === 0) {
-                        // 1st installment = registration fee
-                        return registrationFee > 0 ? registrationFee.toString() : ''
-                    } else if (remainingBalance > 0) {
+                if (registrationFee > 0) {
+                    const remainingBalance = totalFee - registrationFee
+                    const remainingCount = count - 1
+                    const perInstallment = remainingBalance > 0 ? Math.floor(remainingBalance / remainingCount) : 0
+                    const remainder = remainingBalance > 0 ? remainingBalance - (perInstallment * remainingCount) : 0
+
+                    newAmounts = Array.from({ length: count }, (_, i) => {
+                        if (i === 0) return registrationFee.toString()
                         // Add remainder to 2nd installment for clean division
                         return (i === 1 ? perInstallment + remainder : perInstallment).toString()
-                    }
-                    return ''
-                })
+                    })
+                } else {
+                    // All divide equally
+                    const perInstallment = totalFee > 0 ? Math.floor(totalFee / count) : 0
+                    const remainder = totalFee > 0 ? totalFee - (perInstallment * count) : 0
+
+                    newAmounts = Array.from({ length: count }, (_, i) => {
+                        // Add remainder to 1st installment for clean division
+                        return (i === 0 ? perInstallment + remainder : perInstallment).toString()
+                    })
+                }
             }
-            handleChange('installmentAmounts', newAmounts)
+
+            lastCalculatedRef.current = { count, fee: totalFee, reg: registrationFee }
+
+            // Only update if it actually changed to avoid infinite loops
+            if (JSON.stringify(newAmounts) !== JSON.stringify(currentAmounts)) {
+                handleChange('installmentAmounts', newAmounts)
+            }
         }
     }, [formData.maxInstallments, formData.fee, formData.registrationFee])
 
