@@ -129,7 +129,16 @@ export async function POST(request: NextRequest) {
             fathersName, fathersPhone, enrollmentNo,
             mothersName, category, maritalStatus,
             aadhaarNumber, alternatePhone, addressLine1, addressLine2, district,
-            imageUrl
+            imageUrl, schoolCollege, referredBy, enrollmentDate,
+            // Qualifications
+            highestQualification,
+            hsSchoolName, hsBoard, hsPassingYear, hsPercentage,
+            hssSchoolName, hssBoard, hssStream, hssPassingYear, hssPercentage,
+            gradCollegeName, gradUniversity, gradDegree, gradPassingYear, gradPercentage,
+            pgCollegeName, pgUniversity, pgDegree, pgPassingYear, pgPercentage,
+            // Financials
+            totalAmount, discountAmount, netPayableFee, isPartPayment,
+            installmentPlan, installmentMode, fullPayment, receivedBy, courseId, batchId
         } = body
 
         // Validation
@@ -164,13 +173,32 @@ export async function POST(request: NextRequest) {
             )
         }
 
+        // Auto-generate unique enrollment number if needed
+        let finalEnrollmentNo = enrollmentNo
+        const existingStudent = await db.student.findUnique({
+            where: { enrollmentNo }
+        })
+
+        if (existingStudent || !enrollmentNo || enrollmentNo === 'OCI-1') {
+            const count = await db.student.count()
+            const year = new Date().getFullYear().toString().slice(-2)
+            // Format: OCI-YY-XXX (e.g., OCI-24-001)
+            finalEnrollmentNo = `OCI-${year}-${String(count + 1).padStart(3, '0')}`
+
+            // Double check uniqueness
+            const doubleCheck = await db.student.findUnique({ where: { enrollmentNo: finalEnrollmentNo } })
+            if (doubleCheck) {
+                finalEnrollmentNo = `OCI-${year}-${String(count + 2).padStart(3, '0')}`
+            }
+        }
+
         const student = await db.student.create({
             data: {
                 firstName,
                 lastName,
                 email,
                 phone,
-                dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
+                dateOfBirth: (dateOfBirth && dateOfBirth !== '') ? new Date(dateOfBirth) : null,
                 gender,
                 address,
                 city,
@@ -180,7 +208,38 @@ export async function POST(request: NextRequest) {
                 branchId,
                 imageUrl,
                 notes,
-                status: 'active'
+                enrollmentDate: (enrollmentDate && enrollmentDate !== '') ? new Date(enrollmentDate) : new Date(),
+                status: 'active',
+                enrollmentNo: finalEnrollmentNo,
+                fathersName,
+                fathersPhone,
+                mothersName,
+                category,
+                maritalStatus,
+                aadhaarNumber,
+                alternatePhone,
+                addressLine1,
+                addressLine2,
+                district,
+                schoolCollege,
+                referredBy,
+                // Qualifications
+                highestQualification,
+                hsSchoolName, hsBoard, hsPassingYear, hsPercentage,
+                hssSchoolName, hssBoard, hssStream, hssPassingYear, hssPercentage,
+                gradCollegeName, gradUniversity, gradDegree, gradPassingYear, gradPercentage,
+                pgCollegeName, pgUniversity, pgDegree, pgPassingYear, pgPercentage,
+                // Financials
+                totalAmount: totalAmount ? Number(totalAmount) : 0,
+                discountAmount: discountAmount ? Number(discountAmount) : 0,
+                netPayableFee: netPayableFee ? Number(netPayableFee) : 0,
+                isPartPayment: !!isPartPayment,
+                installmentPlan: installmentPlan ? JSON.stringify(installmentPlan) : null,
+                installmentMode,
+                fullPayment: fullPayment ? JSON.stringify(fullPayment) : null,
+                receivedBy,
+                courseId,
+                batchId
             },
             include: {
                 branch: {

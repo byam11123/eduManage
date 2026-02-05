@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useSearchParams, useRouter, useParams } from 'next/navigation'
 import { toast } from 'sonner'
 import { useBranches, useCourses, useBatches } from '@/hooks'
 import { useAdmissionDraftStore } from '@/lib/stores'
@@ -90,6 +90,7 @@ export const INITIAL_FORM_DATA: StudentAdmissionFormData = {
 
 export function useAdmissionForm() {
     const router = useRouter()
+    const params = useParams()
     const searchParams = useSearchParams()
     const { defaultBranch } = useBranches()
     const { courses, createCourse } = useCourses()
@@ -135,8 +136,10 @@ export function useAdmissionForm() {
         endTime: ''
     })
 
-    // Pre-fill from enquiry data if coming from Enquiry page
+    // Pre-fill from enquiry data or existing student
     useEffect(() => {
+        const studentId = (searchParams.get('studentId') || searchParams.get('id') || params?.id) as string
+
         if (searchParams.get('fromEnquiry') === 'true') {
             setFormData(prev => ({
                 ...prev,
@@ -145,8 +148,121 @@ export function useAdmissionForm() {
                 phone: searchParams.get('phone') || '',
                 email: searchParams.get('email') || '',
             }))
+        } else if (studentId) {
+            // Load existing student data for editing
+            const loadStudent = async () => {
+                try {
+                    const res = await fetch(`/api/students/${studentId}`)
+                    const data = await res.json()
+                    if (data.success && data.student) {
+                        const s = data.student
+
+                        let fullPaymentData: any = {}
+                        if (s.fullPayment) {
+                            try {
+                                fullPaymentData = typeof s.fullPayment === 'string' ? JSON.parse(s.fullPayment) : s.fullPayment
+                            } catch (e) {
+                                console.error('Failed to parse fullPayment:', e)
+                            }
+                        }
+
+                        let installmentPlanData: InstallmentPlanItem[] = []
+                        if (s.installmentPlan) {
+                            try {
+                                installmentPlanData = typeof s.installmentPlan === 'string' ? JSON.parse(s.installmentPlan) : s.installmentPlan
+                            } catch (e) {
+                                console.error('Failed to parse installmentPlan:', e)
+                            }
+                        }
+
+                        setFormData({
+                            // Step 1: Student Details
+                            firstName: s.firstName || '',
+                            lastName: s.lastName || '',
+                            email: s.email || '',
+                            dateOfBirth: s.dateOfBirth ? new Date(s.dateOfBirth).toISOString().split('T')[0] : '',
+                            enrollmentNo: s.enrollmentNo || '',
+                            phone: s.phone || '',
+                            fathersName: s.fathersName || '',
+                            mothersName: s.mothersName || '',
+                            category: s.category || '',
+                            maritalStatus: s.maritalStatus || '',
+                            fathersPhone: s.fathersPhone || '',
+                            address: s.address || '',
+                            aadhaarNumber: s.aadhaarNumber || '',
+                            alternatePhone: s.alternatePhone || '',
+                            addressLine1: s.addressLine1 || '',
+                            addressLine2: s.addressLine2 || '',
+                            district: s.district || '',
+                            city: s.city || '',
+                            state: s.state || '',
+                            pinCode: s.zipCode || '',
+                            country: s.country || '',
+                            gender: s.gender || '',
+                            referredBy: s.referredBy || '',
+                            admissionDate: s.enrollmentDate ? new Date(s.enrollmentDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                            imageUrl: s.imageUrl || '',
+
+                            // Step 2: Qualification Details
+                            highestQualification: s.highestQualification || '',
+                            hsSchoolName: s.hsSchoolName || '',
+                            hsBoard: s.hsBoard || '',
+                            hsPassingYear: s.hsPassingYear || '',
+                            hsPercentage: s.hsPercentage || '',
+                            hssSchoolName: s.hssSchoolName || '',
+                            hssBoard: s.hssBoard || '',
+                            hssStream: s.hssStream || '',
+                            hssPassingYear: s.hssPassingYear || '',
+                            hssPercentage: s.hssPercentage || '',
+                            gradCollegeName: s.gradCollegeName || '',
+                            gradUniversity: s.gradUniversity || '',
+                            gradDegree: s.gradDegree || '',
+                            gradPassingYear: s.gradPassingYear || '',
+                            gradPercentage: s.gradPercentage || '',
+                            pgCollegeName: s.pgCollegeName || '',
+                            pgUniversity: s.pgUniversity || '',
+                            pgDegree: s.pgDegree || '',
+                            pgPassingYear: s.pgPassingYear || '',
+                            pgPercentage: s.pgPercentage || '',
+
+                            // Step 3: Course & Batch Details
+                            courseId: s.courseId || '',
+                            branchId: s.branchId || '',
+                            batchId: s.batchId || '',
+
+                            // Step 4: Payment Details
+                            totalAmount: String(s.totalAmount || '0'),
+                            discountAmount: String(s.discountAmount || '0'),
+                            netPayableFee: String(s.netPayableFee || '0'),
+                            isPartPayment: s.isPartPayment ? 'yes' : 'no',
+                            applyCoupon: 'no',
+                            discountedAmount: String(s.netPayableFee || '0'),
+                            paymentMode: fullPaymentData?.mode || '',
+                            receiptNo: fullPaymentData?.receiptNo || '',
+                            transactionId: fullPaymentData?.transactionId || '',
+                            paymentDate: fullPaymentData?.date || '',
+                            proofImage: fullPaymentData?.proofImage || '',
+                            receivedBy: s.receivedBy || '',
+
+                            // Step 5: Installment Details
+                            divideInstallments: s.installmentMode || (installmentPlanData.length > 0 ? 'custom' : 'custom'),
+                            installments: installmentPlanData.length || 1,
+                            payFirstInstallmentNow: 'no',
+                            installmentPlan: (installmentPlanData || []).map((ip: any) => ({
+                                ...ip,
+                                amount: String(ip.amount),
+                                paidAmount: String(ip.paidAmount)
+                            }))
+                        })
+                    }
+                } catch (e) {
+                    console.error('Failed to load student for edit:', e)
+                    toast.error('Failed to load student data')
+                }
+            }
+            loadStudent()
         }
-    }, [searchParams])
+    }, [searchParams, params])
 
     // Set default branch when loaded
     useEffect(() => {
@@ -432,6 +548,27 @@ export function useAdmissionForm() {
                 branchId: formData.branchId || defaultBranch?.id,
                 imageUrl: formData.imageUrl,
                 status: 'active',
+                // Qualifications
+                highestQualification: formData.highestQualification,
+                hsSchoolName: formData.hsSchoolName,
+                hsBoard: formData.hsBoard,
+                hsPassingYear: formData.hsPassingYear,
+                hsPercentage: formData.hsPercentage,
+                hssSchoolName: formData.hssSchoolName,
+                hssBoard: formData.hssBoard,
+                hssStream: formData.hssStream,
+                hssPassingYear: formData.hssPassingYear,
+                hssPercentage: formData.hssPercentage,
+                gradCollegeName: formData.gradCollegeName,
+                gradUniversity: formData.gradUniversity,
+                gradDegree: formData.gradDegree,
+                gradPassingYear: formData.gradPassingYear,
+                gradPercentage: formData.gradPercentage,
+                pgCollegeName: formData.pgCollegeName,
+                pgUniversity: formData.pgUniversity,
+                pgDegree: formData.pgDegree,
+                pgPassingYear: formData.pgPassingYear,
+                pgPercentage: formData.pgPercentage,
 
                 // Advanced Payment Logic fields
                 totalAmount: formData.totalAmount,           // Total Course Fee
@@ -450,11 +587,15 @@ export function useAdmissionForm() {
                 } : null,
 
                 // Installment Plan Details if applicable
+                installmentMode: formData.divideInstallments,
                 installmentPlan: formData.isPartPayment === 'yes' ? formData.installmentPlan : []
             }
 
-            const res = await fetch('/api/students', {
-                method: 'POST',
+            const studentId = (searchParams.get('studentId') || searchParams.get('id') || params?.id) as string
+            const isEdit = !!studentId
+
+            const res = await fetch(isEdit ? `/api/students/${studentId}` : '/api/students', {
+                method: isEdit ? 'PATCH' : 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(studentData)
             })
@@ -462,24 +603,26 @@ export function useAdmissionForm() {
             const data = await res.json()
 
             if (data.success) {
-                const enquiryId = searchParams.get('enquiryId')
-                if (enquiryId) {
-                    try {
-                        await fetch(`/api/enquiries/${enquiryId}`, {
-                            method: 'PATCH',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ status: 'admitted' })
-                        })
-                    } catch (e) {
-                        console.warn('Failed to update enquiry status:', e)
+                if (!isEdit) {
+                    const enquiryId = searchParams.get('enquiryId')
+                    if (enquiryId) {
+                        try {
+                            await fetch(`/api/enquiries/${enquiryId}`, {
+                                method: 'PATCH',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ status: 'admitted' })
+                            })
+                        } catch (e) {
+                            console.warn('Failed to update enquiry status:', e)
+                        }
                     }
                 }
 
                 clearDraft() // Clear draft on successful submission
-                toast.success('Student admitted successfully!')
+                toast.success(isEdit ? 'Student updated successfully!' : 'Student admitted successfully!')
                 router.push('/admin/students')
             } else {
-                toast.error(data.error || 'Failed to create student')
+                toast.error(data.error || `Failed to ${isEdit ? 'update' : 'create'} student`)
             }
         } catch (error) {
             console.error('Submit error:', error)

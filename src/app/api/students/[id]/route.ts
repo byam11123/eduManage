@@ -56,7 +56,7 @@ export async function GET(
 
         return NextResponse.json({
             success: true,
-            data: student
+            student
         })
 
     } catch (error) {
@@ -94,15 +94,41 @@ export async function PATCH(
             return NextResponse.json({ success: false, error: 'Access denied' }, { status: 403 })
         }
 
-        // 3. Update
+        // 3. Sanitize and Update
+        const data = { ...body }
+
+        // Convert dates
+        if (data.dateOfBirth !== undefined) {
+            data.dateOfBirth = (data.dateOfBirth && data.dateOfBirth !== '') ? new Date(data.dateOfBirth) : null
+        }
+        if (data.enrollmentDate !== undefined) {
+            data.enrollmentDate = (data.enrollmentDate && data.enrollmentDate !== '') ? new Date(data.enrollmentDate) : new Date()
+        }
+
+        // Convert numbers
+        if (data.totalAmount !== undefined) data.totalAmount = Number(data.totalAmount) || 0
+        if (data.discountAmount !== undefined) data.discountAmount = Number(data.discountAmount) || 0
+        if (data.netPayableFee !== undefined) data.netPayableFee = Number(data.netPayableFee) || 0
+
+        // JSON strings
+        if (data.installmentPlan !== undefined) {
+            data.installmentPlan = data.installmentPlan ? JSON.stringify(data.installmentPlan) : null
+        }
+        if (data.fullPayment !== undefined) {
+            data.fullPayment = data.fullPayment ? JSON.stringify(data.fullPayment) : null
+        }
+        if (data.installmentMode !== undefined) {
+            data.installmentMode = data.installmentMode || null
+        }
+
         const updatedStudent = await db.student.update({
             where: { id },
-            data: body
+            data
         })
 
         return NextResponse.json({
             success: true,
-            data: updatedStudent
+            student: updatedStudent
         })
 
     } catch (error) {

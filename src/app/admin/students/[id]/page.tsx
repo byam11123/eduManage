@@ -13,12 +13,15 @@ import {
     AttendanceDetailsTab,
     DocumentsTab
 } from '@/components/admin/students/view'
+import { DeleteStudentDialog } from '@/components/admin/students'
 
 export default function StudentDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const router = useRouter()
     const { fetchStudentById, deleteStudent } = useStudents()
     const [student, setStudent] = useState<any>(null)
     const [loading, setLoading] = useState(true)
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false)
+    const [deleting, setDeleting] = useState(false)
 
     // Unwrap params using React.use()
     const resolvedParams = use(params)
@@ -38,10 +41,17 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
         router.push(`/admin/students/${student.id}/edit`)
     }
 
-    const handleDelete = async () => {
-        if (confirm(`Are you sure you want to delete ${student.firstName} ${student.lastName}?`)) {
+    const handleDelete = () => {
+        setIsDeleteOpen(true)
+    }
+
+    const handleConfirmDelete = async () => {
+        if (student) {
+            setDeleting(true)
             const success = await deleteStudent(student.id)
+            setDeleting(false)
             if (success) {
+                setIsDeleteOpen(false)
                 router.push('/admin/students')
             }
         }
@@ -160,6 +170,14 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
                     </Tabs>
                 </div>
             </div>
+            {/* Deletion Dialog */}
+            <DeleteStudentDialog
+                open={isDeleteOpen}
+                onOpenChange={setIsDeleteOpen}
+                student={student}
+                onConfirm={handleConfirmDelete}
+                loading={deleting}
+            />
         </div>
     )
 }

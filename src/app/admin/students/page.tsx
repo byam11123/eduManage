@@ -13,7 +13,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 // Modular components
-import { StudentList, StudentFilters, StudentStats } from '@/components/admin/students'
+import { StudentList, StudentFilters, StudentStats, DeleteStudentDialog } from '@/components/admin/students'
 
 // Custom hooks
 import { useStudents, useCourses, useBranches } from '@/hooks'
@@ -35,14 +35,25 @@ export default function StudentsPage() {
     const { courses } = useCourses()
     const { branches } = useBranches()
 
+    // Deletion states
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false)
+    const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
+
     // Handlers
     const handleEdit = (student: Student) => {
         router.push(`/admin/students/${student.id}/edit`)
     }
 
-    const handleDelete = async (student: Student) => {
-        if (confirm(`Are you sure you want to delete ${student.firstName} ${student.lastName}?`)) {
-            await deleteStudent(student.id)
+    const handleDelete = (student: Student) => {
+        setSelectedStudent(student)
+        setIsDeleteOpen(true)
+    }
+
+    const handleConfirmDelete = async () => {
+        if (selectedStudent) {
+            await deleteStudent(selectedStudent.id)
+            setIsDeleteOpen(false)
+            setSelectedStudent(null)
         }
     }
 
@@ -131,6 +142,14 @@ export default function StudentsPage() {
                     </div>
                 </CardContent>
             </Card>
+            {/* Deletion Dialog */}
+            <DeleteStudentDialog
+                open={isDeleteOpen}
+                onOpenChange={setIsDeleteOpen}
+                student={selectedStudent}
+                onConfirm={handleConfirmDelete}
+                loading={loading}
+            />
         </div>
     )
 }

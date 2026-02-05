@@ -195,6 +195,38 @@ model Student {
   schoolCollege  String?
   referredBy     String?
   
+  // Qualification Details
+  highestQualification String?
+  hsSchoolName       String?
+  hsBoard            String?
+  hsPassingYear      String?
+  hsPercentage       String?
+  hssSchoolName      String?
+  hssBoard           String?
+  hssStream          String?
+  hssPassingYear     String?
+  hssPercentage      String?
+  gradCollegeName    String?
+  gradUniversity     String?
+  gradDegree         String?
+  gradPassingYear    String?
+  gradPercentage     String?
+  pgCollegeName      String?
+  pgUniversity       String?
+  pgDegree           String?
+  pgPassingYear      String?
+  pgPercentage       String?
+
+  // Financial Details
+  totalAmount     Float     @default(0)
+  discountAmount  Float     @default(0)
+  netPayableFee   Float     @default(0)
+  isPartPayment   Boolean   @default(false)
+  installmentPlan String?   // JSON string of InstallmentPlanItem[]
+  installmentMode String?   // 'preset' | 'equal' | 'custom'
+  fullPayment     String?   // JSON string of full payment details
+  receivedBy      String?
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
