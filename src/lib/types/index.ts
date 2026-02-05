@@ -165,6 +165,7 @@ export interface InstallmentPlanItem {
     proofImage: string
     status: 'paid' | 'pending' | 'due'
     remark: string
+    receivedBy: string
 }
 
 export interface StudentAdmissionFormData {
@@ -234,6 +235,7 @@ export interface StudentAdmissionFormData {
     transactionId: string // for full payment
     paymentDate: string // for full payment
     proofImage: string // for full payment
+    receivedBy: string // for full payment
 
     // Step 5: Installment Details
     divideInstallments: 'preset' | 'equal' | 'custom'

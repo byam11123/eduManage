@@ -119,6 +119,10 @@ export function Step4PaymentDetails({
                             <Label htmlFor="paymentDate">Payment Date *</Label>
                             <Input id="paymentDate" name="paymentDate" type="date" value={formData.paymentDate} onChange={onChange} className="h-11" />
                         </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="receivedBy">Payment Received By *</Label>
+                            <Input id="receivedBy" name="receivedBy" value={formData.receivedBy} onChange={onChange} className="h-11" placeholder="Staff name" />
+                        </div>
 
                         <div className="space-y-2 md:col-span-2">
                             <Label>Payment Proof (ScreenShot/Receipt) *</Label>

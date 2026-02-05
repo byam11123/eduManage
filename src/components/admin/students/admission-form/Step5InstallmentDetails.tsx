@@ -211,6 +211,15 @@ export function Step5InstallmentDetails({
                                                 className="h-10 bg-white/50 border-green-200"
                                             />
                                         </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-[11px] text-green-700">Received By</Label>
+                                            <Input
+                                                value={item.receivedBy}
+                                                onChange={(e) => handleInstallmentChange(index, 'receivedBy', e.target.value)}
+                                                className="h-10 bg-white/50 border-green-200"
+                                                placeholder="Staff name"
+                                            />
+                                        </div>
                                         <div className="space-y-2 flex flex-col justify-end">
                                             {!item.proofImage ? (
                                                 <Button

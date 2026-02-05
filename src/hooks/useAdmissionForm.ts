@@ -79,6 +79,7 @@ export const INITIAL_FORM_DATA: StudentAdmissionFormData = {
     transactionId: '',
     paymentDate: '',
     proofImage: '',
+    receivedBy: '',
 
     // Step 5: Installment Details
     divideInstallments: 'custom',
@@ -237,6 +238,7 @@ export function useAdmissionForm() {
                         receiptNo: (i === 0 && isPayingFirstNow) ? (prev.installmentPlan[0]?.receiptNo || '') : '',
                         utrNo: (i === 0 && isPayingFirstNow) ? (prev.installmentPlan[0]?.utrNo || '') : '',
                         proofImage: (i === 0 && isPayingFirstNow) ? (prev.installmentPlan[0]?.proofImage || '') : '',
+                        receivedBy: (i === 0 && isPayingFirstNow) ? (prev.installmentPlan[0]?.receivedBy || '') : '',
                         status: (i === 0 && isPayingFirstNow) ? 'paid' : 'pending',
                         remark: ''
                     }
@@ -255,6 +257,7 @@ export function useAdmissionForm() {
                     receiptNo: (i === 0 && isPayingFirstNow) ? (prev.installmentPlan[0]?.receiptNo || '') : '',
                     utrNo: (i === 0 && isPayingFirstNow) ? (prev.installmentPlan[0]?.utrNo || '') : '',
                     proofImage: (i === 0 && isPayingFirstNow) ? (prev.installmentPlan[0]?.proofImage || '') : '',
+                    receivedBy: (i === 0 && isPayingFirstNow) ? (prev.installmentPlan[0]?.receivedBy || '') : '',
                     status: (i === 0 && isPayingFirstNow) ? 'paid' : 'pending',
                     remark: ''
                 }))
@@ -272,6 +275,7 @@ export function useAdmissionForm() {
                         receiptNo: '',
                         utrNo: '',
                         proofImage: '',
+                        receivedBy: '',
                         status: 'pending',
                         remark: ''
                     }

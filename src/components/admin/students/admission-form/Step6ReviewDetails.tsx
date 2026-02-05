@@ -101,6 +101,9 @@ export function Step6ReviewDetails({
                                                 <p className="text-[10px] text-gray-500 flex items-center gap-1">
                                                     <Calendar className="w-2.5 h-2.5" /> Due: {ip.dueDate || 'TBD'}
                                                 </p>
+                                                {ip.status === 'paid' && ip.receivedBy && (
+                                                    <p className="text-[9px] text-green-600 font-medium">Received by: {ip.receivedBy}</p>
+                                                )}
                                             </div>
                                         </div>
                                         <span className={cn(
@@ -117,14 +120,18 @@ export function Step6ReviewDetails({
                                         <span className="text-green-700 font-medium">Full Amount Received</span>
                                         <span className="font-black text-green-800">₹{formData.netPayableFee}</span>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-green-100">
+                                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mt-2 pt-3 border-t border-green-100">
                                         <div className="text-[10px] space-y-1">
                                             <span className="text-green-600/70 block uppercase font-bold">Mode</span>
                                             <span className="text-green-800 font-bold uppercase">{formData.paymentMode}</span>
                                         </div>
-                                        <div className="text-[10px] space-y-1 text-right">
+                                        <div className="text-[10px] space-y-1">
                                             <span className="text-green-600/70 block uppercase font-bold">Receipt No</span>
-                                            <span className="text-green-800 font-bold">{formData.receiptNo}</span>
+                                            <span className="text-green-800 font-bold">{formData.receiptNo || 'N/A'}</span>
+                                        </div>
+                                        <div className="text-[10px] space-y-1">
+                                            <span className="text-green-600/70 block uppercase font-bold">Received By</span>
+                                            <span className="text-green-800 font-bold uppercase">{formData.receivedBy || 'Staff'}</span>
                                         </div>
                                     </div>
                                 </div>
