@@ -52,7 +52,7 @@ export function CourseForm({
         const count = parseInt(formData.maxInstallments) || 1
         const totalFee = parseFloat(formData.fee) || 0
         const registrationFee = parseFloat(formData.registrationFee) || 0
-        const currentAmounts = formData.installmentAmounts || []
+        const currentAmounts = Array.isArray(formData.installmentAmounts) ? formData.installmentAmounts : []
 
         const masterFieldsChanged =
             count !== lastCalculatedRef.current.count ||
@@ -60,7 +60,7 @@ export function CourseForm({
             registrationFee !== lastCalculatedRef.current.reg
 
         // Also re-calculate if the array is empty but we have a fee
-        const isMostlyEmpty = currentAmounts.length === 0 || currentAmounts.every(a => !a || a === '0')
+        const isMostlyEmpty = currentAmounts.length === 0 || (Array.isArray(currentAmounts) && currentAmounts.every(a => !a || a === '0'))
 
         if (masterFieldsChanged || isMostlyEmpty) {
             let newAmounts: string[] = []
