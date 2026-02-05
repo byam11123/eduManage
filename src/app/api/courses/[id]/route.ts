@@ -75,7 +75,23 @@ export async function PATCH(
 
         const { id } = await params
         const body = await req.json()
-        const { name, description, fee, feeDescription, durationYears, durationMonths, maxInstallments, status } = body
+        const {
+            name,
+            description,
+            courseType,
+            mode,
+            fee,
+            feeDescription,
+            registrationFee,
+            discountAllowed,
+            discountPercentage,
+            durationYears,
+            durationMonths,
+            maxInstallments,
+            installmentAmounts,
+            eligibility,
+            status
+        } = body
 
         // Verify user access
         const user = await db.user.findUnique({
@@ -105,12 +121,22 @@ export async function PATCH(
             data: {
                 ...(name && { name }),
                 ...(description !== undefined && { description }),
+                ...(courseType !== undefined && { courseType: courseType || null }),
+                ...(mode !== undefined && { mode: mode || 'offline' }),
                 ...(fee !== undefined && { fee: parseFloat(fee) }),
                 ...(feeDescription !== undefined && { feeDescription }),
+                ...(registrationFee !== undefined && { registrationFee: parseFloat(registrationFee || '0') }),
+                ...(discountAllowed !== undefined && { discountAllowed }),
+                ...(discountPercentage !== undefined && { discountPercentage: parseFloat(discountPercentage || '0') }),
                 ...(durationYears !== undefined && { durationYears: parseInt(durationYears) }),
                 ...(durationMonths !== undefined && { durationMonths: parseInt(durationMonths) }),
                 ...(maxInstallments !== undefined && { maxInstallments: parseInt(maxInstallments) }),
+                ...(installmentAmounts !== undefined && { installmentAmounts: JSON.stringify(installmentAmounts) }),
+                ...(eligibility !== undefined && { eligibility: eligibility || null }),
                 ...(status && { status })
+            },
+            include: {
+                subjects: true
             }
         })
 

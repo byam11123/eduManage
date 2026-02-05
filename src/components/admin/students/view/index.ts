@@ -1,0 +1,5 @@
+export * from './ProfileSidebar'
+export * from './CourseDetailsTab'
+export * from './PaymentDetailsTab'
+export * from './AttendanceDetailsTab'
+export * from './DocumentsTab'

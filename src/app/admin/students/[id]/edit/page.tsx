@@ -24,6 +24,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
+import { DateInput } from '@/components/ui/date-input'
 import {
     Select,
     SelectContent,
@@ -33,6 +34,7 @@ import {
 } from '@/components/ui/select'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { cn } from '@/lib/utils'
+import { INDIAN_STATES } from '@/lib/constants'
 import { studentService } from '@/lib/services/student.service'
 import { toast } from 'sonner'
 
@@ -49,7 +51,7 @@ export default function EditStudentPage() {
     const router = useRouter()
     const params = useParams()
     const id = params?.id as string
-    
+
     const [currentStep, setCurrentStep] = useState(1)
     const [isLoading, setIsLoading] = useState(true)
     const [isSaving, setIsSaving] = useState(false)
@@ -64,12 +66,22 @@ export default function EditStudentPage() {
         enrollmentNo: '',
         phone: '',
         fathersName: '',
+        mothersName: '',
+        category: '',
+        maritalStatus: 'single',
         fathersPhone: '',
         address: '',
+        aadhaarNumber: '',
+        alternatePhone: '',
+        addressLine1: '',
+        addressLine2: '',
+        district: '',
+        pinCode: '',
+        country: 'India',
         gender: '',
         referredBy: '',
         admissionDate: '',
-        
+
         // Step 2: College Details
         state: '',
         city: '',
@@ -117,12 +129,22 @@ export default function EditStudentPage() {
                     enrollmentNo: s.enrollmentNo || '',
                     phone: s.phone || '',
                     fathersName: s.fathersName || '',
+                    mothersName: s.mothersName || '',
+                    category: s.category || '',
+                    maritalStatus: s.maritalStatus || 'single',
                     fathersPhone: s.fathersPhone || '',
                     address: s.address || '',
+                    aadhaarNumber: s.aadhaarNumber || '',
+                    alternatePhone: s.alternatePhone || '',
+                    addressLine1: s.addressLine1 || '',
+                    addressLine2: s.addressLine2 || '',
+                    district: s.district || '',
+                    pinCode: s.zipCode || '',
+                    country: s.country || 'India',
                     gender: s.gender || '',
                     referredBy: '', // Not always present in basic type
                     admissionDate: s.admissionDate ? new Date(s.admissionDate).toISOString().split('T')[0] : '',
-                    
+
                     state: s.state || '',
                     city: s.city || '',
                     collegeName: s.collegeName || '',
@@ -231,47 +253,151 @@ export default function EditStudentPage() {
 
                     <div className="flex-1 overflow-y-auto p-6">
 
-                        {/* Step 1: Student Details */}
+                        {/* Step 1: Student Details - Reorganized into 4 Sections */}
                         {currentStep === 1 && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <Label htmlFor="firstName">First Name <span className="text-red-500">*</span></Label>
-                                    <Input id="firstName" name="firstName" value={formData.firstName} onChange={handleInputChange} />
+                            <div className="space-y-8">
+                                {/* Section 1: Student Basic Details */}
+                                <div className="space-y-4">
+                                    <h3 className="text-md font-semibold text-gray-700 dark:text-gray-300 border-b pb-2">Basic Details</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="firstName">First Name <span className="text-red-500">*</span></Label>
+                                            <Input id="firstName" name="firstName" value={formData.firstName} onChange={handleInputChange} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="lastName">Last Name</Label>
+                                            <Input id="lastName" name="lastName" value={formData.lastName} onChange={handleInputChange} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="enrollmentNo">Enrollment No</Label>
+                                            <Input id="enrollmentNo" name="enrollmentNo" value={formData.enrollmentNo} onChange={handleInputChange} disabled className="bg-gray-100" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="dateOfBirth">Date of Birth</Label>
+                                            <DateInput id="dateOfBirth" name="dateOfBirth" value={formData.dateOfBirth} onChange={(val) => setFormData(prev => ({ ...prev, dateOfBirth: val }))} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="gender">Gender</Label>
+                                            <Select value={formData.gender} onValueChange={(val) => handleSelectChange('gender', val)}>
+                                                <SelectTrigger><SelectValue placeholder="Select Gender" /></SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="male">Male</SelectItem>
+                                                    <SelectItem value="female">Female</SelectItem>
+                                                    <SelectItem value="other">Other</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="lastName">Last Name</Label>
-                                    <Input id="lastName" name="lastName" value={formData.lastName} onChange={handleInputChange} />
+
+                                {/* Section 2: Family Details */}
+                                <div className="space-y-4">
+                                    <h3 className="text-md font-semibold text-gray-700 dark:text-gray-300 border-b pb-2">Family Details</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="fathersName">Father's / Husband's Name</Label>
+                                            <Input id="fathersName" name="fathersName" value={formData.fathersName} onChange={handleInputChange} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="mothersName">Mother's Name</Label>
+                                            <Input id="mothersName" name="mothersName" value={formData.mothersName} onChange={handleInputChange} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="maritalStatus">Marital Status</Label>
+                                            <Select value={formData.maritalStatus} onValueChange={(val) => handleSelectChange('maritalStatus', val)}>
+                                                <SelectTrigger><SelectValue placeholder="Select Status" /></SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="single">Unmarried</SelectItem>
+                                                    <SelectItem value="married">Married</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="enrollmentNo">Enrollment No</Label>
-                                    <Input id="enrollmentNo" name="enrollmentNo" value={formData.enrollmentNo} onChange={handleInputChange} disabled className="bg-gray-100" />
+
+                                {/* Section 3: Category & ID */}
+                                <div className="space-y-4">
+                                    <h3 className="text-md font-semibold text-gray-700 dark:text-gray-300 border-b pb-2">Category & ID</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="category">Category</Label>
+                                            <Select value={formData.category} onValueChange={(val) => handleSelectChange('category', val)}>
+                                                <SelectTrigger><SelectValue placeholder="Select Category" /></SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="general">GEN</SelectItem>
+                                                    <SelectItem value="obc">OBC</SelectItem>
+                                                    <SelectItem value="sc">SC</SelectItem>
+                                                    <SelectItem value="st">ST</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="aadhaarNumber">Aadhaar Number</Label>
+                                            <Input id="aadhaarNumber" name="aadhaarNumber" value={formData.aadhaarNumber} onChange={handleInputChange} placeholder="12-digit Aadhaar" maxLength={12} />
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="dateOfBirth">Date of Birth</Label>
-                                    <Input id="dateOfBirth" name="dateOfBirth" type="date" value={formData.dateOfBirth} onChange={handleInputChange} />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="phone">Phone Number <span className="text-red-500">*</span></Label>
-                                    <Input id="phone" name="phone" value={formData.phone} onChange={handleInputChange} />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="email">Email</Label>
-                                    <Input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="gender">Gender</Label>
-                                    <Select value={formData.gender} onValueChange={(val) => handleSelectChange('gender', val)}>
-                                        <SelectTrigger><SelectValue placeholder="Select Gender" /></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="male">Male</SelectItem>
-                                            <SelectItem value="female">Female</SelectItem>
-                                            <SelectItem value="other">Other</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2 col-span-2">
-                                    <Label htmlFor="address">Address</Label>
-                                    <Textarea id="address" name="address" value={formData.address} onChange={e => setFormData(prev => ({ ...prev, address: e.target.value }))} />
+
+                                {/* Section 4: Contact Details */}
+                                <div className="space-y-4">
+                                    <h3 className="text-md font-semibold text-gray-700 dark:text-gray-300 border-b pb-2">Contact Details</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="phone">Mobile Number <span className="text-red-500">*</span></Label>
+                                            <Input id="phone" name="phone" value={formData.phone} onChange={handleInputChange} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="alternatePhone">Alternate Number</Label>
+                                            <Input id="alternatePhone" name="alternatePhone" value={formData.alternatePhone} onChange={handleInputChange} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="email">Email</Label>
+                                            <Input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} />
+                                        </div>
+                                    </div>
+                                    {/* Address Sub-Section */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="addressLine1">Address Line 1</Label>
+                                            <Input id="addressLine1" name="addressLine1" value={formData.addressLine1} onChange={handleInputChange} placeholder="House No, Street" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="addressLine2">Address Line 2</Label>
+                                            <Input id="addressLine2" name="addressLine2" value={formData.addressLine2} onChange={handleInputChange} placeholder="Area, Landmark (Optional)" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="city">City</Label>
+                                            <Input id="city" name="city" value={formData.city} onChange={handleInputChange} placeholder="City" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="district">District</Label>
+                                            <Input id="district" name="district" value={formData.district} onChange={handleInputChange} placeholder="District" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="state">State</Label>
+                                            <Select value={formData.state} onValueChange={(val) => handleSelectChange('state', val)}>
+                                                <SelectTrigger><SelectValue placeholder="Select State" /></SelectTrigger>
+                                                <SelectContent>
+                                                    {INDIAN_STATES.map((state) => (
+                                                        <SelectItem key={state} value={state}>{state}</SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="pinCode">PIN Code</Label>
+                                            <Input id="pinCode" name="pinCode" value={formData.pinCode} onChange={handleInputChange} placeholder="6-digit PIN" maxLength={6} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="country">Country</Label>
+                                            <Select value={formData.country} onValueChange={(val) => handleSelectChange('country', val)}>
+                                                <SelectTrigger><SelectValue placeholder="Select Country" /></SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="India">India</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         )}
@@ -284,9 +410,11 @@ export default function EditStudentPage() {
                                     <Select value={formData.state} onValueChange={(val) => handleSelectChange('state', val)}>
                                         <SelectTrigger><SelectValue placeholder="Select State" /></SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="California">California</SelectItem>
-                                            <SelectItem value="Texas">Texas</SelectItem>
-                                            <SelectItem value="New York">New York</SelectItem>
+                                            {INDIAN_STATES.map((state) => (
+                                                <SelectItem key={state} value={state}>
+                                                    {state}
+                                                </SelectItem>
+                                            ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -349,7 +477,7 @@ export default function EditStudentPage() {
                     </div>
 
                     <div className="p-6 border-t border-gray-100 dark:border-gray-700 flex justify-between">
-                         <Button
+                        <Button
                             variant="outline"
                             onClick={() => {
                                 if (currentStep > 1) setCurrentStep(prev => prev - 1)
@@ -359,9 +487,9 @@ export default function EditStudentPage() {
                         >
                             Back
                         </Button>
-                        
+
                         {currentStep < 4 ? (
-                             <Button
+                            <Button
                                 onClick={() => setCurrentStep(prev => prev + 1)}
                                 className="w-24 bg-indigo-600 hover:bg-indigo-700 text-white uppercase"
                             >

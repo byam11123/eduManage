@@ -20,3 +20,26 @@ export function getUserInitials(name: string): string {
 
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
 }
+
+/**
+ * Format a date string or object to a human-readable string
+ * @param date - Date string or object
+ * @returns Formatted date string (e.g. "12 Oct, 2023")
+ */
+export function formatDate(date: string | Date | undefined | null): string {
+  if (!date) return '-'
+
+  try {
+    const d = new Date(date)
+    // Check if valid date
+    if (isNaN(d.getTime())) return '-'
+
+    return new Intl.DateTimeFormat('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    }).format(d)
+  } catch (error) {
+    return '-'
+  }
+}

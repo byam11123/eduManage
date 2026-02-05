@@ -27,13 +27,27 @@ import type { Course, CourseFormData } from '@/lib/types'
 
 // Default form data
 const defaultFormData: CourseFormData = {
+    // Basic Info
     name: '',
     description: '',
+    courseType: '',
+    mode: 'offline',
+    // Fee Structure
     fee: '',
     feeDescription: '',
+    registrationFee: '',
+    discountAllowed: false,
+    discountPercentage: '',
+    maxInstallments: '1',
+    installmentAmounts: [],
+    // Duration
     durationYears: '0',
     durationMonths: '0',
-    maxInstallments: '1'
+    // Academic Details
+    subjects: [],
+    eligibility: '',
+    // Status Control
+    status: 'active'
 }
 
 export default function CoursesPage() {
@@ -71,13 +85,26 @@ export default function CoursesPage() {
     const handleEdit = (course: Course) => {
         setSelectedCourse(course)
         setFormData({
+            // Basic Info
             name: course.name,
             description: course.description || '',
+            courseType: (course as any).courseType || '',
+            mode: (course as any).mode || 'offline',
+            // Fee Structure
             fee: course.fee.toString(),
             feeDescription: course.feeDescription || '',
+            registrationFee: ((course as any).registrationFee || '').toString(),
+            discountAllowed: (course as any).discountAllowed || false,
+            discountPercentage: ((course as any).discountPercentage || '').toString(),
+            maxInstallments: course.maxInstallments.toString(),
+            installmentAmounts: (course as any).installmentAmounts || [],
+            // Duration
             durationYears: course.durationYears.toString(),
             durationMonths: course.durationMonths.toString(),
-            maxInstallments: course.maxInstallments.toString(),
+            // Academic Details
+            subjects: (course as any).subjects?.map((s: any) => s.name) || [],
+            eligibility: (course as any).eligibility || '',
+            // Status Control
             status: course.status
         })
         setIsEditOpen(true)

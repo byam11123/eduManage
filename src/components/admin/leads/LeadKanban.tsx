@@ -101,7 +101,7 @@ export function LeadKanban({ leads, loading, onStageChange, onEdit }: LeadKanban
                                 </div>
 
                                 <div className="mt-2 text-[10px] text-gray-400 text-right">
-                                    {new Date(lead.updatedAt).toLocaleDateString()}
+                                    {new Date(lead.updatedAt).toLocaleDateString('en-GB')}
                                 </div>
                             </div>
                         ))}

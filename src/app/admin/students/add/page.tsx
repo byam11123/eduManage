@@ -22,6 +22,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
+import { DateInput } from '@/components/ui/date-input'
 import {
     Select,
     SelectContent,
@@ -29,13 +30,14 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
+import { INDIAN_STATES } from '@/lib/constants'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { cn } from '@/lib/utils'
 import { useBranches } from '@/hooks'
 
 const steps = [
     { id: 1, title: 'Student Details', description: 'Enter Student Information', icon: User },
-    { id: 2, title: 'College Details', description: 'Enter College Information', icon: GraduationCap },
+    { id: 2, title: 'Qualification Details', description: 'Enter Education Information', icon: GraduationCap },
     { id: 3, title: 'Coaching Details', description: 'Enter Coaching Information', icon: BookOpen },
     { id: 4, title: 'Batch Details', description: 'Enter Batch Information', icon: LayoutGrid },
     { id: 5, title: 'Payment Details', description: 'Enter Payment Information', icon: CreditCard },
@@ -59,20 +61,48 @@ export default function StudentAdmissionPage() {
         enrollmentNo: 'OCI-1',
         phone: '',
         fathersName: '',
+        mothersName: '',
+        category: '',
+        maritalStatus: 'single',
         fathersPhone: '',
         address: '',
+        aadhaarNumber: '',
+        alternatePhone: '',
+        addressLine1: '',
+        addressLine2: '',
+        district: '',
+        pinCode: '',
+        country: 'India',
         gender: '',
         referredBy: '',
         admissionDate: '',
         studentImage: null as File | null,
 
-        // Step 2: College Details
-        state: '',
-        city: '',
-        collegeName: '',
-        department: '',
-        collegeCourse: '',
-        semester: '',
+        // Step 2: Qualification Details
+        highestQualification: '', // 'high_school' | 'higher_secondary' | 'graduation' | 'post_graduation'
+        // High School (10th)
+        hsSchoolName: '',
+        hsBoard: '',
+        hsPassingYear: '',
+        hsPercentage: '',
+        // Higher Secondary (12th)
+        hssSchoolName: '',
+        hssBoard: '',
+        hssStream: '',
+        hssPassingYear: '',
+        hssPercentage: '',
+        // Graduation
+        gradCollegeName: '',
+        gradUniversity: '',
+        gradDegree: '',
+        gradPassingYear: '',
+        gradPercentage: '',
+        // Post Graduation
+        pgCollegeName: '',
+        pgUniversity: '',
+        pgDegree: '',
+        pgPassingYear: '',
+        pgPercentage: '',
 
         // Step 3: Coaching Details
         courseId: '',
@@ -181,7 +211,19 @@ export default function StudentAdmissionPage() {
                 gender: formData.gender,
                 address: formData.address,
                 fathersName: formData.fathersName,
+                mothersName: formData.mothersName,
+                category: formData.category,
+                maritalStatus: formData.maritalStatus,
                 fathersPhone: formData.fathersPhone,
+                aadhaarNumber: formData.aadhaarNumber,
+                alternatePhone: formData.alternatePhone,
+                addressLine1: formData.addressLine1,
+                addressLine2: formData.addressLine2,
+                district: formData.district,
+                city: formData.city,
+                state: formData.state,
+                zipCode: formData.pinCode,
+                country: formData.country,
                 courseId: formData.courseId,
                 batchId: formData.batchId,
                 enrollmentNo: formData.enrollmentNo,
@@ -290,85 +332,286 @@ export default function StudentAdmissionPage() {
 
                 <div className="flex-1 overflow-y-auto p-6">
 
-                    {/* Step 1: Student Details */}
+                    {/* Step 1: Student Details - Reorganized into 4 Sections */}
                     {currentStep === 1 && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <Label htmlFor="firstName">First Name <span className="text-red-500">*</span></Label>
-                                <Input id="firstName" name="firstName" value={formData.firstName} onChange={handleInputChange} placeholder="First name" />
+                        <div className="space-y-8">
+                            {/* Section 1: Student Basic Details */}
+                            <div className="space-y-4">
+                                <h3 className="text-md font-semibold text-gray-700 dark:text-gray-300 border-b pb-2">Basic Details</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="firstName">First Name <span className="text-red-500">*</span></Label>
+                                        <Input id="firstName" name="firstName" value={formData.firstName} onChange={handleInputChange} placeholder="First name" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="lastName">Last Name</Label>
+                                        <Input id="lastName" name="lastName" value={formData.lastName} onChange={handleInputChange} placeholder="Last name" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="dateOfBirth">Date of Birth</Label>
+                                        <DateInput id="dateOfBirth" name="dateOfBirth" value={formData.dateOfBirth} onChange={(val) => setFormData(prev => ({ ...prev, dateOfBirth: val }))} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="gender">Gender</Label>
+                                        <Select value={formData.gender} onValueChange={(val) => handleSelectChange('gender', val)}>
+                                            <SelectTrigger><SelectValue placeholder="Select Gender" /></SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="male">Male</SelectItem>
+                                                <SelectItem value="female">Female</SelectItem>
+                                                <SelectItem value="other">Other</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="lastName">Last Name</Label>
-                                <Input id="lastName" name="lastName" value={formData.lastName} onChange={handleInputChange} placeholder="Last name" />
+
+                            {/* Section 2: Family Details */}
+                            <div className="space-y-4">
+                                <h3 className="text-md font-semibold text-gray-700 dark:text-gray-300 border-b pb-2">Family Details</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="fathersName">Father's / Husband's Name</Label>
+                                        <Input id="fathersName" name="fathersName" value={formData.fathersName} onChange={handleInputChange} placeholder="Father's / Husband's Name" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="mothersName">Mother's Name</Label>
+                                        <Input id="mothersName" name="mothersName" value={formData.mothersName} onChange={handleInputChange} placeholder="Mother's Name" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="maritalStatus">Marital Status</Label>
+                                        <Select value={formData.maritalStatus} onValueChange={(val) => handleSelectChange('maritalStatus', val)}>
+                                            <SelectTrigger><SelectValue placeholder="Select Status" /></SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="single">Unmarried</SelectItem>
+                                                <SelectItem value="married">Married</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="enrollmentNo">Enrollment No <span className="text-red-500">*</span></Label>
-                                <Input id="enrollmentNo" name="enrollmentNo" value={formData.enrollmentNo} onChange={handleInputChange} />
+
+                            {/* Section 3: Category & ID */}
+                            <div className="space-y-4">
+                                <h3 className="text-md font-semibold text-gray-700 dark:text-gray-300 border-b pb-2">Category & ID</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="category">Category</Label>
+                                        <Select value={formData.category} onValueChange={(val) => handleSelectChange('category', val)}>
+                                            <SelectTrigger><SelectValue placeholder="Select Category" /></SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="general">GEN</SelectItem>
+                                                <SelectItem value="obc">OBC</SelectItem>
+                                                <SelectItem value="sc">SC</SelectItem>
+                                                <SelectItem value="st">ST</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="aadhaarNumber">Aadhaar Number</Label>
+                                        <Input id="aadhaarNumber" name="aadhaarNumber" value={formData.aadhaarNumber} onChange={handleInputChange} placeholder="12-digit Aadhaar" maxLength={12} />
+                                    </div>
+                                </div>
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="dateOfBirth">Date of Birth</Label>
-                                <Input id="dateOfBirth" name="dateOfBirth" type="date" value={formData.dateOfBirth} onChange={handleInputChange} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="phone">Phone Number <span className="text-red-500">*</span></Label>
-                                <Input id="phone" name="phone" value={formData.phone} onChange={handleInputChange} placeholder="123-456-7890" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="email">Email</Label>
-                                <Input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} placeholder="Email address" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="gender">Gender</Label>
-                                <Select value={formData.gender} onValueChange={(val) => handleSelectChange('gender', val)}>
-                                    <SelectTrigger><SelectValue placeholder="Select Gender" /></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="male">Male</SelectItem>
-                                        <SelectItem value="female">Female</SelectItem>
-                                        <SelectItem value="other">Other</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-2 col-span-2">
-                                <Label htmlFor="address">Address</Label>
-                                <Textarea id="address" name="address" value={formData.address} onChange={e => setFormData(prev => ({ ...prev, address: e.target.value }))} placeholder="Address" />
+
+                            {/* Section 4: Contact Details */}
+                            <div className="space-y-4">
+                                <h3 className="text-md font-semibold text-gray-700 dark:text-gray-300 border-b pb-2">Contact Details</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="phone">Mobile Number <span className="text-red-500">*</span></Label>
+                                        <Input id="phone" name="phone" value={formData.phone} onChange={handleInputChange} placeholder="Mobile Number" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="alternatePhone">Alternate Number</Label>
+                                        <Input id="alternatePhone" name="alternatePhone" value={formData.alternatePhone} onChange={handleInputChange} placeholder="Alternate Number" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="email">Email</Label>
+                                        <Input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} placeholder="Email address" />
+                                    </div>
+                                </div>
+                                {/* Address Sub-Section */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="addressLine1">Address Line 1</Label>
+                                        <Input id="addressLine1" name="addressLine1" value={formData.addressLine1} onChange={handleInputChange} placeholder="House No, Street" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="addressLine2">Address Line 2</Label>
+                                        <Input id="addressLine2" name="addressLine2" value={formData.addressLine2} onChange={handleInputChange} placeholder="Area, Landmark (Optional)" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="city">City</Label>
+                                        <Input id="city" name="city" value={formData.city} onChange={handleInputChange} placeholder="City" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="district">District</Label>
+                                        <Input id="district" name="district" value={formData.district} onChange={handleInputChange} placeholder="District" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="state">State</Label>
+                                        <Select value={formData.state} onValueChange={(val) => handleSelectChange('state', val)}>
+                                            <SelectTrigger><SelectValue placeholder="Select State" /></SelectTrigger>
+                                            <SelectContent>
+                                                {INDIAN_STATES.map((state) => (
+                                                    <SelectItem key={state} value={state}>{state}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="pinCode">PIN Code</Label>
+                                        <Input id="pinCode" name="pinCode" value={formData.pinCode} onChange={handleInputChange} placeholder="6-digit PIN" maxLength={6} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="country">Country</Label>
+                                        <Select value={formData.country} onValueChange={(val) => handleSelectChange('country', val)}>
+                                            <SelectTrigger><SelectValue placeholder="Select Country" /></SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="India">India</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     )}
 
-                    {/* Step 2: College Details */}
+                    {/* Step 2: Qualification Details */}
                     {currentStep === 2 && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <Label htmlFor="state">State name *</Label>
-                                <Select value={formData.state} onValueChange={(val) => handleSelectChange('state', val)}>
-                                    <SelectTrigger><SelectValue placeholder="Select State" /></SelectTrigger>
+                        <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+                            {/* Highest Qualification Selector */}
+                            <div className="space-y-2 max-w-md">
+                                <Label htmlFor="highestQualification">Highest Qualification *</Label>
+                                <Select value={formData.highestQualification} onValueChange={(val) => handleSelectChange('highestQualification', val)}>
+                                    <SelectTrigger><SelectValue placeholder="Select Highest Qualification" /></SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="California">California</SelectItem>
-                                        <SelectItem value="Texas">Texas</SelectItem>
-                                        <SelectItem value="New York">New York</SelectItem>
+                                        <SelectItem value="high_school">High School (10th)</SelectItem>
+                                        <SelectItem value="higher_secondary">Higher Secondary (12th)</SelectItem>
+                                        <SelectItem value="graduation">Graduation</SelectItem>
+                                        <SelectItem value="post_graduation">Post Graduation</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="city">City name *</Label>
-                                <Input id="city" name="city" value={formData.city} onChange={handleInputChange} placeholder="City name" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="collegeName">College name *</Label>
-                                <Input id="collegeName" name="collegeName" value={formData.collegeName} onChange={handleInputChange} placeholder="College name" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="department">Department name *</Label>
-                                <Input id="department" name="department" value={formData.department} onChange={handleInputChange} placeholder="Department name" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="collegeCourse">Course name *</Label>
-                                <Input id="collegeCourse" name="collegeCourse" value={formData.collegeCourse} onChange={handleInputChange} placeholder="e.g. B.Tech" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="semester">College semester *</Label>
-                                <Input id="semester" name="semester" value={formData.semester} onChange={handleInputChange} placeholder="e.g. 4th Semester" />
-                            </div>
+
+                            {/* High School (10th) - Show for all qualifications */}
+                            {formData.highestQualification && (
+                                <div className="border rounded-lg p-4 bg-gray-50/50 dark:bg-gray-800/50 space-y-4">
+                                    <h3 className="font-semibold text-gray-700 dark:text-gray-300">High School (10th) Details</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="hsSchoolName">School Name *</Label>
+                                            <Input id="hsSchoolName" name="hsSchoolName" value={formData.hsSchoolName} onChange={handleInputChange} placeholder="Enter school name" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="hsBoard">Board *</Label>
+                                            <Input id="hsBoard" name="hsBoard" value={formData.hsBoard} onChange={handleInputChange} placeholder="e.g. CBSE, ICSE, State Board" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="hsPassingYear">Passing Year *</Label>
+                                            <Input id="hsPassingYear" name="hsPassingYear" value={formData.hsPassingYear} onChange={handleInputChange} placeholder="e.g. 2018" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="hsPercentage">Percentage / Grade *</Label>
+                                            <Input id="hsPercentage" name="hsPercentage" value={formData.hsPercentage} onChange={handleInputChange} placeholder="e.g. 85% or A+" />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Higher Secondary (12th) - Show for higher_secondary, graduation, post_graduation */}
+                            {['higher_secondary', 'graduation', 'post_graduation'].includes(formData.highestQualification) && (
+                                <div className="border rounded-lg p-4 bg-amber-50/50 dark:bg-amber-900/20 space-y-4">
+                                    <h3 className="font-semibold text-gray-700 dark:text-gray-300">Higher Secondary (12th) Details</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="hssSchoolName">School Name *</Label>
+                                            <Input id="hssSchoolName" name="hssSchoolName" value={formData.hssSchoolName} onChange={handleInputChange} placeholder="Enter school name" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="hssBoard">Board *</Label>
+                                            <Input id="hssBoard" name="hssBoard" value={formData.hssBoard} onChange={handleInputChange} placeholder="e.g. CBSE, ICSE, State Board" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="hssStream">Stream *</Label>
+                                            <Select value={formData.hssStream} onValueChange={(val) => handleSelectChange('hssStream', val)}>
+                                                <SelectTrigger><SelectValue placeholder="Select Stream" /></SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="science">Science</SelectItem>
+                                                    <SelectItem value="commerce">Commerce</SelectItem>
+                                                    <SelectItem value="arts">Arts</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="hssPassingYear">Passing Year *</Label>
+                                            <Input id="hssPassingYear" name="hssPassingYear" value={formData.hssPassingYear} onChange={handleInputChange} placeholder="e.g. 2020" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="hssPercentage">Percentage *</Label>
+                                            <Input id="hssPercentage" name="hssPercentage" value={formData.hssPercentage} onChange={handleInputChange} placeholder="e.g. 90%" />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Graduation - Show for graduation, post_graduation */}
+                            {['graduation', 'post_graduation'].includes(formData.highestQualification) && (
+                                <div className="border rounded-lg p-4 bg-blue-50/50 dark:bg-blue-900/20 space-y-4">
+                                    <h3 className="font-semibold text-gray-700 dark:text-gray-300">Graduation Details</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="gradCollegeName">College Name *</Label>
+                                            <Input id="gradCollegeName" name="gradCollegeName" value={formData.gradCollegeName} onChange={handleInputChange} placeholder="Enter college name" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="gradUniversity">University *</Label>
+                                            <Input id="gradUniversity" name="gradUniversity" value={formData.gradUniversity} onChange={handleInputChange} placeholder="Enter university name" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="gradDegree">Degree *</Label>
+                                            <Input id="gradDegree" name="gradDegree" value={formData.gradDegree} onChange={handleInputChange} placeholder="e.g. BSc, BCom, BTech" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="gradPassingYear">Passing Year *</Label>
+                                            <Input id="gradPassingYear" name="gradPassingYear" value={formData.gradPassingYear} onChange={handleInputChange} placeholder="e.g. 2023" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="gradPercentage">Percentage / CGPA *</Label>
+                                            <Input id="gradPercentage" name="gradPercentage" value={formData.gradPercentage} onChange={handleInputChange} placeholder="e.g. 75% or 8.5 CGPA" />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Post Graduation - Show only for post_graduation */}
+                            {formData.highestQualification === 'post_graduation' && (
+                                <div className="border rounded-lg p-4 bg-purple-50/50 dark:bg-purple-900/20 space-y-4">
+                                    <h3 className="font-semibold text-gray-700 dark:text-gray-300">Post Graduation Details</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="pgCollegeName">PG College Name *</Label>
+                                            <Input id="pgCollegeName" name="pgCollegeName" value={formData.pgCollegeName} onChange={handleInputChange} placeholder="Enter PG college name" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="pgUniversity">University *</Label>
+                                            <Input id="pgUniversity" name="pgUniversity" value={formData.pgUniversity} onChange={handleInputChange} placeholder="Enter university name" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="pgDegree">Degree *</Label>
+                                            <Input id="pgDegree" name="pgDegree" value={formData.pgDegree} onChange={handleInputChange} placeholder="e.g. MSc, MCom, MTech" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="pgPassingYear">Passing Year *</Label>
+                                            <Input id="pgPassingYear" name="pgPassingYear" value={formData.pgPassingYear} onChange={handleInputChange} placeholder="e.g. 2025" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="pgPercentage">Percentage / CGPA *</Label>
+                                            <Input id="pgPercentage" name="pgPercentage" value={formData.pgPercentage} onChange={handleInputChange} placeholder="e.g. 80% or 9.0 CGPA" />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
 

@@ -37,12 +37,16 @@ import {
     EditCourseDialog,
     DeleteCourseDialog
 } from '@/components/admin/courses'
+import {
+    EditBatchDialog,
+    DeleteBatchDialog
+} from '@/components/admin/batches'
 import { StudentList } from '@/components/admin/students'
 import { BatchList } from '@/components/admin/batches'
 
 // Custom hooks
 import { useCourses, useStudents, useBatches } from '@/hooks'
-import type { CourseFormData } from '@/lib/types'
+import type { CourseFormData, Batch, BatchFormData } from '@/lib/types'
 
 export default function CourseDetailsPage() {
     const params = useParams()
@@ -55,8 +59,10 @@ export default function CourseDetailsPage() {
         fetchCourseById,
         updateCourse,
         deleteCourse,
-        saving
+        saving: savingCourse
     } = useCourses()
+
+    const { courses } = useCourses()
 
     const {
         students,
@@ -68,7 +74,10 @@ export default function CourseDetailsPage() {
         batches,
         fetchBatches,
         loading: loadingBatches,
-        getBatchesByCourse
+        getBatchesByCourse,
+        updateBatch,
+        deleteBatch,
+        saving: savingBatch
     } = useBatches()
 
     // Local state
@@ -82,13 +91,96 @@ export default function CourseDetailsPage() {
     const [editFormData, setEditFormData] = useState<CourseFormData>({
         name: '',
         description: '',
+        courseType: '',
+        mode: 'offline',
         fee: '',
         feeDescription: '',
+        registrationFee: '',
+        discountAllowed: false,
+        discountPercentage: '',
         durationYears: '0',
         durationMonths: '0',
         maxInstallments: '1',
+        installmentAmounts: [],
+        subjects: [],
+        eligibility: '',
         status: 'active'
     })
+
+    // Batch Dialog states
+    const [isBatchEditOpen, setIsBatchEditOpen] = useState(false)
+    const [isBatchDeleteOpen, setIsBatchDeleteOpen] = useState(false)
+    const [selectedBatch, setSelectedBatch] = useState<Batch | null>(null)
+    const [batchEditFormData, setBatchEditFormData] = useState<BatchFormData>({
+        name: '',
+        description: '',
+        courseId: '',
+        startDate: '',
+        endDate: '',
+        startTime: '',
+        endTime: '',
+        status: 'active'
+    })
+
+    // Handlers
+    const handleUpdate = async () => {
+        if (!course) return
+        const success = await updateCourse(course.id, editFormData)
+        if (success) {
+            setIsEditOpen(false)
+            // Refresh course data
+            const updated = await fetchCourseById(id)
+            if (updated) setCourse(updated)
+        }
+    }
+
+    const handleDelete = async () => {
+        if (!course) return
+        const success = await deleteCourse(course.id)
+        if (success) {
+            router.push('/admin/courses')
+        }
+    }
+
+    // Batch Handlers
+    const handleBatchEdit = (batch: Batch) => {
+        setSelectedBatch(batch)
+        setBatchEditFormData({
+            name: batch.name,
+            description: batch.description || '',
+            courseId: batch.courseId,
+            startDate: batch.startDate ? new Date(batch.startDate).toISOString().split('T')[0] : '',
+            endDate: batch.endDate ? new Date(batch.endDate).toISOString().split('T')[0] : '',
+            startTime: batch.startTime || '',
+            endTime: batch.endTime || '',
+            status: batch.status
+        })
+        setIsBatchEditOpen(true)
+    }
+
+    const handleBatchDelete = (batch: Batch) => {
+        setSelectedBatch(batch)
+        setIsBatchDeleteOpen(true)
+    }
+
+    const onBatchEditSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!selectedBatch) return
+        const success = await updateBatch(selectedBatch.id, batchEditFormData)
+        if (success) {
+            setIsBatchEditOpen(false)
+            fetchBatches()
+        }
+    }
+
+    const onBatchDeleteConfirm = async () => {
+        if (!selectedBatch) return
+        const success = await deleteBatch(selectedBatch.id)
+        if (success) {
+            setIsBatchDeleteOpen(false)
+            fetchBatches()
+        }
+    }
 
     // Fetch data
     useEffect(() => {
@@ -100,11 +192,19 @@ export default function CourseDetailsPage() {
                 setEditFormData({
                     name: data.name,
                     description: data.description || '',
+                    courseType: data.courseType || '',
+                    mode: data.mode || 'offline',
                     fee: data.fee.toString(),
                     feeDescription: data.feeDescription || '',
+                    registrationFee: (data.registrationFee || 0).toString(),
+                    discountAllowed: data.discountAllowed || false,
+                    discountPercentage: (data.discountPercentage || 0).toString(),
                     durationYears: (data.durationYears || 0).toString(),
                     durationMonths: (data.durationMonths || 0).toString(),
                     maxInstallments: (data.maxInstallments || 1).toString(),
+                    installmentAmounts: data.installmentAmounts ? JSON.parse(data.installmentAmounts) : [],
+                    subjects: data.subjects?.map((s: any) => s.name) || [],
+                    eligibility: data.eligibility || '',
                     status: data.status
                 })
             }
@@ -269,27 +369,96 @@ export default function CourseDetailsPage() {
                 </TabsList>
 
                 <TabsContent value="details" className="space-y-4">
+                    {/* Basic Info Card */}
                     <Card>
                         <CardHeader>
-                            <CardTitle>Course Information</CardTitle>
+                            <CardTitle>Basic Course Info</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
+                        <CardContent>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 <div>
                                     <h4 className="text-sm font-medium text-gray-500">Course Name</h4>
-                                    <p>{course.name}</p>
+                                    <p className="font-medium">{course.name}</p>
                                 </div>
                                 <div>
                                     <h4 className="text-sm font-medium text-gray-500">Status</h4>
-                                    <Badge variant="outline">{course.status}</Badge>
+                                    <Badge variant="outline" className={course.status === 'active' ? 'bg-green-100 text-green-700' : ''}>{course.status}</Badge>
                                 </div>
                                 <div>
-                                    <h4 className="text-sm font-medium text-gray-500">Fees</h4>
-                                    <p>₹{course.fee.toLocaleString()}</p>
+                                    <h4 className="text-sm font-medium text-gray-500">Course Type</h4>
+                                    <p className="capitalize">{course.courseType || '-'}</p>
                                 </div>
+                                <div>
+                                    <h4 className="text-sm font-medium text-gray-500">Mode</h4>
+                                    <p className="capitalize">{course.mode || 'Offline'}</p>
+                                </div>
+                                {course.description && (
+                                    <div className="col-span-2 md:col-span-4">
+                                        <h4 className="text-sm font-medium text-gray-500">Description</h4>
+                                        <p>{course.description}</p>
+                                    </div>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Fee Structure Card */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Fee Structure</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div>
+                                    <h4 className="text-sm font-medium text-gray-500">Total Course Fee</h4>
+                                    <p className="text-lg font-bold text-indigo-600">₹{course.fee?.toLocaleString()}</p>
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-medium text-gray-500">Registration Fee</h4>
+                                    <p>₹{(course.registrationFee || 0).toLocaleString()}</p>
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-medium text-gray-500">Installments</h4>
+                                    <p>{course.maxInstallments || 1} Installment{(course.maxInstallments || 1) !== 1 ? 's' : ''}</p>
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-medium text-gray-500">Discount</h4>
+                                    <p>{course.discountAllowed ? `${course.discountPercentage || 0}% allowed` : 'Not allowed'}</p>
+                                </div>
+                                {course.installmentAmounts && JSON.parse(course.installmentAmounts).length > 0 && (
+                                    <div className="col-span-2 md:col-span-4">
+                                        <h4 className="text-sm font-medium text-gray-500 mb-2">Installment Amounts</h4>
+                                        <div className="flex flex-wrap gap-2">
+                                            {JSON.parse(course.installmentAmounts).map((amt: string, i: number) => (
+                                                <Badge key={i} variant="outline" className="bg-gray-100">
+                                                    Inst {i + 1}: ₹{parseInt(amt || '0').toLocaleString()}
+                                                </Badge>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Duration & Academic Details Card */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Duration & Academic Details</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 <div>
                                     <h4 className="text-sm font-medium text-gray-500">Duration</h4>
-                                    <p>{course.durationYears} Years, {course.durationMonths} Months</p>
+                                    <p>{course.durationYears || 0} Years, {course.durationMonths || 0} Months</p>
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-medium text-gray-500">Eligibility</h4>
+                                    <p className="capitalize">{course.eligibility?.replace('_', ' ') || '-'}</p>
+                                </div>
+                                <div>
+                                    <h4 className="text-sm font-medium text-gray-500">Subjects</h4>
+                                    <p>{course.subjects?.length || 0} Subject{(course.subjects?.length || 0) !== 1 ? 's' : ''}</p>
                                 </div>
                             </div>
                         </CardContent>
@@ -313,6 +482,8 @@ export default function CourseDetailsPage() {
                             <BatchList
                                 batches={courseBatches}
                                 loading={loadingBatches}
+                                onEdit={handleBatchEdit}
+                                onDelete={handleBatchDelete}
                             />
                         </CardContent>
                     </Card>
@@ -334,7 +505,7 @@ export default function CourseDetailsPage() {
                 formData={editFormData}
                 onChange={setEditFormData}
                 onSubmit={handleUpdate}
-                saving={saving}
+                saving={savingCourse}
             />
 
             <DeleteCourseDialog
@@ -342,7 +513,26 @@ export default function CourseDetailsPage() {
                 onOpenChange={setIsDeleteOpen}
                 course={course}
                 onConfirm={handleDelete}
-                saving={saving}
+                saving={savingCourse}
+            />
+
+            {/* Batch Dialogs */}
+            <EditBatchDialog
+                open={isBatchEditOpen}
+                onOpenChange={setIsBatchEditOpen}
+                formData={batchEditFormData}
+                onChange={setBatchEditFormData}
+                courses={courses}
+                onSubmit={onBatchEditSubmit}
+                saving={savingBatch}
+            />
+
+            <DeleteBatchDialog
+                open={isBatchDeleteOpen}
+                onOpenChange={setIsBatchDeleteOpen}
+                batch={selectedBatch}
+                onConfirm={onBatchDeleteConfirm}
+                saving={savingBatch}
             />
         </div>
     )

@@ -75,11 +75,19 @@ export async function POST(req: Request) {
         const {
             name,
             description,
+            courseType,
+            mode,
             fee,
             feeDescription,
+            registrationFee,
+            discountAllowed,
+            discountPercentage,
             durationYears,
             durationMonths,
             maxInstallments,
+            installmentAmounts,
+            eligibility,
+            status,
             subjects
         } = body
 
@@ -111,16 +119,24 @@ export async function POST(req: Request) {
             data: {
                 name,
                 description,
+                courseType: courseType || null,
+                mode: mode || 'offline',
                 fee: parseFloat(fee),
                 feeDescription,
+                registrationFee: parseFloat(registrationFee || '0'),
+                discountAllowed: discountAllowed || false,
+                discountPercentage: parseFloat(discountPercentage || '0'),
                 durationYears: parseInt(durationYears || '0'),
                 durationMonths: parseInt(durationMonths || '0'),
                 maxInstallments: parseInt(maxInstallments || '1'),
+                installmentAmounts: installmentAmounts ? JSON.stringify(installmentAmounts) : null,
+                eligibility: eligibility || null,
+                status: status || 'active',
                 organizationId: organization.id,
                 subjects: {
-                    create: subjects?.map((s: any) => ({
-                        name: s.name,
-                        description: s.description
+                    create: subjects?.filter((s: any) => s && (typeof s === 'string' ? s.trim() : s.name?.trim())).map((s: any) => ({
+                        name: typeof s === 'string' ? s : s.name,
+                        description: typeof s === 'string' ? '' : (s.description || '')
                     })) || []
                 }
             },

@@ -178,11 +178,22 @@ model Student {
   notes         String?
   
   // Admission Details
-  fathersName   String?
-  fathersPhone  String?
-  imageUrl      String?
-  schoolCollege String?
-  referredBy    String?
+  fathersName    String?
+  fathersPhone   String?
+  mothersName    String?
+  category       String?  // general, obc, sc, st, other
+  maritalStatus  String?  // single, married, divorced, widowed
+  aadhaarNumber  String? // 12 digit
+  alternatePhone String?
+  
+  // Address Split
+  addressLine1   String?
+  addressLine2   String?
+  district       String?
+  
+  imageUrl       String?
+  schoolCollege  String?
+  referredBy     String?
   
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -204,17 +215,25 @@ model Student {
 
 // Course model for coaching management
 model Course {
-  id              String   @id @default(cuid())
-  name            String
-  description     String?
-  fee             Float    @default(0)
-  feeDescription  String?
-  durationYears   Int      @default(0)
-  durationMonths  Int      @default(0)
-  maxInstallments Int      @default(1)
-  status          String   @default("active") // active, inactive
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                  String   @id @default(cuid())
+  name                String
+  description         String?
+  courseType          String?  // academic, skill, certification
+  mode                String   @default("offline") // offline, online, hybrid
+  fee                 Float    @default(0)
+  feeDescription      String?
+  registrationFee     Float    @default(0)
+  discountAllowed     Boolean  @default(false)
+  discountPercentage  Float    @default(0)
+  durationYears       Int      @default(0)
+  durationMonths      Int      @default(0)
+  maxInstallments     Int      @default(1)
+  installmentAmounts  String?  // JSON string array of amounts
+  eligibility         String?  // high_school, higher_secondary, graduation, post_graduation
+  status              String   @default("active") // active, inactive
+  showInAdmissionForm Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
   // Relations
   organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)

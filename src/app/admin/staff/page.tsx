@@ -181,7 +181,7 @@ export default function StaffListPage() {
                                             </div>
                                         </TableCell>
                                         <TableCell className="text-sm text-gray-500">
-                                            {new Date(s.dateOfJoining).toLocaleDateString()}
+                                            {new Date(s.dateOfJoining).toLocaleDateString('en-GB')}
                                         </TableCell>
                                         <TableCell>
                                             <Badge variant="outline" className={

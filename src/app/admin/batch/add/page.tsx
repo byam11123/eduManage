@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { DateInput } from '@/components/ui/date-input'
 import {
     Select,
     SelectContent,
@@ -140,26 +141,22 @@ export default function AddBatchPage() {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="startDate">Batch start date *</Label>
-                            <Input
+                            <DateInput
                                 id="startDate"
                                 name="startDate"
-                                type="date"
                                 value={formData.startDate}
-                                onChange={handleChange}
-                                required
+                                onChange={(val) => setFormData(prev => ({ ...prev, startDate: val }))}
                             />
                         </div>
 
                         {/* Row 3 */}
                         <div className="space-y-2">
                             <Label htmlFor="endDate">Batch end date *</Label>
-                            <Input
+                            <DateInput
                                 id="endDate"
                                 name="endDate"
-                                type="date"
                                 value={formData.endDate}
-                                onChange={handleChange}
-                                required
+                                onChange={(val) => setFormData(prev => ({ ...prev, endDate: val }))}
                             />
                         </div>
                         <div className="space-y-2">

@@ -123,7 +123,13 @@ export async function POST(request: NextRequest) {
         }
 
         const body = await request.json()
-        const { firstName, lastName, email, phone, dateOfBirth, gender, address, city, state, country, zipCode, branchId, notes } = body
+        const {
+            firstName, lastName, email, phone, dateOfBirth, gender,
+            address, city, state, country, zipCode, branchId, notes,
+            fathersName, fathersPhone, enrollmentNo,
+            mothersName, category, maritalStatus,
+            aadhaarNumber, alternatePhone, addressLine1, addressLine2, district
+        } = body
 
         // Validation
         if (!firstName || !lastName) {

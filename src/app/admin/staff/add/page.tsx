@@ -22,6 +22,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
+import { DateInput } from '@/components/ui/date-input'
 import {
     Select,
     SelectContent,
@@ -208,7 +209,7 @@ export default function AddStaffPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Date of birth *</Label>
-                                    <Input type="date" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleInputChange} />
+                                    <DateInput name="dateOfBirth" value={formData.dateOfBirth} onChange={(val) => setFormData(prev => ({ ...prev, dateOfBirth: val }))} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Email *</Label>
@@ -228,7 +229,7 @@ export default function AddStaffPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Date of joining</Label>
-                                    <Input type="date" name="dateOfJoining" value={formData.dateOfJoining} onChange={handleInputChange} />
+                                    <DateInput name="dateOfJoining" value={formData.dateOfJoining} onChange={(val) => setFormData(prev => ({ ...prev, dateOfJoining: val }))} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Gender</Label>

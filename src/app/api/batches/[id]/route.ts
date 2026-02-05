@@ -58,3 +58,57 @@ export async function GET(
         )
     }
 }
+
+export async function PATCH(
+    req: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params
+        const body = await req.json()
+        const { name, description, courseId, startDate, endDate, startTime, endTime, status } = body
+
+        const updatedBatch = await db.batch.update({
+            where: { id },
+            data: {
+                ...(name && { name }),
+                ...(description !== undefined && { description }),
+                ...(courseId && { courseId }),
+                ...(startDate && { startDate: new Date(startDate) }),
+                ...(endDate && { endDate: new Date(endDate) }),
+                ...(startTime !== undefined && { startTime }),
+                ...(endTime !== undefined && { endTime }),
+                ...(status && { status })
+            }
+        })
+
+        return NextResponse.json({ success: true, batch: updatedBatch })
+    } catch (error) {
+        console.error('Error updating batch:', error)
+        return NextResponse.json(
+            { success: false, error: 'Failed to update batch' },
+            { status: 500 }
+        )
+    }
+}
+
+export async function DELETE(
+    req: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params
+
+        await db.batch.delete({
+            where: { id }
+        })
+
+        return NextResponse.json({ success: true, message: 'Batch deleted successfully' })
+    } catch (error) {
+        console.error('Error deleting batch:', error)
+        return NextResponse.json(
+            { success: false, error: 'Failed to delete batch' },
+            { status: 500 }
+        )
+    }
+}

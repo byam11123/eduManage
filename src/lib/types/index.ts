@@ -84,13 +84,26 @@ export interface Course {
 }
 
 export interface CourseFormData {
+    // Basic Info
     name: string
     description: string
+    courseType: string // 'academic' | 'skill' | 'certification'
+    mode: string // 'offline' | 'online' | 'hybrid'
+    // Fee Structure
     fee: string
     feeDescription: string
+    registrationFee: string
+    discountAllowed: boolean
+    discountPercentage: string
+    maxInstallments: string
+    installmentAmounts: string[] // Custom amount for each installment
+    // Duration
     durationYears: string
     durationMonths: string
-    maxInstallments: string
+    // Academic Details
+    subjects: string[]
+    eligibility: string // 'high_school' | 'higher_secondary' | 'graduation' | 'post_graduation'
+    // Status Control
     status?: string
 }
 
@@ -118,6 +131,14 @@ export interface Student {
     enrollmentDate?: string
     fathersName?: string
     fathersPhone?: string
+    mothersName?: string
+    category?: 'general' | 'obc' | 'sc' | 'st' | 'other'
+    maritalStatus?: 'single' | 'married' | 'divorced' | 'widowed'
+    aadhaarNumber?: string
+    alternatePhone?: string
+    addressLine1?: string
+    addressLine2?: string
+    district?: string
     schoolCollege?: string
     referredBy?: string
     notes?: string
@@ -145,6 +166,14 @@ export interface StudentFormData {
     zipCode: string
     fathersName: string
     fathersPhone: string
+    mothersName: string
+    category: string
+    maritalStatus: string
+    aadhaarNumber: string
+    alternatePhone: string
+    addressLine1: string
+    addressLine2: string
+    district: string
     schoolCollege: string
     referredBy: string
     notes: string
