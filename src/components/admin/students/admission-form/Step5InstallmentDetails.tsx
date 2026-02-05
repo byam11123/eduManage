@@ -130,29 +130,49 @@ export function Step5InstallmentDetails({
 
                             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                                 <div className="space-y-2">
-                                    <Label className="text-xs uppercase tracking-wider text-gray-500">Due Date</Label>
-                                    <Input
-                                        type="date"
-                                        value={item.dueDate}
-                                        onChange={(e) => handleInstallmentChange(index, 'dueDate', e.target.value)}
-                                        className="h-11 bg-transparent"
-                                        disabled={formData.divideInstallments !== 'custom' && index > 0}
-                                    />
+                                    <Label className="text-xs uppercase tracking-wider text-gray-400">Due Date</Label>
+                                    <div className="relative">
+                                        <Input
+                                            type="date"
+                                            value={item.dueDate}
+                                            onChange={(e) => handleInstallmentChange(index, 'dueDate', e.target.value)}
+                                            className={cn(
+                                                "h-11 bg-transparent pr-8",
+                                                formData.divideInstallments !== 'custom' && "bg-gray-50/50 cursor-not-allowed border-dashed"
+                                            )}
+                                            disabled={formData.divideInstallments !== 'custom'}
+                                        />
+                                        {formData.divideInstallments !== 'custom' && (
+                                            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-indigo-400 font-bold uppercase pointer-events-none">
+                                                Auto
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label className="text-xs uppercase tracking-wider text-gray-500">Amount</Label>
-                                    <Input
-                                        type="number"
-                                        value={item.amount}
-                                        onChange={(e) => handleInstallmentChange(index, 'amount', e.target.value)}
-                                        className="h-11 font-semibold text-gray-900 bg-transparent"
-                                        disabled={formData.divideInstallments !== 'custom'}
-                                    />
+                                    <Label className="text-xs uppercase tracking-wider text-gray-400">Amount</Label>
+                                    <div className="relative">
+                                        <Input
+                                            type="number"
+                                            value={item.amount}
+                                            onChange={(e) => handleInstallmentChange(index, 'amount', e.target.value)}
+                                            className={cn(
+                                                "h-11 font-semibold text-gray-900 bg-transparent pr-12",
+                                                formData.divideInstallments !== 'custom' && "bg-gray-50/50 cursor-not-allowed border-dashed text-indigo-600"
+                                            )}
+                                            disabled={formData.divideInstallments !== 'custom'}
+                                        />
+                                        {formData.divideInstallments !== 'custom' && (
+                                            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-indigo-400 font-bold uppercase pointer-events-none">
+                                                Locked
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div className="md:col-span-2 space-y-2">
-                                    <Label className="text-xs uppercase tracking-wider text-gray-500">Remark / Description</Label>
+                                    <Label className="text-xs uppercase tracking-wider text-gray-400">Remark / Description</Label>
                                     <Input
                                         value={item.remark}
                                         onChange={(e) => handleInstallmentChange(index, 'remark', e.target.value)}
@@ -217,6 +237,40 @@ export function Step5InstallmentDetails({
                             </div>
                         </div>
                     ))}
+                </div>
+
+                {/* Sum Validation Footer */}
+                <div className={cn(
+                    "mt-4 p-4 rounded-xl border flex items-center justify-between transition-all duration-300",
+                    formData.divideInstallments === 'custom'
+                        ? (Number(formData.installmentPlan.reduce((sum, item) => sum + (Number(item.amount) || 0), 0)) === Number(formData.netPayableFee)
+                            ? "bg-green-50 border-green-100 text-green-700"
+                            : "bg-red-50 border-red-100 text-red-700 animate-pulse")
+                        : "bg-indigo-50/50 border-indigo-100 text-indigo-700"
+                )}>
+                    <div className="flex items-center gap-2">
+                        {formData.divideInstallments === 'custom' ? (
+                            Number(formData.installmentPlan.reduce((sum, item) => sum + (Number(item.amount) || 0), 0)) === Number(formData.netPayableFee) ? (
+                                <CheckCircle2 className="w-5 h-5" />
+                            ) : (
+                                <X className="w-5 h-5 text-red-500" />
+                            )
+                        ) : (
+                            <CheckCircle2 className="w-5 h-5" />
+                        )}
+                        <span className="font-semibold text-sm">
+                            {formData.divideInstallments === 'custom' ? (
+                                Number(formData.installmentPlan.reduce((sum, item) => sum + (Number(item.amount) || 0), 0)) === Number(formData.netPayableFee)
+                                    ? "Plan fully matched!"
+                                    : `Sum mismatch: ${formData.installmentPlan.reduce((sum, item) => sum + (Number(item.amount) || 0), 0)} / ${formData.netPayableFee}`
+                            ) : (
+                                "Plan matches Net Fee"
+                            )}
+                        </span>
+                    </div>
+                    <div className="text-xs uppercase font-bold tracking-widest opacity-60">
+                        ERP Validation
+                    </div>
                 </div>
             </div>
         </div>

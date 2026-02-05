@@ -75,6 +75,7 @@ export interface Course {
     durationYears: number
     durationMonths: number
     maxInstallments: number
+    installmentAmounts?: string | string[] // JSON string in DB, usually string[] in frontend
     status: 'active' | 'inactive'
     organizationId: string
     subjects?: Subject[]

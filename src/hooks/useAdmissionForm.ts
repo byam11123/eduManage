@@ -191,58 +191,80 @@ export function useAdmissionForm() {
 
     // Update installment rows based on mode and first payment
     useEffect(() => {
-        const count = Number(formData.installments) || 1
         const mode = formData.divideInstallments
         const isPayingFirstNow = formData.payFirstInstallmentNow === 'yes'
         const netFee = Number(formData.netPayableFee) || 0
+        const course = courses.find(c => c.id === formData.courseId)
+
+        // Count depends on mode: Preset forces course max, others use user selection
+        const count = mode === 'preset'
+            ? (Number(course?.maxInstallments) || 1)
+            : (Number(formData.installments) || 1)
 
         setFormData(prev => {
             let newPlan: InstallmentPlanItem[] = []
+            const today = new Date().toISOString().split('T')[0]
 
-            if (mode === 'equal') {
+            const getMonthlyDate = (index: number) => {
+                const d = new Date()
+                d.setMonth(d.getMonth() + index)
+                return d.toISOString().split('T')[0]
+            }
+
+            if (mode === 'preset') {
+                // Parse preset amounts from course (stored as JSON string or string[])
+                let presetAmounts: string[] = []
+                try {
+                    const raw = course?.installmentAmounts
+                    if (typeof raw === 'string') {
+                        presetAmounts = JSON.parse(raw)
+                    } else if (Array.isArray(raw)) {
+                        presetAmounts = raw
+                    }
+                } catch (e) {
+                    console.error('Failed to parse preset amounts:', e)
+                }
+
+                newPlan = Array(count).fill(null).map((_, i) => {
+                    const instAmount = presetAmounts[i] || '0'
+                    return {
+                        installmentNo: i + 1,
+                        dueDate: getMonthlyDate(i),
+                        amount: String(instAmount),
+                        paidAmount: (i === 0 && isPayingFirstNow) ? String(instAmount) : '0',
+                        paymentDate: (i === 0 && isPayingFirstNow) ? today : '',
+                        mode: (i === 0 && isPayingFirstNow) ? 'cash' : '',
+                        receiptNo: (i === 0 && isPayingFirstNow) ? (prev.installmentPlan[0]?.receiptNo || '') : '',
+                        utrNo: (i === 0 && isPayingFirstNow) ? (prev.installmentPlan[0]?.utrNo || '') : '',
+                        proofImage: (i === 0 && isPayingFirstNow) ? (prev.installmentPlan[0]?.proofImage || '') : '',
+                        status: (i === 0 && isPayingFirstNow) ? 'paid' : 'pending',
+                        remark: ''
+                    }
+                })
+            } else if (mode === 'equal') {
                 const amountPerInst = Math.floor(netFee / count)
                 const lastInstAmount = netFee - (amountPerInst * (count - 1))
 
                 newPlan = Array(count).fill(null).map((_, i) => ({
                     installmentNo: i + 1,
-                    dueDate: i === 0 ? new Date().toISOString().split('T')[0] : '', // Default 1st to today
+                    dueDate: getMonthlyDate(i),
                     amount: String(i === count - 1 ? lastInstAmount : amountPerInst),
                     paidAmount: (i === 0 && isPayingFirstNow) ? String(i === count - 1 ? lastInstAmount : amountPerInst) : '0',
-                    paymentDate: (i === 0 && isPayingFirstNow) ? new Date().toISOString().split('T')[0] : '',
+                    paymentDate: (i === 0 && isPayingFirstNow) ? today : '',
                     mode: (i === 0 && isPayingFirstNow) ? 'cash' : '',
-                    receiptNo: (i === 0 && isPayingFirstNow) ? prev.installmentPlan[0]?.receiptNo || '' : '',
-                    utrNo: (i === 0 && isPayingFirstNow) ? prev.installmentPlan[0]?.utrNo || '' : '',
-                    proofImage: (i === 0 && isPayingFirstNow) ? prev.installmentPlan[0]?.proofImage || '' : '',
+                    receiptNo: (i === 0 && isPayingFirstNow) ? (prev.installmentPlan[0]?.receiptNo || '') : '',
+                    utrNo: (i === 0 && isPayingFirstNow) ? (prev.installmentPlan[0]?.utrNo || '') : '',
+                    proofImage: (i === 0 && isPayingFirstNow) ? (prev.installmentPlan[0]?.proofImage || '') : '',
                     status: (i === 0 && isPayingFirstNow) ? 'paid' : 'pending',
                     remark: ''
                 }))
-            } else if (mode === 'preset') {
-                const course = courses.find(c => c.id === prev.courseId)
-                // Use preset amounts from course if available
-                const presetAmounts = (course as any)?.installmentAmounts || []
-                newPlan = Array(count).fill(null).map((_, i) => {
-                    const instAmount = presetAmounts[i] || '0'
-                    return {
-                        installmentNo: i + 1,
-                        dueDate: '',
-                        amount: String(instAmount),
-                        paidAmount: (i === 0 && isPayingFirstNow) ? String(instAmount) : '0',
-                        paymentDate: (i === 0 && isPayingFirstNow) ? new Date().toISOString().split('T')[0] : '',
-                        mode: (i === 0 && isPayingFirstNow) ? 'cash' : '',
-                        receiptNo: (i === 0 && isPayingFirstNow) ? prev.installmentPlan[0]?.receiptNo || '' : '',
-                        utrNo: (i === 0 && isPayingFirstNow) ? prev.installmentPlan[0]?.utrNo || '' : '',
-                        proofImage: (i === 0 && isPayingFirstNow) ? prev.installmentPlan[0]?.proofImage || '' : '',
-                        status: (i === 0 && isPayingFirstNow) ? 'paid' : 'pending',
-                        remark: ''
-                    }
-                })
             } else {
                 // Custom Mode - Retain existing data if possible
                 newPlan = Array(count).fill(null).map((_, i) => {
                     const existing = prev.installmentPlan[i]
                     return existing || {
                         installmentNo: i + 1,
-                        dueDate: '',
+                        dueDate: getMonthlyDate(i),
                         amount: '0',
                         paidAmount: '0',
                         paymentDate: '',
@@ -255,18 +277,31 @@ export function useAdmissionForm() {
                     }
                 })
 
-                // If paying first now, ensure 1st inst is marked
+                // If paying first now, mark 1st inst
                 if (isPayingFirstNow && newPlan[0]) {
                     newPlan[0].paidAmount = newPlan[0].amount
-                    newPlan[0].paymentDate = new Date().toISOString().split('T')[0]
+                    newPlan[0].paymentDate = today
                     newPlan[0].status = 'paid'
                     if (!newPlan[0].mode) newPlan[0].mode = 'cash'
                 }
             }
 
-            return { ...prev, installmentPlan: newPlan }
+            // Sync installments count in form data if it changed (e.g. from Preset selection)
+            const installmentsToUpdate = mode === 'preset' ? count : prev.installments
+
+            // Avoid state update if nothing changed
+            if (JSON.stringify(newPlan) === JSON.stringify(prev.installmentPlan) &&
+                installmentsToUpdate === prev.installments) {
+                return prev
+            }
+
+            return {
+                ...prev,
+                installmentPlan: newPlan,
+                installments: installmentsToUpdate
+            }
         })
-    }, [formData.installments, formData.divideInstallments, formData.payFirstInstallmentNow, formData.netPayableFee])
+    }, [formData.installments, formData.divideInstallments, formData.payFirstInstallmentNow, formData.netPayableFee, formData.courseId])
 
     const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target
