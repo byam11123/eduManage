@@ -86,6 +86,21 @@ model Organization {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  // Platform Settings
+  planName      String?   @default("Free Plan")
+  planAmount    Float     @default(0)
+  planStartDate DateTime?
+  planExpiryDate DateTime?
+
+  // Wallet Balances
+  emailBalance             Int       @default(0)
+  textBalance              Int       @default(0)
+  whatsappMarketingBalance Int       @default(0)
+  whatsappUtilityBalance   Int       @default(0)
+
+  // Rules
+  attendanceRules String? // JSON string
+
   // Relations
   owner      User                @relation("OrganizationOwner", fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId    String   @unique
@@ -93,9 +108,24 @@ model Organization {
   branches   Branch[]
   courses    Course[]
   enquiries  Enquiry[]
+  walletTransactions WalletTransaction[]
 
   @@index([slug])
   @@index([ownerId])
+}
+
+model WalletTransaction {
+  id             String       @id @default(cuid())
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId String
+  amount         Float
+  type           String       // 'recharge', 'usage'
+  medium         String       // 'email', 'text', 'whatsapp'
+  status         String       // 'success', 'failed', 'pending'
+  rechargeBy     String?
+  createdAt      DateTime     @default(now())
+
+  @@index([organizationId])
 }
 
 model OrganizationMember {

@@ -21,7 +21,8 @@ import {
     UserCog,
     Wallet,
     Megaphone,
-    Award
+    Award,
+    Settings
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -109,6 +110,16 @@ export function SidebarContent() {
         { title: 'Forms', url: '/admin/forms', icon: FileText },
         { title: 'Expenses', url: '/admin/expenses', icon: Wallet },
         { title: 'Certificate', url: '/admin/certificate', icon: Award },
+        {
+            title: 'Settings',
+            url: '/admin/settings/organization',
+            icon: Settings,
+            children: [
+                { title: 'Organization Info', url: '/admin/settings/organization' },
+                { title: 'Devices', url: '/admin/settings/devices' },
+                { title: 'Notification', url: '/admin/settings/notification' },
+            ]
+        },
     ]
 
     return (
