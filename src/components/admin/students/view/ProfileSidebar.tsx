@@ -75,72 +75,71 @@ export function ProfileSidebar({ student, onEdit, onDelete }: ProfileSidebarProp
                         </div>
                     </div>
 
-                    <div className="space-y-4 text-sm">
-                        <div className="grid grid-cols-[110px_1fr] gap-2 items-start">
-                            <span className="text-gray-500 font-medium">Name</span>
-                            <span className="text-gray-900 font-medium flex items-center">
-                                : {student.firstName} {student.lastName}
-                            </span>
-                        </div>
+                    <div className="grid grid-cols-[110px_10px_1fr] gap-x-2 gap-y-4 text-sm items-start">
+                        {/* Name */}
+                        <span className="text-gray-500 font-medium">Name</span>
+                        <span className="text-gray-900 ">:</span>
+                        <span className="text-gray-900 font-medium">
+                            {student.firstName} {student.lastName}
+                        </span>
 
-                        <div className="grid grid-cols-[110px_1fr] gap-2 items-start">
-                            <span className="text-gray-500 font-medium">Enrollment</span>
-                            <span className="text-gray-600 font-mono">
-                                : {student.enrollmentNo || '-'}
-                            </span>
-                        </div>
+                        {/* Student ID */}
+                        <span className="text-gray-500 font-medium">Student ID</span>
+                        <span className="text-gray-600 ">:</span>
+                        <span className="text-gray-900 font-medium">
+                            {student.studentDisplayId || student.admissionDisplayId || student.enrollmentNo || '-'}
+                        </span>
 
-                        <div className="grid grid-cols-[110px_1fr] gap-2 items-start">
-                            <span className="text-gray-500 font-medium">Email</span>
-                            <span className="text-gray-600 truncate max-w-[180px]" title={student.email}>
-                                : {student.email || '-'}
-                            </span>
-                        </div>
+                        {/* Email */}
+                        <span className="text-gray-500 font-medium">Email</span>
+                        <span className="text-gray-600 ">:</span>
+                        <span className="text-gray-900 truncate max-w-[170px] font-medium" title={student.email}>
+                            {student.email || '-'}
+                        </span>
 
-                        <div className="grid grid-cols-[110px_1fr] gap-2 items-start">
-                            <span className="text-gray-500 font-medium">Contact</span>
-                            <span className="text-gray-600 font-mono">
-                                : {student.phone || '-'}
-                            </span>
-                        </div>
+                        {/* Contact */}
+                        <span className="text-gray-500 font-medium">Contact</span>
+                        <span className="text-gray-600 ">:</span>
+                        <span className="text-gray-900 font-medium">
+                            {student.phone || '-'}
+                        </span>
 
-                        <div className="grid grid-cols-[110px_1fr] gap-2 items-start">
-                            <span className="text-gray-500 font-medium">Date of birth</span>
-                            <span className="text-gray-600">
-                                : {student.dateOfBirth ? formatDate(student.dateOfBirth) : '-'}
-                            </span>
-                        </div>
+                        {/* Date of birth */}
+                        <span className="text-gray-500 font-medium">Date of birth</span>
+                        <span className="text-gray-600 ">:</span>
+                        <span className="text-gray-900 font-medium">
+                            {student.dateOfBirth ? formatDate(student.dateOfBirth) : '-'}
+                        </span>
 
-                        <div className="grid grid-cols-[110px_1fr] gap-2 items-start">
-                            <span className="text-gray-500 font-medium">Date of admission</span>
-                            <span className="text-gray-600">
-                                : {student.enrollmentDate ? formatDate(student.enrollmentDate) : '-'}
-                            </span>
-                        </div>
+                        {/* Date of admission */}
+                        <span className="text-gray-500 font-medium">Date of admission</span>
+                        <span className="text-gray-600   ">:</span>
+                        <span className="text-gray-900 font-medium">
+                            {student.enrollmentDate ? formatDate(student.enrollmentDate) : '-'}
+                        </span>
 
-                        <div className="grid grid-cols-[110px_1fr] gap-2 items-start">
-                            <span className="text-gray-500 font-medium">Address</span>
-                            <span className="text-gray-600 line-clamp-2" title={student.address}>
-                                : {student.address || '-'}
-                            </span>
-                        </div>
+                        {/* Address */}
+                        <span className="text-gray-500 font-medium">Address</span>
+                        <span className="text-gray-600">:</span>
+                        <span className="text-gray-900 line-clamp-3 font-medium " title={student.address || [student.addressLine1, student.addressLine2, student.city, student.state, student.zipCode].filter(Boolean).join(', ')}>
+                            {student.address || [student.addressLine1, student.addressLine2, student.city, student.state, student.zipCode].filter(Boolean).join(', ') || '-'}
+                        </span>
 
-                        <div className="grid grid-cols-[110px_1fr] gap-2 items-center">
-                            <span className="text-gray-500 font-medium">Status</span>
-                            <div className="flex items-center">
-                                <span className="mr-2">:</span>
-                                <Badge
-                                    className={`
+                        {/* Status */}
+                        <span className="text-gray-500 font-medium self-center">Status</span>
+                        <span className="text-gray-600 self-center">:</span>
+                        <div className="self-center">
+                            <Badge
+                                className={`
                                         ${student.status === 'active' ? 'bg-green-100 text-green-700 hover:bg-green-100' : ''}
                                         ${student.status === 'inactive' ? 'bg-gray-100 text-gray-700 hover:bg-gray-100' : ''}
                                         ${student.status === 'dropped' ? 'bg-red-100 text-red-700 hover:bg-red-100' : ''}
                                         ${student.status === 'graduated' ? 'bg-indigo-100 text-indigo-700 hover:bg-indigo-100' : ''}
                                         rounded-sm px-2 py-0 text-[10px] uppercase font-bold tracking-wider
                                     `}
-                                >
-                                    {student.status}
-                                </Badge>
-                            </div>
+                            >
+                                {student.status}
+                            </Badge>
                         </div>
                     </div>
                 </div>

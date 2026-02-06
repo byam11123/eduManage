@@ -1,207 +1,213 @@
 'use client'
 
-import { CreditCard, Info, MoreVertical } from 'lucide-react'
+import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
-import type { Student } from '@/lib/types'
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
+import { Eye, CreditCard, AlertCircle, CheckCircle2, Clock } from 'lucide-react'
+import type { Student, InstallmentPlanItem } from '@/lib/types'
+import { PayInstallmentDialog } from './PayInstallmentDialog'
+import { useRouter } from 'next/navigation'
 
 interface PaymentDetailsTabProps {
     student: Student
+    onRefresh?: () => void
 }
 
-export function PaymentDetailsTab({ student }: PaymentDetailsTabProps) {
-    // Mock Data based on design
-    const paymentStats = {
-        totalAmount: 23000,
-        paid: 23000,
-        due: 0,
-        refund: 0,
-        status: 'PAID'
+export function PaymentDetailsTab({ student, onRefresh }: PaymentDetailsTabProps) {
+    const router = useRouter()
+    const [selectedInstallment, setSelectedInstallment] = useState<{ item: InstallmentPlanItem, index: number } | null>(null)
+
+    // 1. Parse Installment Plan
+    let installments: InstallmentPlanItem[] = []
+    try {
+        const parsed = student.installmentPlan ? JSON.parse(student.installmentPlan) : []
+        installments = Array.isArray(parsed) ? parsed : []
+    } catch (e) {
+        console.error("Failed to parse installment plan", e)
+        installments = []
     }
 
-    const coursePayment = {
-        name: student.course?.name || 'Course Name',
-        amount: 23000,
-        status: 'PAID',
-        due: 0,
-        refund: 0,
-        received: 23000,
-        discount: 0,
-        gst: 0
+    // 2. Calculate Stats
+    const grossFee = Number(student.totalAmount) || 0
+    const discount = Number(student.discountAmount) || 0
+    const netPayable = Number(student.netPayableFee) || (grossFee - discount)
+
+    const totalPaid = installments.reduce((acc, item) => acc + (item.status === 'paid' ? (Number(item.paidAmount) || 0) : 0), 0)
+
+    // Total Due is Net Payable - Total Paid
+    const totalDue = Math.max(0, netPayable - totalPaid)
+
+    // Status Logic
+    let paymentStatus = 'PENDING'
+    if (totalDue === 0 && totalPaid > 0) paymentStatus = 'PAID'
+    else if (totalPaid > 0 && totalDue > 0) paymentStatus = 'PARTIAL'
+    else if (totalPaid === 0) paymentStatus = 'DUE'
+
+    // Helper to check overdue
+    const isOverdue = (dateStr: string) => {
+        if (!dateStr) return false
+        return new Date(dateStr) < new Date()
     }
 
     return (
         <div className="space-y-6">
-            <Card className="border-none shadow-sm">
-                <CardHeader className="pb-2">
-                    <CardTitle className="text-lg font-semibold text-gray-800">Payment History</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    {/* Main Stats Card */}
-                    <div className="bg-white border rounded-xl p-6 flex items-center justify-between shadow-sm">
-                        <div className="flex items-center gap-4">
-                            <div className="h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600">
-                                <CreditCard className="h-5 w-5" />
-                            </div>
-                            <span className="text-2xl font-bold text-gray-900">₹ {paymentStats.paid.toLocaleString()}</span>
-                        </div>
-                        <Badge className="bg-green-100 text-green-700 hover:bg-green-100 uppercase font-bold tracking-wider px-3 py-1">
-                            {paymentStats.status}
+            {/* 1. Payment Summary Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                <SummaryCard title="Course Fee" value={grossFee} />
+                <SummaryCard title="Discount" value={discount} className="text-red-600" prefix="- " />
+                <SummaryCard title="Net Payable" value={netPayable} className="bg-indigo-50 border-indigo-100 text-indigo-700 font-bold" />
+                <SummaryCard title="Total Paid" value={totalPaid} className="bg-green-50 border-green-100 text-green-700 font-bold" />
+                <SummaryCard title="Total Due" value={totalDue} className="bg-orange-50 border-orange-100 text-orange-700 font-bold" />
+
+                <Card className="shadow-sm border-l-4 border-l-indigo-500">
+                    <CardContent className="p-4 flex flex-col justify-center h-full items-center">
+                        <span className="text-xs text-gray-500 font-medium uppercase mb-1">Status</span>
+                        <Badge variant={
+                            paymentStatus === 'PAID' ? 'default' :
+                                paymentStatus === 'PARTIAL' ? 'secondary' : 'destructive'
+                        } className="font-bold">
+                            {paymentStatus}
                         </Badge>
-                    </div>
+                    </CardContent>
+                </Card>
+            </div>
 
-                    {/* Detailed Stats List */}
-                    <div className="grid gap-4 max-w-2xl">
-                        <div className="flex justify-between items-center py-1">
-                            <span className="text-gray-500 font-medium">All Payment Status</span>
-                            <span className="flex items-center gap-4">
-                                <span className="text-gray-400">:</span>
-                                <Badge className="bg-green-100 text-green-600 hover:bg-green-100 uppercase font-bold text-[10px] w-20 justify-center">
-                                    {paymentStats.status}
-                                </Badge>
-                            </span>
-                        </div>
+            {/* 2. Installment Table */}
+            <Card className="border-none shadow-sm">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                        <CreditCard className="h-5 w-5 text-indigo-600" />
+                        Installment Plan
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow className="bg-gray-50/50 hover:bg-gray-50/50">
+                                <TableHead className="w-[50px]">#</TableHead>
+                                <TableHead>Due Date</TableHead>
+                                <TableHead>Paid Date</TableHead>
+                                <TableHead>Amount</TableHead>
+                                <TableHead>Receipt No.</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead className="text-right">Action</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {installments.length === 0 ? (
+                                <TableRow>
+                                    <TableCell colSpan={7} className="text-center h-24 text-gray-500">
+                                        No installment plan found.
+                                    </TableCell>
+                                </TableRow>
+                            ) : (
+                                installments.map((inst, index) => {
+                                    const isPaid = inst.status === 'paid'
+                                    const overdue = !isPaid && isOverdue(inst.dueDate)
 
-                        <div className="flex justify-between items-center py-1">
-                            <span className="text-gray-500 font-medium">Overall Course Fees</span>
-                            <span className="flex items-center gap-4">
-                                <span className="text-gray-400">:</span>
-                                <Badge variant="secondary" className="bg-cyan-50 text-cyan-600 hover:bg-cyan-50 font-bold w-20 justify-center">
-                                    ₹ {paymentStats.totalAmount.toLocaleString()}
-                                </Badge>
-                            </span>
-                        </div>
-
-                        <div className="flex justify-between items-center py-1">
-                            <div className="flex items-center gap-1">
-                                <span className="text-gray-500 font-medium">Grand Total Payment</span>
-                                <Info className="h-3 w-3 text-gray-400" />
-                            </div>
-                            <span className="flex items-center gap-4">
-                                <span className="text-gray-400">:</span>
-                                <Badge variant="secondary" className="bg-cyan-50 text-cyan-600 hover:bg-cyan-50 font-bold w-20 justify-center">
-                                    ₹ {paymentStats.paid.toLocaleString()}
-                                </Badge>
-                            </span>
-                        </div>
-
-                        <div className="flex justify-between items-center py-1">
-                            <span className="text-gray-500 font-medium">Grand Refund Payment</span>
-                            <span className="flex items-center gap-4">
-                                <span className="text-gray-400">:</span>
-                                <Badge variant="secondary" className="bg-orange-50 text-orange-600 hover:bg-orange-50 font-bold w-20 justify-center">
-                                    ₹ {paymentStats.refund}
-                                </Badge>
-                            </span>
-                        </div>
-
-                        <div className="flex justify-between items-center py-1">
-                            <span className="text-gray-500 font-medium">Total Due Payment</span>
-                            <span className="flex items-center gap-4">
-                                <span className="text-gray-400">:</span>
-                                <Badge variant="secondary" className="bg-yellow-50 text-yellow-600 hover:bg-yellow-50 font-bold w-20 justify-center">
-                                    ₹ {paymentStats.due}
-                                </Badge>
-                            </span>
-                        </div>
-
-                        <div className="flex justify-between items-center py-1">
-                            <span className="text-gray-500 font-medium">Total Received Payment</span>
-                            <span className="flex items-center gap-4">
-                                <span className="text-gray-400">:</span>
-                                <Badge variant="secondary" className="bg-green-50 text-green-600 hover:bg-green-50 font-bold w-20 justify-center">
-                                    ₹ {paymentStats.paid.toLocaleString()}
-                                </Badge>
-                            </span>
-                        </div>
-                    </div>
+                                    return (
+                                        <TableRow key={index} className="hover:bg-gray-50/30">
+                                            <TableCell className="font-medium text-gray-500">
+                                                {inst.installmentNo}
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="flex flex-col">
+                                                    <span className="font-medium text-gray-700">{inst.dueDate}</span>
+                                                    {overdue && (
+                                                        <span className="text-[10px] text-red-500 font-bold flex items-center gap-0.5">
+                                                            <AlertCircle className="h-3 w-3" /> Overdue
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="text-gray-500">
+                                                {inst.paymentDate ? inst.paymentDate : '—'}
+                                            </TableCell>
+                                            <TableCell className="font-bold text-gray-800">
+                                                ₹ {Number(inst.amount).toLocaleString()}
+                                            </TableCell>
+                                            <TableCell className="font-mono text-xs text-gray-500">
+                                                {inst.receiptNo || '—'}
+                                            </TableCell>
+                                            <TableCell>
+                                                {isPaid ? (
+                                                    <Badge className="bg-green-100 text-green-700 border-green-200 hover:bg-green-100 uppercase text-[10px] gap-1 pl-1">
+                                                        <CheckCircle2 className="h-3 w-3" /> PAID
+                                                    </Badge>
+                                                ) : overdue ? (
+                                                    <Badge variant="destructive" className="uppercase text-[10px] gap-1 pl-1">
+                                                        <AlertCircle className="h-3 w-3" /> OVERDUE
+                                                    </Badge>
+                                                ) : (
+                                                    <Badge variant="outline" className="text-yellow-600 bg-yellow-50 border-yellow-200 uppercase text-[10px] gap-1 pl-1">
+                                                        <Clock className="h-3 w-3" /> PENDING
+                                                    </Badge>
+                                                )}
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                {isPaid ? (
+                                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-indigo-50 hover:text-indigo-600">
+                                                        <Eye className="h-4 w-4" />
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        size="sm"
+                                                        className="h-8 bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4"
+                                                        onClick={() => setSelectedInstallment({ item: inst, index })}
+                                                    >
+                                                        PAY
+                                                    </Button>
+                                                )}
+                                            </TableCell>
+                                        </TableRow>
+                                    )
+                                })
+                            )}
+                        </TableBody>
+                    </Table>
                 </CardContent>
             </Card>
 
-            {/* Course Specific Payment Card */}
-            <Card className="border-none shadow-sm max-w-sm">
-                <CardContent className="p-6 space-y-4">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-xl font-medium text-gray-800 capitalize">{coursePayment.name}</h3>
-                        <div className="flex items-center gap-2">
-                            <Badge className="bg-indigo-50 text-indigo-600 hover:bg-indigo-50 font-bold">
-                                ₹ {coursePayment.amount.toLocaleString()}
-                            </Badge>
-                            <Button variant="ghost" size="icon" className="h-6 w-6">
-                                <MoreVertical className="h-4 w-4 text-gray-400" />
-                            </Button>
-                        </div>
-                    </div>
-
-                    <div className="space-y-3 text-sm">
-                        <div className="flex justify-between">
-                            <span className="text-gray-500">Status</span>
-                            <div className="flex items-center gap-4">
-                                <span className="text-gray-400">:</span>
-                                <Badge className="bg-green-100 text-green-600 hover:bg-green-100 uppercase font-bold text-[10px] w-20 justify-center">
-                                    {coursePayment.status}
-                                </Badge>
-                            </div>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-500">Due</span>
-                            <div className="flex items-center gap-4">
-                                <span className="text-gray-400">:</span>
-                                <Badge variant="secondary" className="bg-orange-50 text-orange-600 hover:bg-orange-50 font-bold w-20 justify-center">
-                                    ₹ {coursePayment.due}
-                                </Badge>
-                            </div>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-500">Refund</span>
-                            <div className="flex items-center gap-4">
-                                <span className="text-gray-400">:</span>
-                                <Badge variant="secondary" className="bg-red-50 text-red-600 hover:bg-red-50 font-bold w-20 justify-center">
-                                    ₹ {coursePayment.refund}
-                                </Badge>
-                            </div>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-500">Received</span>
-                            <div className="flex items-center gap-4">
-                                <span className="text-gray-400">:</span>
-                                <Badge variant="secondary" className="bg-green-50 text-green-600 hover:bg-green-50 font-bold w-20 justify-center">
-                                    ₹ {coursePayment.received.toLocaleString()}
-                                </Badge>
-                            </div>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-500">Discount</span>
-                            <div className="flex items-center gap-4">
-                                <span className="text-gray-400">:</span>
-                                <Badge variant="secondary" className="bg-cyan-50 text-cyan-600 hover:bg-cyan-50 font-bold w-20 justify-center">
-                                    ₹ {coursePayment.discount}
-                                </Badge>
-                            </div>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-500">GST</span>
-                            <div className="flex items-center gap-4">
-                                <span className="text-gray-400">:</span>
-                                <Badge variant="secondary" className="bg-cyan-50 text-cyan-600 hover:bg-cyan-50 font-bold w-20 justify-center">
-                                    ₹ {coursePayment.gst}
-                                </Badge>
-                            </div>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-500">Certificate</span>
-                            <div className="flex items-center gap-4">
-                                <span className="text-gray-400">:</span>
-                                <div className="w-20 flex justify-center text-gray-600">
-                                    <CreditCard className="h-4 w-4" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
+            {/* Pay Dialog */}
+            {selectedInstallment && (
+                <PayInstallmentDialog
+                    isOpen={!!selectedInstallment}
+                    onClose={() => setSelectedInstallment(null)}
+                    studentId={student.id}
+                    installment={selectedInstallment.item}
+                    installmentIndex={selectedInstallment.index}
+                    allInstallments={installments}
+                    onSuccess={() => {
+                        if (onRefresh) {
+                            onRefresh()
+                        } else {
+                            router.refresh()
+                        }
+                    }}
+                />
+            )}
         </div>
+    )
+}
+
+function SummaryCard({ title, value, className, prefix = '' }: { title: string, value: number, className?: string, prefix?: string }) {
+    return (
+        <Card className={`shadow-sm ${className}`}>
+            <CardContent className="p-4">
+                <div className="text-xs text-gray-500 font-medium uppercase mb-1">{title}</div>
+                <div className="text-xl font-bold">
+                    {prefix}₹ {value.toLocaleString()}
+                </div>
+            </CardContent>
+        </Card>
     )
 }

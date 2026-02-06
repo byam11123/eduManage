@@ -190,6 +190,17 @@ model UserBranch {
 // Student model for coaching management
 model Student {
   id            String   @id @default(cuid())
+  
+  // ID System
+  studentDisplayId String?   @unique // OCI/YY/SEQ (Primary Identity)
+  studentYear      Int?
+  studentSequence  Int?
+  instituteCode    String    @default("OCI")
+  
+  admissionDisplayId String? @unique // ADM/YY/SEQ (Admission Transaction)
+  admissionYear      Int?
+  admissionSequence  Int?
+
   firstName     String
   lastName      String
   email         String?
@@ -201,7 +212,7 @@ model Student {
   state         String?
   country       String?
   zipCode       String?
-  enrollmentNo  String?  @unique
+  enrollmentNo  String?  @unique // Keep for legacy/alias
   paymentStatus String   @default("pending") // paid, pending, partial, overdue
   enrollmentDate DateTime @default(now())
   status        String   @default("active") // active, inactive, graduated, dropped
@@ -268,11 +279,17 @@ model Student {
   batch         Batch?   @relation(fields: [batchId], references: [id])
   batchId       String?
 
+  receipts      Receipt[]
+
   @@index([branchId])
   @@index([courseId])
   @@index([batchId])
   @@index([email])
   @@index([status])
+  
+  // Unique Constraints for ID System
+  @@unique([instituteCode, studentYear, studentSequence])
+  @@unique([admissionYear, admissionSequence])
 }
 
 // Course model for coaching management
@@ -344,6 +361,9 @@ model Subject {
 
 model Enquiry {
   id          String   @id @default(cuid())
+  enquiryId   String?  @unique // ENQ/YY/SEQ
+  enquiryYear Int?
+  enquirySequence Int?
   firstName   String
   lastName    String
   mobile      String
@@ -364,11 +384,36 @@ model Enquiry {
   
   course      Course?  @relation(fields: [courseId], references: [id])
   courseId    String?
-
+  @@unique([enquiryYear, enquirySequence])
   @@index([organizationId])
   @@index([branchId])
   @@index([courseId])
   @@index([status])
+}
+
+// Receipt model for financial audit
+
+// Receipt model for financial audit
+model Receipt {
+  id              String   @id @default(cuid())
+  receiptNo       String   @unique // RCP/YY/SEQ
+  receiptYear     Int
+  receiptSequence Int
+  
+  amount          Float
+  date            DateTime @default(now())
+  mode            String   // cash, online, cheque
+  transactionId   String?
+  remark          String?
+  
+  studentId       String
+  student         Student  @relation(fields: [studentId], references: [id])
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([receiptYear, receiptSequence])
+  @@index([studentId])
 }
 
 // Keep Post model for future use
@@ -380,4 +425,10 @@ model Post {
   authorId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// Counter model for atomic ID generation
+model Counter {
+  key   String @id
+  value Int
 }

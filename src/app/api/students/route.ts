@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { generateId } from '@/lib/utils/id-generator'
 import { extractToken, verifyToken } from '@/lib/auth-utils'
 
 /**
@@ -173,81 +174,120 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        // Auto-generate unique enrollment number if needed
-        let finalEnrollmentNo = enrollmentNo
-        const existingStudent = await db.student.findUnique({
-            where: { enrollmentNo }
-        })
+        // 1. Determine Action (Draft vs Submit)
+        const action = body.action || 'submit' // 'draft' | 'submit'
 
-        if (existingStudent || !enrollmentNo || enrollmentNo === 'OCI-1') {
-            const count = await db.student.count()
-            const year = new Date().getFullYear().toString().slice(-2)
-            // Format: OCI-YY-XXX (e.g., OCI-24-001)
-            finalEnrollmentNo = `OCI-${year}-${String(count + 1).padStart(3, '0')}`
-
-            // Double check uniqueness
-            const doubleCheck = await db.student.findUnique({ where: { enrollmentNo: finalEnrollmentNo } })
-            if (doubleCheck) {
-                finalEnrollmentNo = `OCI-${year}-${String(count + 2).padStart(3, '0')}`
+        // 2. Conditional Validation
+        if (action === 'submit') {
+            if (!body.firstName || !body.branchId || !body.courseId) {
+                return NextResponse.json(
+                    { success: false, error: 'Missing required fields for final submission (Name, Branch, Course)' },
+                    { status: 400 }
+                )
+            }
+        } else {
+            // Draft: Minimal validation
+            if (!body.firstName) {
+                return NextResponse.json(
+                    { success: false, error: 'First Name is required' },
+                    { status: 400 }
+                )
             }
         }
 
+        // 3. Generate IDs
+        // Always generate Admission ID for tracking
+        const admissionIdData = await generateId('ADMISSION')
+
+        let studentIdData = null
+        let studentStatus = 'draft'
+
+        if (action === 'submit') {
+            // Generate Student ID only on finalize
+            studentIdData = await generateId('STUDENT')
+            studentStatus = 'active'
+        }
+
+        // 4. Create Record
         const student = await db.student.create({
             data: {
-                firstName,
-                lastName,
-                email,
-                phone,
-                dateOfBirth: (dateOfBirth && dateOfBirth !== '') ? new Date(dateOfBirth) : null,
-                gender,
-                address,
-                city,
-                state,
-                country,
-                zipCode,
-                branchId,
-                imageUrl,
-                notes,
-                enrollmentDate: (enrollmentDate && enrollmentDate !== '') ? new Date(enrollmentDate) : new Date(),
-                status: 'active',
-                enrollmentNo: finalEnrollmentNo,
-                fathersName,
-                fathersPhone,
-                mothersName,
-                category,
-                maritalStatus,
-                aadhaarNumber,
-                alternatePhone,
-                addressLine1,
-                addressLine2,
-                district,
-                schoolCollege,
-                referredBy,
+                // IDs
+                admissionDisplayId: admissionIdData.displayId,
+                admissionYear: admissionIdData.year,
+                admissionSequence: admissionIdData.sequence,
+
+                studentDisplayId: studentIdData?.displayId || null,
+                studentYear: studentIdData?.year || null,
+                studentSequence: studentIdData?.sequence || null,
+
+                status: studentStatus,
+                enrollmentDate: new Date(),
+
+                // Relations
+                branchId: body.branchId,
+                courseId: body.courseId,
+                batchId: body.batchId || null,
+
+                // Basic Info
+                firstName: body.firstName,
+                lastName: body.lastName || '',
+                email: body.email,
+                phone: body.phone,
+                dateOfBirth: (body.dateOfBirth && body.dateOfBirth !== '') ? new Date(body.dateOfBirth) : null,
+                gender: body.gender,
+
+                // Address
+                address: body.address,
+                city: body.city,
+                state: body.state,
+                country: body.country,
+                zipCode: body.zipCode,
+                addressLine1: body.addressLine1,
+                addressLine2: body.addressLine2,
+                district: body.district,
+
+                // Detailed Info
+                fathersName: body.fathersName,
+                fathersPhone: body.fathersPhone,
+                mothersName: body.mothersName,
+                category: body.category,
+                maritalStatus: body.maritalStatus,
+                aadhaarNumber: body.aadhaarNumber,
+                alternatePhone: body.alternatePhone,
+                imageUrl: body.imageUrl,
+                schoolCollege: body.schoolCollege,
+                referredBy: body.referredBy,
+                notes: body.notes,
+
                 // Qualifications
-                highestQualification,
-                hsSchoolName, hsBoard, hsPassingYear, hsPercentage,
-                hssSchoolName, hssBoard, hssStream, hssPassingYear, hssPercentage,
-                gradCollegeName, gradUniversity, gradDegree, gradPassingYear, gradPercentage,
-                pgCollegeName, pgUniversity, pgDegree, pgPassingYear, pgPercentage,
+                highestQualification: body.highestQualification,
+                hsSchoolName: body.hsSchoolName,
+                hsBoard: body.hsBoard,
+                hsPassingYear: body.hsPassingYear,
+                hsPercentage: body.hsPercentage,
+                hssSchoolName: body.hssSchoolName,
+                hssBoard: body.hssBoard,
+                hssStream: body.hssStream,
+                hssPassingYear: body.hssPassingYear,
+                hssPercentage: body.hssPercentage,
+                gradCollegeName: body.gradCollegeName,
+                gradUniversity: body.gradUniversity,
+                gradDegree: body.gradDegree,
+                gradPassingYear: body.gradPassingYear,
+                gradPercentage: body.gradPercentage,
+                pgCollegeName: body.pgCollegeName,
+                pgUniversity: body.pgUniversity,
+                pgDegree: body.pgDegree,
+                pgPassingYear: body.pgPassingYear,
+                pgPercentage: body.pgPercentage,
+
                 // Financials
-                totalAmount: totalAmount ? Number(totalAmount) : 0,
-                discountAmount: discountAmount ? Number(discountAmount) : 0,
-                netPayableFee: netPayableFee ? Number(netPayableFee) : 0,
-                isPartPayment: !!isPartPayment,
-                installmentPlan: installmentPlan ? JSON.stringify(installmentPlan) : null,
-                installmentMode,
-                fullPayment: fullPayment ? JSON.stringify(fullPayment) : null,
-                receivedBy,
-                courseId,
-                batchId
-            },
-            include: {
-                branch: {
-                    select: {
-                        id: true,
-                        name: true
-                    }
-                }
+                totalAmount: Number(body.totalAmount) || 0,
+                discountAmount: Number(body.discountAmount) || 0,
+                netPayableFee: Number(body.netPayableFee) || 0,
+                isPartPayment: body.isPartPayment === 'true' || body.isPartPayment === true,
+                installmentPlan: body.installmentPlan ? JSON.stringify(body.installmentPlan) : null,
+                receivedBy: body.receivedBy
             }
         })
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { generateId } from '@/lib/utils/id-generator'
 import { extractToken, verifyToken } from '@/lib/auth-utils'
 
 // Helper for auth verification
@@ -82,7 +83,8 @@ export async function PATCH(
         // 1. Check if student exists
         const existingStudent = await db.student.findUnique({
             where: { id },
-            select: { branchId: true }
+            // We need to know current ID status
+            select: { branchId: true, installmentPlan: true, studentDisplayId: true, status: true }
         })
 
         if (!existingStudent) {
@@ -94,13 +96,27 @@ export async function PATCH(
             return NextResponse.json({ success: false, error: 'Access denied' }, { status: 403 })
         }
 
-        // 3. Sanitize and Update
-        const data = { ...body }
+        // 3. Status Transition Logic (Draft -> Active)
+        let idUpdates = {}
+        if (body.status === 'active' && !existingStudent.studentDisplayId) {
+            // Generating Student ID for the first time (Finalizing Admission)
+            const studentIdData = await generateId('STUDENT')
+            idUpdates = {
+                studentDisplayId: studentIdData.displayId,
+                studentYear: studentIdData.year,
+                studentSequence: studentIdData.sequence,
+                enrollmentDate: new Date(), // Set enrollment date to now
+            }
+        }
+
+        // 4. Sanitize and Update
+        const data = { ...body, ...idUpdates }
 
         // Convert dates
         if (data.dateOfBirth !== undefined) {
             data.dateOfBirth = (data.dateOfBirth && data.dateOfBirth !== '') ? new Date(data.dateOfBirth) : null
         }
+        // enrollmentDate logic handled above or preserved if passed
         if (data.enrollmentDate !== undefined) {
             data.enrollmentDate = (data.enrollmentDate && data.enrollmentDate !== '') ? new Date(data.enrollmentDate) : new Date()
         }
@@ -112,7 +128,44 @@ export async function PATCH(
 
         // JSON strings
         if (data.installmentPlan !== undefined) {
-            data.installmentPlan = data.installmentPlan ? JSON.stringify(data.installmentPlan) : null
+            // Receipt Generation Logic (Preserved from previous step)
+            try {
+                const newPlan = data.installmentPlan ? JSON.parse(data.installmentPlan) : []
+                const oldPlan = existingStudent.installmentPlan ? JSON.parse(existingStudent.installmentPlan) : []
+
+                if (Array.isArray(newPlan)) {
+                    for (let i = 0; i < newPlan.length; i++) {
+                        const newItem = newPlan[i];
+                        const oldItem = Array.isArray(oldPlan) && oldPlan[i] ? oldPlan[i] : null;
+
+                        if (newItem.status === 'paid' && (!oldItem || oldItem.status !== 'paid')) {
+                            const receiptIdData = await generateId('RECEIPT')
+                            const systemReceiptNo = receiptIdData.displayId
+
+                            await db.receipt.create({
+                                data: {
+                                    receiptNo: systemReceiptNo,
+                                    receiptYear: receiptIdData.year,
+                                    receiptSequence: receiptIdData.sequence,
+                                    studentId: id,
+                                    amount: Number(newItem.paidAmount) || Number(newItem.amount) || 0,
+                                    mode: newItem.mode || 'cash',
+                                    transactionId: newItem.utrNo || null,
+                                    remark: newItem.remark || null,
+                                    date: newItem.paymentDate ? new Date(newItem.paymentDate) : new Date()
+                                }
+                            })
+                            newItem.receiptNo = systemReceiptNo
+                        }
+                    }
+                    data.installmentPlan = JSON.stringify(newPlan)
+                } else {
+                    data.installmentPlan = data.installmentPlan ? JSON.stringify(data.installmentPlan) : null
+                }
+            } catch (e) {
+                console.error("Error processing receipts in PATCH:", e)
+                data.installmentPlan = data.installmentPlan ? JSON.stringify(data.installmentPlan) : null
+            }
         }
         if (data.fullPayment !== undefined) {
             data.fullPayment = data.fullPayment ? JSON.stringify(data.fullPayment) : null

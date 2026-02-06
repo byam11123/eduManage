@@ -151,7 +151,7 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
                         </TabsContent>
 
                         <TabsContent value="payment">
-                            <PaymentDetailsTab student={student} />
+                            <PaymentDetailsTab student={student} onRefresh={handleRefresh} />
                         </TabsContent>
 
                         <TabsContent value="attendance">

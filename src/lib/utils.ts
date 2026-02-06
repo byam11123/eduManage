@@ -43,3 +43,18 @@ export function formatDate(date: string | Date | undefined | null): string {
     return '-'
   }
 }
+
+/**
+ * Format a number as currency (INR)
+ * @param amount - Amount to format
+ * @returns Formatted currency string
+ */
+export function formatCurrency(amount: number | string | undefined | null): string {
+  const val = Number(amount || 0)
+
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0
+  }).format(val)
+}

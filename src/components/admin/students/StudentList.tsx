@@ -188,7 +188,7 @@ export function StudentList({
                                         {student.firstName} {student.lastName}
                                     </p>
                                     <p className="text-xs text-gray-500">
-                                        {student.enrollmentNo}
+                                        {student.studentDisplayId || student.admissionDisplayId || student.enrollmentNo || '-'}
                                     </p>
                                 </div>
                             </div>

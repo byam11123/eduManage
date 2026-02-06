@@ -142,6 +142,25 @@ export interface Student {
     district?: string
     schoolCollege?: string
     referredBy?: string
+
+    // IDs
+    admissionDisplayId: string
+    admissionYear: string
+    admissionSequence: number
+    studentDisplayId?: string
+    studentYear?: string
+    studentSequence?: number
+
+    // Financials
+    totalAmount?: string
+    discountAmount?: string
+    netPayableFee?: string
+    isPartPayment?: boolean
+    installmentPlan?: string // JSON string
+    installmentMode?: string
+    fullPayment?: string // JSON string
+    receivedBy?: string
+
     notes?: string
     branchId: string
     courseId?: string
@@ -161,7 +180,7 @@ export interface InstallmentPlanItem {
     paymentDate: string
     mode: 'cash' | 'online' | ''
     receiptNo: string
-    utrNo: string
+    utrNo?: string
     proofImage: string
     status: 'paid' | 'pending' | 'due'
     remark: string

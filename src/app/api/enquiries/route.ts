@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { verifyAuth } from '@/lib/auth-utils'
+import { generateId } from '@/lib/utils/id-generator'
 
 export async function POST(request: NextRequest) {
     try {
@@ -53,8 +54,16 @@ export async function POST(request: NextRequest) {
         const branchId = defaultStartBranch.branchId
         const organizationId = defaultStartBranch.branch.organizationId
 
+        // Generate ID
+        const enquiryIdData = await generateId('ENQUIRY')
+
         const enquiry = await db.enquiry.create({
             data: {
+                // ID System Fields
+                enquiryId: enquiryIdData.displayId,
+                enquiryYear: enquiryIdData.year,
+                enquirySequence: enquiryIdData.sequence,
+
                 firstName,
                 lastName,
                 mobile,

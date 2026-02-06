@@ -71,13 +71,7 @@ export default function StudentsPage() {
             </div>
 
             {/* Stats Grid */}
-            <StudentStats
-                total={stats.total}
-                active={stats.active}
-                inactive={stats.inactive}
-                graduated={stats.graduated}
-                dropped={stats.dropped}
-            />
+            <StudentStats {...stats} />
 
             {/* Action Bar */}
             <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col md:flex-row gap-4 items-center justify-between">
@@ -142,6 +136,8 @@ export default function StudentsPage() {
                     </div>
                 </CardContent>
             </Card>
+            {/* Stats Grid */}
+
             {/* Deletion Dialog */}
             <DeleteStudentDialog
                 open={isDeleteOpen}

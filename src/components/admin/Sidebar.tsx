@@ -75,6 +75,7 @@ export function SidebarContent() {
             icon: GraduationCap,
             children: [
                 { title: 'All Students', url: '/admin/students' },
+                { title: 'Draft Admissions', url: '/admin/students/drafts' },
                 { title: 'Student Admission', url: '/admin/students/add' },
                 { title: 'Bulk Upload', url: '/admin/students/upload' },
             ]

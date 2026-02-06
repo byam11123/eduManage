@@ -496,10 +496,60 @@ export function useAdmissionForm() {
         setCurrentStep(prev => (prev > 1 ? prev - 1 : prev))
     }, [])
 
-    const handleSaveDraft = useCallback(() => {
-        saveDraft(formData, currentStep)
-        toast.success('Draft saved successfully!')
-    }, [formData, currentStep, saveDraft])
+    const handleSaveDraft = async () => {
+        try {
+            setIsSubmitting(true)
+
+            // Minimal validation for draft
+            if (!formData.firstName) {
+                toast.error('First Name is required to save a draft')
+                setIsSubmitting(false)
+                return
+            }
+
+            const draftPayload = {
+                ...formData,
+                action: 'draft', // Signal backend to treat as draft
+                branchId: formData.branchId || defaultBranch?.id,
+                status: 'draft',
+                // Ensure numeric fields are safe
+                totalAmount: Number(formData.totalAmount) || 0,
+                discountAmount: Number(formData.discountAmount) || 0,
+                netPayableFee: Number(formData.netPayableFee) || 0,
+                isPartPayment: formData.isPartPayment === 'yes',
+                installmentPlan: formData.isPartPayment === 'yes' ? formData.installmentPlan : []
+            }
+
+            const studentId = (searchParams.get('studentId') || searchParams.get('id') || params?.id) as string
+            const isEdit = !!studentId
+
+            // If editing an existing student, we use PATCH, otherwise POST
+            // But wait, if we are saving a NEW draft, it's a POST.
+            // If we are updating a DRAFT, it's a PATCH.
+
+            const res = await fetch(isEdit ? `/api/students/${studentId}` : '/api/students', {
+                method: isEdit ? 'PATCH' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(draftPayload)
+            })
+
+            const data = await res.json()
+
+            if (data.success) {
+                clearDraft() // Clear local storage draft
+                toast.success('Draft saved to server successfully!')
+                router.push('/admin/students/drafts') // Redirect to drafts list
+            } else {
+                toast.error(data.error || 'Failed to save draft')
+            }
+
+        } catch (error) {
+            console.error('Save draft error:', error)
+            toast.error('Error saving draft')
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
 
     const handleResumeDraft = useCallback(() => {
         if (draftData) {
@@ -547,7 +597,10 @@ export function useAdmissionForm() {
                 enrollmentDate: formData.admissionDate,
                 branchId: formData.branchId || defaultBranch?.id,
                 imageUrl: formData.imageUrl,
-                status: 'active',
+
+                status: 'active', // This will be enforced by backend action='submit' anyway
+                action: 'submit', // CRITICAL: Signal backend to finalize admission
+
                 // Qualifications
                 highestQualification: formData.highestQualification,
                 hsSchoolName: formData.hsSchoolName,
