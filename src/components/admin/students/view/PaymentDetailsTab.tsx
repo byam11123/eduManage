@@ -16,6 +16,7 @@ import { Eye, CreditCard, AlertCircle, CheckCircle2, Clock } from 'lucide-react'
 import type { Student, InstallmentPlanItem } from '@/lib/types'
 import { PayInstallmentDialog } from './PayInstallmentDialog'
 import { useRouter } from 'next/navigation'
+import { calculateStudentFinancials } from '@/lib/utils'
 
 interface PaymentDetailsTabProps {
     student: Student
@@ -26,31 +27,15 @@ export function PaymentDetailsTab({ student, onRefresh }: PaymentDetailsTabProps
     const router = useRouter()
     const [selectedInstallment, setSelectedInstallment] = useState<{ item: InstallmentPlanItem, index: number } | null>(null)
 
-    // 1. Parse Installment Plan
-    let installments: InstallmentPlanItem[] = []
-    try {
-        const parsed = student.installmentPlan ? JSON.parse(student.installmentPlan) : []
-        installments = Array.isArray(parsed) ? parsed : []
-    } catch (e) {
-        console.error("Failed to parse installment plan", e)
-        installments = []
-    }
-
-    // 2. Calculate Stats
-    const grossFee = Number(student.totalAmount) || 0
-    const discount = Number(student.discountAmount) || 0
-    const netPayable = Number(student.netPayableFee) || (grossFee - discount)
-
-    const totalPaid = installments.reduce((acc, item) => acc + (item.status === 'paid' ? (Number(item.paidAmount) || 0) : 0), 0)
-
-    // Total Due is Net Payable - Total Paid
-    const totalDue = Math.max(0, netPayable - totalPaid)
-
-    // Status Logic
-    let paymentStatus = 'PENDING'
-    if (totalDue === 0 && totalPaid > 0) paymentStatus = 'PAID'
-    else if (totalPaid > 0 && totalDue > 0) paymentStatus = 'PARTIAL'
-    else if (totalPaid === 0) paymentStatus = 'DUE'
+    const {
+        grossFee,
+        discount,
+        netPayable,
+        totalPaid,
+        totalDue,
+        status: paymentStatus,
+        installments
+    } = calculateStudentFinancials(student)
 
     // Helper to check overdue
     const isOverdue = (dateStr: string) => {

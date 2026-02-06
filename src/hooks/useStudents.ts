@@ -7,6 +7,7 @@ import { useState, useEffect, useCallback } from 'react'
 import type { Student, StudentFormData } from '@/lib/types'
 import { studentService } from '@/lib/services'
 import { useFilterStore } from '@/lib/stores'
+import { calculateStudentFinancials } from '@/lib/utils'
 
 interface UseStudentsReturn {
     // Data
@@ -169,45 +170,30 @@ export function useStudents(): UseStudentsReturn {
         // 1. Total Students
         acc.total++
 
-        let studentTotalPaid = 0
         let studentTotalOverdue = 0
 
-        // Parse Installment Plan
-        let installments: any[] = []
-        try {
-            if (student.installmentPlan) {
-                installments = typeof student.installmentPlan === 'string'
-                    ? JSON.parse(student.installmentPlan)
-                    : student.installmentPlan
-            }
-        } catch (e) {
-            console.error('Error parsing installment plan for student:', student.id, e)
-        }
+        // Use centralized helper
+        const { installments, totalPaid: helperTotalPaid } = calculateStudentFinancials(student)
 
-        // Process Installments
+        // Process Installments (Financial Breakdown)
         if (installments.length > 0) {
             installments.forEach(inst => {
                 const amount = Number(inst.amount || 0)
                 const paidAmount = Number(inst.paidAmount || 0)
                 const pending = amount - paidAmount
-                const isPaid = inst.status === 'paid'
 
-                // Received Payment
+                // Received Payment Breakdown
                 if (paidAmount > 0) {
-                    acc.received += paidAmount
-                    studentTotalPaid += paidAmount
-
                     const mode = inst.mode?.toLowerCase() || ''
                     if (mode === 'cash') acc.cash += paidAmount
                     else if (mode === 'online' || mode === 'upi' || mode === 'bank_transfer') acc.online += paidAmount
                     else acc.unknown += paidAmount
                 }
 
-                // Overdue & Upcoming
+                // Overdue & Upcoming (Strict Date Check)
                 if (pending > 0 && inst.dueDate) {
                     const dueDate = new Date(inst.dueDate)
                     const today = new Date()
-                    // Reset time for accurate date comparison
                     today.setHours(0, 0, 0, 0)
                     dueDate.setHours(0, 0, 0, 0)
 
@@ -219,50 +205,38 @@ export function useStudents(): UseStudentsReturn {
                     }
                 }
             })
+            // Add total paid from installments to received accumulator
+            acc.received += helperTotalPaid
         }
 
-        // Process Full Payment (if exists and no installments used, or strictly speaking, full payment overrides)
-        // Usually system uses ONE or the OTHER. But let's check 'fullPayment' field too if logic stores it there
-        if (student.paymentStatus === 'paid' && (!installments.length)) {
-            // If manual full payment tracking is separate (depending on how backend saves it)
-            // Based on schema, 'fullPayment' is a JSON string.
-            let fullPayData: any = null
+        // Process Full Payment (Legacy/Fallback)
+        // If helper returned 0 paid (no paid installments) but logic implies full payment existing elsewhere
+        if (helperTotalPaid === 0 && student.paymentStatus === 'paid') {
             try {
-                if (student.fullPayment) {
-                    fullPayData = typeof student.fullPayment === 'string' ? JSON.parse(student.fullPayment) : student.fullPayment
+                const fullPayData = student.fullPayment ? (typeof student.fullPayment === 'string' ? JSON.parse(student.fullPayment) : student.fullPayment) : null
+
+                if (fullPayData) {
+                    const paidAmt = Number(student.netPayableFee || student.totalAmount || 0)
+                    if (paidAmt > 0) {
+                        acc.received += paidAmt
+
+                        const mode = fullPayData.paymentMode?.toLowerCase() || ''
+                        if (mode === 'cash') acc.cash += paidAmt
+                        else if (mode === 'online' || mode === 'upi' || mode === 'bank_transfer') acc.online += paidAmt
+                        else acc.unknown += paidAmt
+                    }
                 }
             } catch (e) { }
-
-            if (fullPayData) {
-                // Check if actually paid
-                // Usually if status='paid', trust totalAmount or netPayableFee?
-                // Let's trust netPayableFee for total received if paid.
-                // Ideally we should sum distinct transaction amounts.
-                // Fallback: If totalAmount is there and status is paid.
-
-                // However, the safest bet is checking if we double counted with installments.
-                // If installments exist, we used them. If not:
-                const paidAmt = Number(student.netPayableFee || student.totalAmount || 0)
-                if (paidAmt > 0) {
-                    acc.received += paidAmt
-                    studentTotalPaid += paidAmt
-
-                    const mode = fullPayData.paymentMode?.toLowerCase() || ''
-                    if (mode === 'cash') acc.cash += paidAmt
-                    else if (mode === 'online' || mode === 'upi' || mode === 'bank_transfer') acc.online += paidAmt
-                    else acc.unknown += paidAmt
-                }
-            }
         }
 
-        // Defaulters (Anyone with overdue > 0)
-        if (studentTotalOverdue > 1) { // Tolerance of 1 for float errors
+        // Defaulters (Anyone with strictly overdue > 0)
+        if (studentTotalOverdue > 1) {
             acc.defaulters++
         }
 
-        // Refunded (Placeholder logic based on status)
-        if (student.status === 'dropped') { // Assuming dropped might be refunded? Or create explicit status later.
-            // For now, no explicit refunded amount field in schema.
+        // Refunded (Placeholder)
+        if (student.status === 'dropped') {
+            acc.refundedCount++
         }
 
         return acc

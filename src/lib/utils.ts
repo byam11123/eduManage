@@ -49,6 +49,12 @@ export function formatDate(date: string | Date | undefined | null): string {
  * @param amount - Amount to format
  * @returns Formatted currency string
  */
+
+/**
+ * Format a number as currency (INR)
+ * @param amount - Amount to format
+ * @returns Formatted currency string
+ */
 export function formatCurrency(amount: number | string | undefined | null): string {
   const val = Number(amount || 0)
 
@@ -57,4 +63,68 @@ export function formatCurrency(amount: number | string | undefined | null): stri
     currency: 'INR',
     maximumFractionDigits: 0
   }).format(val)
+}
+
+// ===========================================
+// STUDENT FINANCIAL HELPERS
+// ===========================================
+
+import type { Student, InstallmentPlanItem } from '@/lib/types'
+
+/**
+ * Safely parse the installment plan from a student record
+ * @param plan - The installmentPlan field (string or array)
+ * @returns Array of InstallmentPlanItem
+ */
+export function parseInstallmentPlan(plan: string | any[] | null | undefined): InstallmentPlanItem[] {
+  if (!plan) return []
+  try {
+    const parsed = typeof plan === 'string' ? JSON.parse(plan) : plan
+    // Ensure it is an array
+    return Array.isArray(parsed) ? parsed : []
+  } catch (e) {
+    console.error("Failed to parse installment plan", e)
+    return []
+  }
+}
+
+/**
+ * Calculate financial metrics for a student
+ * @param student - The student object
+ * @returns Object containing calculated metrics
+ */
+export function calculateStudentFinancials(student: Student) {
+  // 1. Parse Installments
+  const installments = parseInstallmentPlan(student.installmentPlan)
+
+  // 2. Base Fees
+  const grossFee = Number(student.totalAmount) || 0
+  const discount = Number(student.discountAmount) || 0
+  const netPayable = Number(student.netPayableFee) || (grossFee - discount)
+
+  // 3. Paid & Due
+  const totalPaid = installments.reduce((acc, item) => {
+    // Only count as paid if status is explicitly 'paid'
+    const isPaid = item.status === 'paid'
+    const amount = Number(item.paidAmount) || 0
+    return acc + (isPaid ? amount : 0)
+  }, 0)
+
+  const totalDue = Math.max(0, netPayable - totalPaid)
+
+  // 4. Status
+  let status: 'PAID' | 'PARTIAL' | 'DUE' | 'PENDING' = 'PENDING'
+  if (totalDue === 0 && totalPaid > 0) status = 'PAID'
+  else if (totalPaid > 0 && totalDue > 0) status = 'PARTIAL'
+  else if (totalPaid === 0) status = 'DUE'
+
+  return {
+    grossFee,
+    discount,
+    netPayable,
+    totalPaid,
+    totalDue,
+    status,
+    installments
+  }
 }

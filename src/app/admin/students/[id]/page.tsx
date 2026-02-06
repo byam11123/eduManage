@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useStudents } from '@/hooks'
 import {
     ProfileSidebar,
+    ProfileDetailsTab,
     CourseDetailsTab,
     PaymentDetailsTab,
     AttendanceDetailsTab,
@@ -112,8 +113,14 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
 
                 {/* Right Content - Tabs (9 cols) */}
                 <div className="lg:col-span-9">
-                    <Tabs defaultValue="payment" className="w-full">
-                        <TabsList className="bg-transparent border-b border-gray-200 w-full justify-start rounded-none h-auto p-0 mb-6 gap-6">
+                    <Tabs defaultValue="profile" className="w-full">
+                        <TabsList className="bg-transparent border-b border-gray-200 w-full justify-start rounded-none h-auto p-0 mb-6 gap-6 overflow-x-auto">
+                            <TabsTrigger
+                                value="profile"
+                                className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:text-indigo-600 data-[state=active]:shadow-none bg-transparent px-0 pb-2 uppercase text-xs font-semibold tracking-wide text-gray-500"
+                            >
+                                Student Profile
+                            </TabsTrigger>
                             <TabsTrigger
                                 value="course"
                                 className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:text-indigo-600 data-[state=active]:shadow-none bg-transparent px-0 pb-2 uppercase text-xs font-semibold tracking-wide text-gray-500"
@@ -132,12 +139,12 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
                             >
                                 Attendance Details
                             </TabsTrigger>
-                            <TabsTrigger
+                            {/* <TabsTrigger
                                 value="announcement"
                                 className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:text-indigo-600 data-[state=active]:shadow-none bg-transparent px-0 pb-2 uppercase text-xs font-semibold tracking-wide text-gray-500"
                             >
                                 Announcement History
-                            </TabsTrigger>
+                            </TabsTrigger> */}
                             <TabsTrigger
                                 value="documents"
                                 className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600 data-[state=active]:text-indigo-600 data-[state=active]:shadow-none bg-transparent px-0 pb-2 uppercase text-xs font-semibold tracking-wide text-gray-500"
@@ -145,6 +152,10 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
                                 Documents
                             </TabsTrigger>
                         </TabsList>
+
+                        <TabsContent value="profile">
+                            <ProfileDetailsTab student={student} onEdit={handleEdit} />
+                        </TabsContent>
 
                         <TabsContent value="course">
                             <CourseDetailsTab student={student} />
