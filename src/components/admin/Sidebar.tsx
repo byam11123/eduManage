@@ -27,208 +27,270 @@ import {
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getUserInitials } from '@/lib/utils'
-import { useAuth, useBranches } from '@/hooks'
-import { useUIStore } from '@/lib/stores'
+import { useAuth, useUIStore } from '@/hooks'
 import { useRouter } from 'next/navigation'
+import { cn } from '@/lib/utils'
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
+
+import { AVAILABLE_MODULES } from '@/lib/constants/modules'
 
 interface NavItem {
     title: string
     url: string
     icon: any
+    moduleId?: typeof AVAILABLE_MODULES[number]['id']
     children?: { title: string; url: string }[]
 }
 
-export function SidebarContent() {
+export function SidebarContent({ isMobile = false }: { isMobile?: boolean }) {
     const pathname = usePathname()
     const router = useRouter()
-    const { user, logout } = useAuth()
+    const { user, isLoading, logout } = useAuth()
     const {
         closeSidebar,
         sidebarExpandedItems,
-        toggleSidebarItem
+        toggleSidebarItem,
+        isSidebarCollapsed,
     } = useUIStore()
+    const collapsed = !isMobile && isSidebarCollapsed
 
     const handleLogout = async () => {
         await logout()
         router.push('/login')
     }
 
-    const navItems: NavItem[] = [
-        { title: 'Dashboard', url: '/admin', icon: LayoutDashboard },
+    const allNavItems: NavItem[] = [
+        { title: 'Dashboard', url: '/admin', icon: LayoutDashboard, moduleId: 'dashboard' },
         {
             title: 'Enquiry',
             url: '/admin/enquiry',
             icon: ClipboardList,
+            moduleId: 'enquiry',
             children: [
                 { title: 'All Enquiries', url: '/admin/enquiry' },
                 { title: 'New Enquiry', url: '/admin/enquiry/add' },
             ]
         },
-        {
-            title: 'Leads',
-            url: '/admin/leads',
-            icon: Users
-        },
+        { title: 'Leads', url: '/admin/leads', icon: Users, moduleId: 'leads' },
         {
             title: 'Student',
             url: '/admin/students',
             icon: GraduationCap,
+            moduleId: 'students',
             children: [
                 { title: 'All Students', url: '/admin/students' },
                 { title: 'Draft Admissions', url: '/admin/students/drafts' },
                 { title: 'Student Admission', url: '/admin/students/add' },
-                { title: 'Bulk Upload', url: '/admin/students/upload' },
             ]
         },
-        { title: 'Batch', url: '/admin/batch', icon: Users },
+        {
+            title: 'Fees',
+            url: '/admin/fees',
+            icon: Wallet,
+            moduleId: 'fees',
+            children: [
+                { title: 'All Installments', url: '/admin/fees' },
+                { title: 'Pending Dues', url: '/admin/fees?status=pending' },
+            ]
+        },
+        { title: 'Batch', url: '/admin/batch', icon: Users, moduleId: 'batches' },
         {
             title: 'Attendance',
             url: '/admin/attendance',
             icon: Calendar,
+            moduleId: 'attendance',
             children: [
                 { title: 'Employee', url: '/admin/attendance/employee' },
                 { title: 'Student', url: '/admin/attendance/student' },
-                { title: 'Mark Attendance', url: '/admin/attendance' },
-                { title: 'Reports', url: '/admin/attendance/reports' },
             ]
         },
-        { title: 'Courses', url: '/admin/courses', icon: BookOpen },
+        { title: 'Courses', url: '/admin/courses', icon: BookOpen, moduleId: 'courses' },
         {
             title: 'Branches',
             url: '/admin/branches',
             icon: Building2,
+            moduleId: 'branches',
             children: [
                 { title: 'All Branches', url: '/admin/branches' },
-                { title: 'Create Branch', url: '/admin/branches/new' },
             ]
         },
-        { title: 'Time Table', url: '/admin/timetable', icon: Clock },
-        { title: 'Staff', url: '/admin/staff', icon: UserCheck },
-        { title: 'Users & Roles', url: '/admin/users', icon: UserCog },
-        { title: 'Chat', url: '/admin/chat', icon: MessageSquare },
-        { title: 'Notice Board', url: '/admin/notice', icon: Megaphone },
-        { title: 'Tickets', url: '/admin/tickets', icon: Ticket },
-        { title: 'Forms', url: '/admin/forms', icon: FileText },
-        { title: 'Expenses', url: '/admin/expenses', icon: Wallet },
-        { title: 'Certificate', url: '/admin/certificate', icon: Award },
-        {
-            title: 'Settings',
-            url: '/admin/settings/organization',
-            icon: Settings,
-            children: [
-                { title: 'Organization Info', url: '/admin/settings/organization' },
-                { title: 'Devices', url: '/admin/settings/devices' },
-                { title: 'Notification', url: '/admin/settings/notification' },
-            ]
-        },
+        { title: 'Time Table', url: '/admin/timetable', icon: Clock, moduleId: 'timetable' },
+        { title: 'Staff', url: '/admin/staff', icon: UserCheck, moduleId: 'staff' },
+        { title: 'Users & Roles', url: '/admin/users', icon: UserCog, moduleId: 'settings' },
+        { title: 'Chat', url: '/admin/chat', icon: MessageSquare, moduleId: 'chat' },
+        { title: 'Notice Board', url: '/admin/notice', icon: Megaphone, moduleId: 'notice' },
+        { title: 'Tickets', url: '/admin/tickets', icon: Ticket, moduleId: 'tickets' },
+        { title: 'Forms', url: '/admin/forms', icon: FileText, moduleId: 'forms' },
+        { title: 'Expenses', url: '/admin/expenses', icon: Wallet, moduleId: 'expenses' },
+        { title: 'Certificate', url: '/admin/certificate', icon: Award, moduleId: 'certificate' },
+        { title: 'Settings', url: '/admin/settings/organization', icon: Settings, moduleId: 'settings' },
     ]
 
+    // RBAC Filter
+    const navItems = allNavItems.filter(item => {
+        if (isLoading && !user) return true
+        if (!user) return false
+        if (user.role === 'super_admin') return true
+        if (!item.moduleId) return true // Show items without specific module mapping
+        return user.permissions?.includes(item.moduleId)
+    })
+
     return (
-        <div className="flex flex-col h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-800">
-                <Link href="/admin" className="flex items-center gap-2">
-                    <div className="h-8 w-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-                        <GraduationCap className="h-5 w-5 text-white" />
-                    </div>
-                    <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-violet-600">
-                        EduManage
-                    </span>
-                </Link>
-            </div>
+        <TooltipProvider delayDuration={0}>
+            <div className={cn(
+                "relative flex h-full flex-col border-r border-gray-100 bg-white transition-all duration-300 dark:border-gray-800 dark:bg-gray-950",
+                isMobile ? "w-full" : "",
+                collapsed ? "w-24" : "w-[280px]"
+            )}>
 
-            <div className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-                {navItems.map((item) => {
-                    const isActive = pathname === item.url || pathname?.startsWith(item.url + '/')
-                    const isExpanded = sidebarExpandedItems.includes(item.title) || (item.children && item.children.some(child => pathname === child.url))
+                {/* Logo Section */}
+                <div className={cn(
+                    "h-20 flex items-center px-6",
+                    collapsed ? "justify-center px-0" : "justify-between"
+                )}>
+                    <Link href="/admin" className="flex items-center gap-4 group">
+                        <div className={cn(
+                            "bg-indigo-600 flex items-center justify-center shadow-xl shadow-indigo-100 dark:shadow-none group-hover:rotate-6 transition-all duration-300",
+                            collapsed ? "h-14 w-14 rounded-2xl" : "h-11 w-11 rounded-2xl"
+                        )}>
+                            <GraduationCap className={cn("text-white", collapsed ? "h-8 w-8" : "h-6 w-6")} />
+                        </div>
+                        {!collapsed && (
+                            <span className="text-2xl font-black tracking-tight text-gray-900 dark:text-white transition-all">
+                                EduManage
+                            </span>
+                        )}
+                    </Link>
+                </div>
 
-                    if (item.children) {
-                        return (
-                            <div key={item.title}>
-                                <button
-                                    onClick={() => toggleSidebarItem(item.title)}
-                                    className={`w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors
-                    ${isActive || isExpanded
-                                            ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400'
-                                            : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
-                                        }`}
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <item.icon className="h-4 w-4" />
-                                        {item.title}
-                                    </div>
-                                    {isExpanded ? (
-                                        <ChevronDown className="h-4 w-4" />
-                                    ) : (
-                                        <ChevronRight className="h-4 w-4" />
+                {/* Navigation Items */}
+                <div className={cn(
+                    "flex-1 overflow-y-auto py-6 space-y-1.5 custom-scrollbar",
+                    collapsed ? "px-4" : "px-3"
+                )}>
+                    {navItems.map((item) => {
+                        const isActive = pathname === item.url || (item.url !== '/admin' && pathname?.startsWith(item.url))
+                        const isExpanded = sidebarExpandedItems.includes(item.title)
+
+                        if (item.children && !collapsed) {
+                            return (
+                                <div key={item.title} className="space-y-1">
+                                    <button
+                                        onClick={() => toggleSidebarItem(item.title)}
+                                        className={cn(
+                                            "w-full flex items-center justify-between px-4 py-3 text-sm font-bold rounded-2xl transition-all duration-200 group",
+                                            isActive || isExpanded
+                                                ? 'bg-gray-50/80 text-gray-900 dark:bg-gray-800/50 dark:text-white border border-gray-100 dark:border-gray-800 shadow-sm'
+                                                : 'text-gray-500 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800/30 hover:text-indigo-600'
+                                        )}
+                                    >
+                                        <div className="flex items-center gap-3.5">
+                                            <item.icon className={cn("h-4.5 w-4.5 transition-transform group-hover:scale-110", (isActive || isExpanded) ? "text-indigo-600" : "text-gray-400")} />
+                                            <span>{item.title}</span>
+                                        </div>
+                                        <ChevronDown className={cn("h-3.5 w-3.5 transition-transform duration-300 opacity-40", isExpanded ? "rotate-180" : "rotate-0")} />
+                                    </button>
+
+                                    {isExpanded && (
+                                        <div className="mt-1 space-y-1 ml-4 border-l-2 border-gray-100 dark:border-gray-800 pl-4 animate-in slide-in-from-top-2 duration-200">
+                                            {item.children.map((child) => (
+                                                <Link
+                                                    key={child.url}
+                                                    href={child.url}
+                                                    onClick={closeSidebar}
+                                                    className={cn(
+                                                        "block px-4 py-2.5 text-[13px] rounded-xl transition-all duration-200 font-bold",
+                                                        pathname === child.url
+                                                            ? 'text-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/10'
+                                                            : 'text-gray-500 hover:text-indigo-600 hover:bg-gray-50 dark:hover:bg-gray-800/30'
+                                                    )}
+                                                >
+                                                    {child.title}
+                                                </Link>
+                                            ))}
+                                        </div>
                                     )}
-                                </button>
+                                </div>
+                            )
+                        }
 
-                                {isExpanded && (
-                                    <div className="ml-4 mt-1 space-y-1 pl-4 border-l border-gray-200 dark:border-gray-700">
-                                        {item.children.map((child) => (
-                                            <Link
-                                                key={child.url}
-                                                href={child.url}
-                                                onClick={closeSidebar}
-                                                className={`block px-3 py-2 text-sm rounded-md transition-colors
-                          ${pathname === child.url
-                                                        ? 'text-indigo-600 bg-indigo-50/50 font-medium dark:text-indigo-400'
-                                                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-gray-200'
-                                                    }`}
-                                            >
-                                                {child.title}
-                                            </Link>
-                                        ))}
-                                    </div>
+                        return (
+                            <Tooltip key={item.title}>
+                                <TooltipTrigger asChild>
+                                    <Link
+                                        href={item.url}
+                                        onClick={closeSidebar}
+                                        className={cn(
+                                            "flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 group relative",
+                                            collapsed ? "h-14 justify-center px-0" : "justify-start",
+                                            isActive
+                                                ? 'bg-[#4f46e5] text-white shadow-xl shadow-indigo-200 dark:shadow-none'
+                                                : 'text-gray-500 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800/50 hover:text-indigo-600'
+                                        )}
+                                    >
+                                        <item.icon className={cn("shrink-0 transition-transform group-hover:scale-110", collapsed ? "h-7 w-7" : "h-5 w-5", isActive ? "text-white" : "text-gray-400")} />
+                                        {!collapsed && <span className="text-[15px] font-bold tracking-tight">{item.title}</span>}
+                                        {isActive && collapsed && (
+                                            <div className="absolute left-0 w-1 h-6 bg-white rounded-r-full" />
+                                        )}
+                                    </Link>
+                                </TooltipTrigger>
+                                {collapsed && (
+                                    <TooltipContent side="right" className="bg-indigo-600 text-white border-none font-black text-[11px] py-2 px-3 shadow-2xl rounded-lg">
+                                        {item.title}
+                                    </TooltipContent>
                                 )}
-                            </div>
+                            </Tooltip>
                         )
-                    }
+                    })}
+                </div>
 
-                    return (
-                        <Link
-                            key={item.title}
-                            href={item.url}
-                            onClick={closeSidebar}
-                            className={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors
-                ${isActive
-                                    ? 'bg-indigo-600 text-white shadow-sm'
-                                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
-                                }`}
-                        >
-                            <item.icon className="h-4 w-4" />
-                            {item.title}
-                        </Link>
-                    )
-                })}
-            </div>
-
-            <div className="p-4 border-t border-gray-200 dark:border-gray-800">
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50">
-                    <Avatar className="h-9 w-9 border border-gray-200">
-                        <AvatarImage src={user?.image} />
-                        <AvatarFallback className="bg-indigo-100 text-indigo-600">
-                            {getUserInitials(user?.fullName || 'User')}
-                        </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                            {user?.fullName || 'Loading...'}
-                        </p>
-                        <p className="text-xs text-gray-500 truncate">
-                            {user?.role || 'Admin'}
-                        </p>
+                {/* Footer Section */}
+                <div className={cn(
+                    "p-6 border-t border-gray-50 dark:border-gray-800",
+                    collapsed ? "flex justify-center px-0 py-5" : ""
+                )}>
+                    <div className={cn(
+                        "flex items-center gap-4 p-3 rounded-2xl bg-gray-50/80 dark:bg-gray-800/30 transition-all",
+                        collapsed ? "w-16 h-16 justify-center" : "w-full"
+                    )}>
+                        <Avatar className={cn(
+                            "border-2 border-white dark:border-gray-800 shadow-sm flex-shrink-0 ring-2 ring-indigo-50 dark:ring-indigo-900/20",
+                            collapsed ? "h-11 w-11" : "h-9 w-9"
+                        )}>
+                            <AvatarImage src={user?.image} />
+                            <AvatarFallback className="bg-indigo-600 text-white text-[10px] font-bold">
+                                {getUserInitials(user?.fullName || 'U')}
+                            </AvatarFallback>
+                        </Avatar>
+                        {!collapsed && (
+                            <div className="flex-1 min-w-0">
+                                <p className="text-[13px] font-black text-gray-900 dark:text-white truncate">
+                                    {user?.fullName || 'Administrator'}
+                                </p>
+                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest truncate">
+                                    {user?.role?.replace('_', ' ') || 'Super Admin'}
+                                </p>
+                            </div>
+                        )}
+                        {!collapsed && (
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-9 w-9 text-gray-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all rounded-xl"
+                                onClick={handleLogout}
+                            >
+                                <LogOut className="h-4 w-4" />
+                            </Button>
+                        )}
                     </div>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-gray-500 hover:text-red-600"
-                        onClick={handleLogout}
-                    >
-                        <LogOut className="h-4 w-4" />
-                    </Button>
                 </div>
             </div>
-        </div>
+        </TooltipProvider>
     )
 }

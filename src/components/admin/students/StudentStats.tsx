@@ -1,11 +1,5 @@
-// ============================================
-// STUDENT STATS COMPONENT
-// Stats overview cards for students
-// ============================================
-
 'use client'
 
-import { Card, CardContent } from '@/components/ui/card'
 import {
     Users,
     IndianRupee,
@@ -18,6 +12,7 @@ import {
     RotateCcw,
     AlertTriangle
 } from 'lucide-react'
+import { StatsGrid } from '@/components/shared/StatsGrid'
 import { formatCurrency } from '@/lib/utils'
 
 interface StudentStatsProps {
@@ -45,110 +40,45 @@ export function StudentStats({
     refundedAmount,
     defaulters
 }: StudentStatsProps) {
-    const stats = [
-        // Row 1
+    const statsData = [
         {
             title: 'Total Students',
             value: total,
             icon: Users,
-            color: 'text-indigo-600',
-            bgColor: 'bg-indigo-50',
-            isCurrency: false
+            color: 'indigo' as const,
+            trend: 'Base Population'
         },
         {
-            title: 'Received Payment',
-            value: received,
+            title: 'Total Collection',
+            value: formatCurrency(received),
             icon: IndianRupee,
-            color: 'text-green-600',
-            bgColor: 'bg-green-50',
-            isCurrency: true
+            color: 'emerald' as const,
+            trend: 'Revenue Stream'
         },
         {
-            title: 'Cash Received',
-            value: cash,
-            icon: Banknote,
-            color: 'text-emerald-600',
-            bgColor: 'bg-emerald-50',
-            isCurrency: true
-        },
-        {
-            title: 'Online Received',
-            value: online,
-            icon: CreditCard,
-            color: 'text-blue-600',
-            bgColor: 'bg-blue-50',
-            isCurrency: true
-        },
-        {
-            title: 'Unknown Mode Payment',
-            value: unknown,
-            icon: HelpCircle,
-            color: 'text-amber-600',
-            bgColor: 'bg-amber-50',
-            isCurrency: true
-        },
-        // Row 2
-        {
-            title: 'Overdue Payment',
-            value: overdue,
+            title: 'Overdue Dues',
+            value: formatCurrency(overdue),
             icon: AlertCircle,
-            color: 'text-red-600',
-            bgColor: 'bg-red-50',
-            isCurrency: true
+            color: 'rose' as const,
+            trend: 'Critical Attention'
         },
         {
-            title: 'Upcoming Payment',
-            value: upcoming,
+            title: 'Upcoming Dues',
+            value: formatCurrency(upcoming),
             icon: CalendarClock,
-            color: 'text-sky-600',
-            bgColor: 'bg-sky-50',
-            isCurrency: true
+            color: 'amber' as const,
+            trend: 'Projection'
         },
         {
-            title: 'Refunded Students',
-            value: refundedCount,
-            icon: UserX,
-            color: 'text-gray-600',
-            bgColor: 'bg-gray-50',
-            isCurrency: false
-        },
-        {
-            title: 'Refunded Amount',
-            value: refundedAmount,
-            icon: RotateCcw,
-            color: 'text-orange-600',
-            bgColor: 'bg-orange-50',
-            isCurrency: true
-        },
-        {
-            title: 'Defaulter Students',
+            title: 'Defaulters',
             value: defaulters,
             icon: AlertTriangle,
-            color: 'text-rose-600',
-            bgColor: 'bg-rose-50',
-            isCurrency: false
+            color: 'violet' as const,
+            trend: 'Risk Management'
         }
     ]
 
     return (
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-            {stats.map((stat) => (
-                <Card key={stat.title} className="border-none shadow-sm hover:shadow-md transition-shadow">
-                    <CardContent className="p-4 flex items-center gap-3">
-                        <div className={`p-2.5 rounded-xl ${stat.bgColor} shrink-0`}>
-                            <stat.icon className={`h-5 w-5 ${stat.color}`} />
-                        </div>
-                        <div className="overflow-hidden">
-                            <p className={`font-bold text-gray-900 dark:text-white truncate ${stat.isCurrency ? 'text-lg' : 'text-xl'}`}>
-                                {stat.isCurrency ? formatCurrency(stat.value as number) : stat.value}
-                            </p>
-                            <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wide truncate">
-                                {stat.title}
-                            </p>
-                        </div>
-                    </CardContent>
-                </Card>
-            ))}
-        </div>
+        <StatsGrid stats={statsData} columns={5} />
     )
 }

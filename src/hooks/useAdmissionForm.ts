@@ -82,7 +82,7 @@ export const INITIAL_FORM_DATA: StudentAdmissionFormData = {
     receivedBy: '',
 
     // Step 5: Installment Details
-    divideInstallments: 'custom',
+    divideInstallments: 'preset',
     installments: 1,
     payFirstInstallmentNow: 'no',
     installmentPlan: []
@@ -110,6 +110,7 @@ export function useAdmissionForm() {
     // Form data for new course/batch
     const [newCourseData, setNewCourseData] = useState<CourseFormData>({
         name: '',
+        code: '',
         description: '',
         fee: '0',
         registrationFee: '0',
@@ -288,7 +289,7 @@ export function useAdmissionForm() {
                     }
                 })
             }
-            fetchBatches(formData.courseId)
+            fetchBatches()
         }
     }, [formData.courseId, courses, fetchBatches])
 
@@ -479,7 +480,7 @@ export function useAdmissionForm() {
             if (success) {
                 toast.success('Batch created successfully!')
                 setIsAddBatchOpen(false)
-                fetchBatches(formData.courseId)
+                fetchBatches()
             }
         } catch (error) {
             toast.error('Failed to create batch')

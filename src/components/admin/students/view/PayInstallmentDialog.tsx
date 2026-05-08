@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { InstallmentPlanItem } from '@/lib/types'
+import { Installment } from '@/lib/types'
 import { Loader2, Upload } from 'lucide-react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
@@ -15,20 +15,14 @@ import { useRouter } from 'next/navigation'
 interface PayInstallmentDialogProps {
     isOpen: boolean
     onClose: () => void
-    studentId: string
-    installment: InstallmentPlanItem
-    installmentIndex: number
-    allInstallments: InstallmentPlanItem[]
+    installment: Installment
     onSuccess: () => void
 }
 
 export function PayInstallmentDialog({
     isOpen,
     onClose,
-    studentId,
     installment,
-    installmentIndex,
-    allInstallments,
     onSuccess
 }: PayInstallmentDialogProps) {
     const router = useRouter()
@@ -38,7 +32,7 @@ export function PayInstallmentDialog({
         mode: 'cash',
         transactionId: '',
         remark: '',
-        receivedBy: 'Admin' // Should come from auth user in real app
+        receivedBy: 'Admin'
     })
     const [proofFile, setProofFile] = useState<File | null>(null)
 
@@ -47,30 +41,18 @@ export function PayInstallmentDialog({
         setLoading(true)
 
         try {
-            // 1. Create updated plan
-            const updatedPlan = [...allInstallments]
-            updatedPlan[installmentIndex] = {
-                ...updatedPlan[installmentIndex],
-                status: 'paid',
-                paidAmount: installment.amount, // Assuming full payment of installment
-                paymentDate: formData.paymentDate,
-                mode: formData.mode as 'cash' | 'online',
-                utrNo: formData.transactionId,
-                remark: formData.remark,
-                receivedBy: formData.receivedBy,
-                // In a real app, upload proofFile to cloud storage and get URL
-                proofImage: proofFile ? 'uploaded_proof_url_placeholder' : ''
-            }
-
-            // 2. Call API
-            const response = await fetch(`/api/students/${studentId}`, {
+            // Call API to pay installment
+            const response = await fetch(`/api/installments/${installment.id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    installmentPlan: JSON.stringify(updatedPlan),
-                    // Update main status if needed, but the hook/logic usually handles this or we can compute it
-                    // For now, simpler to just persist the plan
-                    isPartPayment: true // Ensure flag is set
+                    paidAmount: Number(installment.amount) - Number(installment.paidAmount), // Pay remaining
+                    paymentDate: formData.paymentDate,
+                    mode: formData.mode,
+                    transactionId: formData.transactionId,
+                    remarks: formData.remark,
+                    receivedBy: formData.receivedBy,
+                    // proofImage logic...
                 })
             })
 

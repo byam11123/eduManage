@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
             )
         }
 
-        const payload = verifyToken(token)
+        const payload = await verifyToken(token)
         if (!payload) {
             return NextResponse.json(
                 { success: false, error: 'Invalid or expired token' },
@@ -32,17 +32,17 @@ export async function GET(request: NextRequest) {
         const status = searchParams.get('status')
         const search = searchParams.get('search')
 
-        // Build the where clause based on user role
-        let whereClause: Record<string, unknown> = {}
+        // Build the where clause based on user organization
+        if (!payload.organizationId) {
+            return NextResponse.json({ success: false, error: 'Organization context missing' }, { status: 400 })
+        }
 
-        // CRITICAL: Branch-level access control
-        if (payload.role === 'super_admin') {
-            // Super admin can see all students, optionally filter by branch
-            if (branchId) {
-                whereClause.branchId = branchId
-            }
-        } else {
-            // Branch users can ONLY see students in their assigned branches
+        let whereClause: Record<string, any> = {
+            branch: { organizationId: payload.organizationId }
+        }
+
+        // Branch-level access control for non-super_admins
+        if (payload.role !== 'super_admin') {
             if (branchId) {
                 // Verify user has access to the requested branch
                 if (!payload.branches.includes(branchId)) {
@@ -56,6 +56,9 @@ export async function GET(request: NextRequest) {
                 // No specific branch requested, show students from all user's branches
                 whereClause.branchId = { in: payload.branches }
             }
+        } else if (branchId) {
+            // Super admin can filter by branch if they want
+            whereClause.branchId = branchId
         }
 
         // Optional filters
@@ -115,7 +118,7 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        const payload = verifyToken(token)
+        const payload = await verifyToken(token)
         if (!payload) {
             return NextResponse.json(
                 { success: false, error: 'Invalid or expired token' },
@@ -198,14 +201,25 @@ export async function POST(request: NextRequest) {
         // 3. Generate IDs
         // Always generate Admission ID for tracking
         const admissionIdData = await generateId('ADMISSION')
-
-        let studentIdData = null
+        let studentIdData: any | null = null
         let studentStatus = 'draft'
 
         if (action === 'submit') {
             // Generate Student ID only on finalize
             studentIdData = await generateId('STUDENT')
             studentStatus = 'active'
+        }
+
+        // Pre-process Installments for Relational Create
+        let installmentsData: any[] = []
+        if (body.installmentPlan) {
+            let plan = body.installmentPlan
+            if (typeof plan === 'string') {
+                try { plan = JSON.parse(plan) } catch (e) { plan = [] }
+            }
+            if (Array.isArray(plan)) {
+                installmentsData = plan
+            }
         }
 
         // 4. Create Record
@@ -227,6 +241,33 @@ export async function POST(request: NextRequest) {
                 branchId: body.branchId,
                 courseId: body.courseId,
                 batchId: body.batchId || null,
+
+                // New Multi-Course Architecture: Create StudentCourse + Installments
+                studentCourses: body.courseId ? {
+                    create: {
+                        courseId: body.courseId,
+                        status: 'ongoing',
+                        totalFee: Number(body.totalAmount) || 0,
+                        discountAmount: Number(body.discountAmount) || 0,
+                        netPayable: Number(body.netPayableFee) || 0,
+                        batches: body.batchId ? {
+                            create: { batchId: body.batchId }
+                        } : undefined,
+                        installments: {
+                            create: installmentsData.map((item: any) => ({
+                                installmentNo: Number(item.installmentNo),
+                                dueDate: item.dueDate ? new Date(item.dueDate) : new Date(),
+                                amount: Number(item.amount) || 0,
+                                paidAmount: Number(item.paidAmount) || 0,
+                                status: item.status || (Number(item.paidAmount) >= Number(item.amount) ? 'paid' : 'pending'),
+                                mode: item.mode || null,
+                                receiptNo: item.receiptNo || null,
+                                remarks: item.remark || null,
+                                paidDate: item.paymentDate ? new Date(item.paymentDate) : (Number(item.paidAmount) > 0 ? new Date() : null)
+                            }))
+                        }
+                    }
+                } : undefined,
 
                 // Basic Info
                 firstName: body.firstName,
@@ -281,12 +322,12 @@ export async function POST(request: NextRequest) {
                 pgPassingYear: body.pgPassingYear,
                 pgPercentage: body.pgPercentage,
 
-                // Financials
+                // Financials (Legacy)
                 totalAmount: Number(body.totalAmount) || 0,
                 discountAmount: Number(body.discountAmount) || 0,
                 netPayableFee: Number(body.netPayableFee) || 0,
                 isPartPayment: body.isPartPayment === 'true' || body.isPartPayment === true,
-                installmentPlan: body.installmentPlan ? JSON.stringify(body.installmentPlan) : null,
+                installmentPlan: body.installmentPlan ? (typeof body.installmentPlan === 'string' ? body.installmentPlan : JSON.stringify(body.installmentPlan)) : null,
                 receivedBy: body.receivedBy
             }
         })

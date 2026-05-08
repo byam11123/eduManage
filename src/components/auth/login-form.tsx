@@ -216,7 +216,7 @@ export function LoginForm() {
       {/* Sign Up Link */}
       <p className="text-center text-sm text-muted-foreground">
         Don't have an account?{' '}
-        <Link href="/?view=signup" className="text-primary font-medium hover:underline">
+        <Link href="/signup" className="text-primary font-medium hover:underline">
           Sign up
         </Link>
       </p>

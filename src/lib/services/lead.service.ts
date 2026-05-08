@@ -3,7 +3,7 @@
 // API service for managing leads
 // ============================================
 
-import type { Lead, ApiResponse, LeadFormData } from '@/lib/types'
+import type { Lead, ApiResponse, LeadFormData, LeadSource, LeadStage } from '@/lib/types'
 
 // Mock data
 let MOCK_LEADS: Lead[] = [
@@ -109,9 +109,11 @@ export const leadService = {
         const index = MOCK_LEADS.findIndex(l => l.id === id)
         if (index === -1) throw new Error('Lead not found')
 
-        const updatedLead = {
+        const updatedLead: Lead = {
             ...MOCK_LEADS[index],
             ...data,
+            source: data.source ? data.source as LeadSource : MOCK_LEADS[index].source,
+            stage: data.stage ? data.stage as LeadStage : MOCK_LEADS[index].stage,
             value: data.value ? parseFloat(data.value) : MOCK_LEADS[index].value,
             updatedAt: new Date().toISOString()
         }

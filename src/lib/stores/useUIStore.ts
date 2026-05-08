@@ -29,6 +29,8 @@ interface UIStore {
     setSidebarOpen: (open: boolean) => void
     setSidebarCollapsed: (collapsed: boolean) => void
     toggleSidebarItem: (item: string) => void
+    toggleSidebarCollapsed: () => void
+    closeSidebar: () => void
 
     openModal: (type: ModalType, data?: unknown) => void
     closeModal: () => void
@@ -59,6 +61,8 @@ export const useUIStore = create<UIStore>()((set) => ({
             ? state.sidebarExpandedItems.filter((i) => i !== item)
             : [...state.sidebarExpandedItems, item]
     })),
+    toggleSidebarCollapsed: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
+    closeSidebar: () => set({ sidebarOpen: false }),
 
     // Modal Actions
     openModal: (type, data = null) => set({ activeModal: type, modalData: data }),

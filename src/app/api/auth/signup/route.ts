@@ -8,12 +8,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { fullName, email, password, otp } = body
 
-    console.log('=== SIGNUP REQUEST ====')
-    console.log('Full Name:', fullName)
-    console.log('Email:', email)
-    console.log('OTP:', otp)
-    console.log('Password length:', password?.length)
-
     // Validation
     if (!fullName || fullName.trim().length < 2) {
       return NextResponse.json(
@@ -30,7 +24,6 @@ export async function POST(request: NextRequest) {
     }
 
     if (!password || !validatePassword(password)) {
-      console.log('Password validation failed')
       return NextResponse.json(
         {
           success: false,
@@ -41,14 +34,12 @@ export async function POST(request: NextRequest) {
     }
 
     if (!otp || otp.length !== 6) {
-      console.log('OTP validation failed - length:', otp?.length)
       return NextResponse.json(
         { success: false, error: 'OTP is required and must be 6 digits' },
         { status: 400 }
       )
     }
 
-    console.log('All validations passed, checking OTP in database...')
 
     // Check if OTP is verified
     const otpRecord = await db.otp.findFirst({
@@ -65,49 +56,27 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    console.log('OTP Record found:', otpRecord ? 'Yes' : 'No')
-    if (otpRecord) {
-      console.log('OTP details:', {
-        id: otpRecord.id,
-        email: otpRecord.email,
-        code: otpRecord.code,
-        verified: otpRecord.verified,
-        expiresAt: otpRecord.expiresAt,
-        currentTime: new Date().toISOString(),
-        isExpired: new Date() > otpRecord.expiresAt,
-      })
-    }
-
     if (!otpRecord) {
-      console.log('OTP verification failed: No valid OTP found')
       return NextResponse.json(
         { success: false, error: 'Invalid or expired OTP. Please request a new OTP.' },
         { status: 400 }
       )
     }
 
-    console.log('OTP verified successfully, checking if user exists...')
-
     // Check if user already exists
-    console.log('Checking existing user...')
     const existingUser = await db.user.findUnique({
       where: { email: email.toLowerCase() },
     })
 
     if (existingUser) {
-      console.log('User already exists:', existingUser.email)
       return NextResponse.json(
         { success: false, error: 'Email already registered' },
         { status: 400 }
       )
     }
 
-    console.log('Hashing password...')
-    // Hash password
     const hashedPassword = await hashPassword(password)
-    console.log('Password hashed successfully')
 
-    console.log('Creating new user in DB...')
     // Create user
     let user
     try {
@@ -127,23 +96,19 @@ export async function POST(request: NextRequest) {
           createdAt: true,
         },
       })
-      console.log('User created:', user.id)
     } catch (dbError) {
       console.error('DB User Create Error:', dbError)
       throw dbError
     }
 
     // Delete used OTP
-    console.log('Deleting OTP...')
     await db.otp.deleteMany({
       where: { email },
     })
 
-    console.log('Sending welcome email...')
     // Send welcome email
     try {
       await sendWelcomeEmail(user.email, user.fullName)
-      console.log('Welcome email sent')
     } catch (emailError) {
       console.error('Email sending failed (non-blocking):', emailError)
     }

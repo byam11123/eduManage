@@ -16,28 +16,13 @@ export async function POST(req: Request) {
             return NextResponse.json({ success: false, error: 'Name and courseId are required' }, { status: 400 })
         }
 
-        // Verify ownership
-        const user = await db.user.findUnique({
-            where: { id: auth.userId },
-            include: {
-                ownedOrganization: true,
-                organizations: {
-                    include: {
-                        organization: true
-                    }
-                }
-            }
-        })
-
-        const organization = user?.ownedOrganization || user?.organizations[0]?.organization
-
-        if (!organization) {
-            return NextResponse.json({ success: false, error: 'Organization not found' }, { status: 404 })
+        if (!auth.organizationId) {
+            return NextResponse.json({ success: false, error: 'Organization context missing' }, { status: 400 })
         }
 
         // Check if course belongs to org
-        const course = await db.course.findUnique({
-            where: { id: courseId, organizationId: organization.id }
+        const course = await db.course.findFirst({
+            where: { id: courseId, organizationId: auth.organizationId }
         })
 
         if (!course) {
@@ -75,38 +60,19 @@ export async function DELETE(req: Request) {
             return NextResponse.json({ success: false, error: 'Subject ID is required' }, { status: 400 })
         }
 
-        // Verify ownership logic simplified: Check if subject->course->org belongs to user
-        // Ideally we do a deep check. For now, we trust database consistency + simple check if we had time.
-        // But let's do it properly.
+        if (!auth.organizationId) {
+            return NextResponse.json({ success: false, error: 'Organization context missing' }, { status: 400 })
+        }
 
         const subject = await db.subject.findUnique({
             where: { id },
             include: {
-                course: {
-                    include: {
-                        organization: true
-                    }
-                }
+                course: true
             }
         })
 
-        if (!subject) {
-            return NextResponse.json({ success: false, error: 'Subject not found' }, { status: 404 })
-        }
-
-        // Check User Org matches Subject Org
-        // We need to fetch user's org id
-        const user = await db.user.findUnique({
-            where: { id: auth.userId },
-            include: {
-                ownedOrganization: true,
-                organizations: { include: { organization: true } }
-            }
-        })
-        const userOrgId = user?.ownedOrganization?.id || user?.organizations[0]?.organization?.id
-
-        if (subject.course.organization.id !== userOrgId) {
-            return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 403 })
+        if (!subject || subject.course.organizationId !== auth.organizationId) {
+            return NextResponse.json({ success: false, error: 'Subject not found or access denied' }, { status: 403 })
         }
 
         await db.subject.delete({

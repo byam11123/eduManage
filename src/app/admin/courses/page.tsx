@@ -29,6 +29,7 @@ import type { Course, CourseFormData } from '@/lib/types'
 const defaultFormData: CourseFormData = {
     // Basic Info
     name: '',
+    code: '',
     description: '',
     courseType: '',
     mode: 'offline',
@@ -87,6 +88,7 @@ export default function CoursesPage() {
         setFormData({
             // Basic Info
             name: course.name,
+            code: course.code || '',
             description: course.description || '',
             courseType: (course as any).courseType || '',
             mode: (course as any).mode || 'offline',

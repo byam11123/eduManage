@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
+import * as jose from 'jose'
 
 // Password hashing
 export async function hashPassword(password: string): Promise<string> {
@@ -49,6 +49,7 @@ export function isValidEmail(email: string): boolean {
 
 // JWT Token utilities
 const JWT_SECRET = process.env.NEXTAUTH_SECRET || 'your-secret-key-change-in-production'
+const JWT_SECRET_ENCODED = new TextEncoder().encode(JWT_SECRET)
 const JWT_EXPIRY = '7d' // Token expires in 7 days
 
 export interface JWTPayload {
@@ -56,20 +57,26 @@ export interface JWTPayload {
   email: string
   role: string
   branches: string[]
+  organizationId?: string
   defaultBranchId?: string
   iat?: number
   exp?: number
 }
 
 // Sign JWT token
-export function signToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRY })
+export async function signToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): Promise<string> {
+  return await new jose.SignJWT({ ...payload as any })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime(JWT_EXPIRY)
+    .sign(JWT_SECRET_ENCODED)
 }
 
 // Verify JWT token
-export function verifyToken(token: string): JWTPayload | null {
+export async function verifyToken(token: string): Promise<JWTPayload | null> {
   try {
-    return jwt.verify(token, JWT_SECRET) as JWTPayload
+    const { payload } = await jose.jwtVerify(token, JWT_SECRET_ENCODED)
+    return payload as unknown as JWTPayload
   } catch (error) {
     console.error('JWT verification error:', error)
     return null
@@ -103,7 +110,7 @@ export async function verifyAuth(req: Request) {
     return { success: false }
   }
 
-  const payload = verifyToken(token)
+  const payload = await verifyToken(token)
   if (!payload) {
     return { success: false }
   }
@@ -113,6 +120,7 @@ export async function verifyAuth(req: Request) {
     userId: payload.userId,
     email: payload.email,
     role: payload.role,
-    branches: payload.branches
+    branches: payload.branches,
+    organizationId: payload.organizationId
   }
 }

@@ -26,9 +26,7 @@ export async function POST(request: NextRequest) {
     // Find the most recent valid OTP (not yet verified and not expired) - case-insensitive email
     const otpRecord = await db.otp.findFirst({
       where: {
-        email: {
-          equals: email,  // Case-sensitive for now or rely on consistent casing
-        },
+        email: email.toLowerCase(),
         code: otp,
         expiresAt: {
           gt: new Date(), // Not expired

@@ -7,7 +7,7 @@ import { extractToken, verifyToken } from '@/lib/auth-utils'
 async function verifyAuth(request: NextRequest) {
     const token = extractToken(request)
     if (!token) return null
-    return verifyToken(token)
+    return await verifyToken(token)
 }
 
 export async function GET(
@@ -31,11 +31,26 @@ export async function GET(
                 branch: {
                     select: { id: true, name: true }
                 },
+                // Legacy fields (keep for fallback)
                 course: {
                     select: { id: true, name: true }
                 },
                 batch: {
                     select: { id: true, name: true }
+                },
+                // New Multi-Course Data
+                studentCourses: {
+                    include: {
+                        course: true,
+                        batches: {
+                            include: {
+                                batch: true
+                            }
+                        },
+                        installments: {
+                            orderBy: { installmentNo: 'asc' }
+                        }
+                    }
                 }
             }
         })
@@ -130,8 +145,32 @@ export async function PATCH(
         if (data.installmentPlan !== undefined) {
             // Receipt Generation Logic (Preserved from previous step)
             try {
-                const newPlan = data.installmentPlan ? JSON.parse(data.installmentPlan) : []
-                const oldPlan = existingStudent.installmentPlan ? JSON.parse(existingStudent.installmentPlan) : []
+                let newPlan: any[] = []
+                if (Array.isArray(data.installmentPlan)) {
+                    newPlan = data.installmentPlan
+                } else if (typeof data.installmentPlan === 'string') {
+                    try {
+                        // Check if it's "[object Object]" which means it was coerced string
+                        if (data.installmentPlan.startsWith('[object')) {
+                            newPlan = [] // Invalid
+                        } else {
+                            newPlan = JSON.parse(data.installmentPlan)
+                        }
+                    } catch (e) {
+                        newPlan = []
+                    }
+                }
+
+                let oldPlan: any[] = []
+                if (existingStudent.installmentPlan) {
+                    try {
+                        oldPlan = typeof existingStudent.installmentPlan === 'string'
+                            ? JSON.parse(existingStudent.installmentPlan)
+                            : existingStudent.installmentPlan
+                    } catch (e) {
+                        oldPlan = []
+                    }
+                }
 
                 if (Array.isArray(newPlan)) {
                     for (let i = 0; i < newPlan.length; i++) {
@@ -173,6 +212,14 @@ export async function PATCH(
         if (data.installmentMode !== undefined) {
             data.installmentMode = data.installmentMode || null
         }
+
+        // Prevent "Unknown argument" errors if Prisma Client is out of sync
+        // TODO: Remove this once admission form is updated to use StudentCourse relation
+        // and Prisma Client is regenerated successfully
+        if ('courseId' in data) delete data.courseId
+        if ('batchId' in data) delete data.batchId
+        if ('branchId' in data) delete data.branchId
+        if ('action' in data) delete data.action
 
         const updatedStudent = await db.student.update({
             where: { id },

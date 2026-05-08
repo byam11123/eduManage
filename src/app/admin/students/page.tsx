@@ -1,29 +1,18 @@
-// ============================================
-// STUDENTS PAGE
-// Thin wrapper using modular components and hooks
-// ============================================
-
 'use client'
 
 import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Plus, Upload, Megaphone } from 'lucide-react'
+import { Plus, Upload, Megaphone, Users, ChevronLeft, ChevronRight, FileText } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-
-// Modular components
+import { PageHeader } from '@/components/shared/PageHeader'
 import { StudentList, StudentFilters, StudentStats, DeleteStudentDialog } from '@/components/admin/students'
-
-// Custom hooks
 import { useStudents, useCourses, useBranches } from '@/hooks'
-
-// Types
 import type { Student } from '@/lib/types'
 
 export default function StudentsPage() {
     const router = useRouter()
-    // Custom hooks for data
     const {
         filteredStudents,
         loading,
@@ -35,11 +24,9 @@ export default function StudentsPage() {
     const { courses } = useCourses()
     const { branches } = useBranches()
 
-    // Deletion states
     const [isDeleteOpen, setIsDeleteOpen] = useState(false)
     const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
 
-    // Handlers
     const handleEdit = (student: Student) => {
         router.push(`/admin/students/${student.id}/edit`)
     }
@@ -62,54 +49,54 @@ export default function StudentsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50/50 dark:bg-gray-900 p-6 space-y-6">
-            {/* Breadcrumb */}
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-                <span className="text-indigo-600 font-medium">Students</span>
-                <span>›</span>
-                <span>Student list</span>
-            </div>
+        <div className="p-8 space-y-8 bg-gray-50/30 dark:bg-gray-950 min-h-screen">
+            <PageHeader 
+                title="Student Directory"
+                description="Manage student records, track academic progress, and monitor fee collection across all batches."
+                actions={[
+                    { 
+                        label: 'Announcement', 
+                        icon: Megaphone, 
+                        variant: 'outline',
+                        className: 'bg-violet-600 text-white hover:bg-violet-700 hover:text-white border-none shadow-lg shadow-violet-100 dark:shadow-none'
+                    },
+                    { label: 'Bulk Upload', icon: Upload, variant: 'outline' },
+                    { label: 'Add New Student', icon: Plus, variant: 'default', href: '/admin/students/add' }
+                ]}
+            />
 
-            {/* Stats Grid */}
             <StudentStats {...stats} />
 
-            {/* Action Bar */}
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col md:flex-row gap-4 items-center justify-between">
-                <div className="flex items-center gap-2 w-full md:w-auto">
-                    <Link href="/admin/students/add">
-                        <Button className="h-9 gap-2 bg-indigo-600 hover:bg-indigo-700 text-white">
-                            <Plus className="h-4 w-4" />
-                            ADD STUDENT
-                        </Button>
-                    </Link>
-                    <Button variant="outline" size="sm" className="h-9 gap-2">
-                        <Upload className="h-4 w-4" />
-                        UPLOAD DATA
-                    </Button>
-                </div>
-
-                <div className="flex items-center gap-2 w-full md:w-auto">
-                    <Button variant="outline" size="sm" className="h-9 gap-2 bg-indigo-500 text-white hover:bg-indigo-600 hover:text-white border-transparent">
-                        <Megaphone className="h-4 w-4" />
-                        ANNOUNCEMENT
-                    </Button>
+            {/* Filter Bar */}
+            <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center justify-between">
+                <div className="w-full lg:flex-1">
+                    <Card className="border-none shadow-xl shadow-gray-200/50 dark:shadow-none bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
+                        <CardContent className="p-4">
+                            <StudentFilters
+                                onRefresh={fetchStudents}
+                                loading={loading}
+                                courses={courses}
+                                branches={branches}
+                            />
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
 
-            {/* Main Content */}
-            <Card className="border-none shadow-sm">
-                <CardContent className="p-0">
-                    {/* Filters */}
-                    <div className="p-4 border-b border-gray-100 dark:border-gray-800">
-                        <StudentFilters
-                            onRefresh={fetchStudents}
-                            loading={loading}
-                            courses={courses}
-                            branches={branches}
-                        />
+            {/* Main List Section */}
+            <Card className="border-none shadow-2xl shadow-gray-200/50 dark:shadow-none bg-white dark:bg-gray-900 rounded-3xl overflow-hidden">
+                <div className="p-8 border-b border-gray-50 dark:border-gray-800 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-200 dark:shadow-none">
+                            <Users className="h-5 w-5" />
+                        </div>
+                        <div>
+                            <h3 className="text-xl font-black tracking-tight">Student Ledger</h3>
+                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-tighter mt-0.5">Live academic database</p>
+                        </div>
                     </div>
-
-                    {/* Student List */}
+                </div>
+                <CardContent className="p-0">
                     <div className="overflow-x-auto">
                         <StudentList
                             students={filteredStudents}
@@ -121,24 +108,22 @@ export default function StudentsPage() {
                     </div>
 
                     {/* Pagination */}
-                    <div className="p-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end text-sm text-gray-500 gap-4">
-                        <div className="flex items-center gap-2">
-                            <span>Rows per page:</span>
-                            <select className="bg-transparent border rounded p-1">
-                                <option>10</option>
-                                <option>20</option>
-                                <option>50</option>
-                            </select>
+                    <div className="p-8 border-t border-gray-50 dark:border-gray-800 flex items-center justify-between">
+                        <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+                            Showing {filteredStudents.length} Students
+                        </p>
+                        <div className="flex gap-2">
+                            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-gray-400" disabled>
+                                <ChevronLeft className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-gray-400" disabled>
+                                <ChevronRight className="h-4 w-4" />
+                            </Button>
                         </div>
-                        <span>
-                            {filteredStudents.length > 0 ? `1-${Math.min(10, filteredStudents.length)}` : '0-0'} of {filteredStudents.length}
-                        </span>
                     </div>
                 </CardContent>
             </Card>
-            {/* Stats Grid */}
 
-            {/* Deletion Dialog */}
             <DeleteStudentDialog
                 open={isDeleteOpen}
                 onOpenChange={setIsDeleteOpen}

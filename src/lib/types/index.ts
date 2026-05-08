@@ -12,10 +12,25 @@ export interface User {
     fullName: string
     email: string
     role: string
+    organizationId?: string
+    organization?: {
+        id: string
+        name: string
+        logo?: string
+        slug: string
+    } | null
     image?: string
     isVerified: boolean
-    branches: string[]
+    branches: {
+        id: string
+        name: string
+        isDefault: boolean
+    }[]
+    permissions?: string[]
     defaultBranchId?: string
+    address?: string
+    phone?: string
+    status: string
     createdAt?: string
 }
 
@@ -53,6 +68,9 @@ export interface Branch {
     isActive: boolean
     organizationId: string
     createdAt: string
+    _count?: {
+        students: number
+    }
 }
 
 // ===========================================
@@ -69,15 +87,23 @@ export interface Subject {
 export interface Course {
     id: string
     name: string
+    code: string
     description?: string
     fee: number
     feeDescription?: string
     durationYears: number
     durationMonths: number
     maxInstallments: number
-    installmentAmounts?: string | string[] // JSON string in DB, usually string[] in frontend
+    installmentAmounts?: string // JSON string in DB
+    courseType?: string
+    mode: 'offline' | 'online' | 'hybrid'
+    registrationFee: number
+    discountAllowed: boolean
+    discountPercentage: number
+    eligibility?: string
     status: 'active' | 'inactive'
     organizationId: string
+    showInAdmissionForm: boolean
     subjects?: Subject[]
     students?: Student[]
     createdAt: string
@@ -87,7 +113,9 @@ export interface Course {
 export interface CourseFormData {
     // Basic Info
     name: string
+    code: string
     description: string
+    organizationId?: string
     courseType: string // 'academic' | 'skill' | 'certification'
     mode: string // 'offline' | 'online' | 'hybrid'
     // Fee Structure
@@ -127,7 +155,7 @@ export interface Student {
     country?: string
     zipCode?: string
     imageUrl?: string
-    status: 'active' | 'inactive' | 'graduated' | 'dropped'
+    status: 'active' | 'inactive' | 'graduated' | 'dropped' | 'draft'
     paymentStatus: 'paid' | 'pending' | 'overdue' | 'partial'
     enrollmentDate?: string
     fathersName?: string
@@ -142,6 +170,28 @@ export interface Student {
     district?: string
     schoolCollege?: string
     referredBy?: string
+    
+    // Qualification Fields
+    highestQualification?: string
+    hsSchoolName?: string
+    hsBoard?: string
+    hsPassingYear?: string
+    hsPercentage?: string
+    hssSchoolName?: string
+    hssBoard?: string
+    hssStream?: string
+    hssPassingYear?: string
+    hssPercentage?: string
+    gradCollegeName?: string
+    gradUniversity?: string
+    gradDegree?: string
+    gradPassingYear?: string
+    gradPercentage?: string
+    pgCollegeName?: string
+    pgUniversity?: string
+    pgDegree?: string
+    pgPassingYear?: string
+    pgPercentage?: string
 
     // IDs
     admissionDisplayId: string
@@ -168,8 +218,70 @@ export interface Student {
     branch?: Branch
     course?: Course
     batch?: Batch
+
+    // New Multi-Course Relation
+    studentCourses?: StudentCourse[]
+
     createdAt: string
     updatedAt: string
+}
+
+export interface UseStudentsReturn {
+    students: Student[]
+    filteredStudents: Student[]
+    selectedStudent: Student | null
+    loading: boolean
+    saving: boolean
+    fetchStudents: (params?: { branchId?: string; courseId?: string; batchId?: string }) => Promise<void>
+    fetchStudentById: (id: string) => Promise<Student | null>
+    createStudent: (data: StudentFormData) => Promise<boolean>
+    updateStudent: (id: string, data: Partial<StudentFormData>) => Promise<boolean>
+    deleteStudent: (id: string) => Promise<boolean>
+    selectStudent: (student: Student | null) => void
+    stats: {
+        total: number
+        received: number
+        cash: number
+        online: number
+        unknown: number
+        overdue: number
+        upcoming: number
+        refundedCount: number
+        refundedAmount: number
+        defaulters: number
+    }
+}
+
+export interface Installment {
+    id: string
+    installmentNo: number
+    dueDate: string
+    amount: number
+    paidAmount: number
+    paidDate?: string
+    status: 'pending' | 'paid' | 'partial' | 'due'
+    mode?: string
+    receiptNo?: string
+    remarks?: string
+}
+
+export interface StudentCourseBatch {
+    id: string
+    batchId: string
+    batch: Batch
+}
+
+export interface StudentCourse {
+    id: string
+    courseId: string
+    course: Course
+    status: 'ongoing' | 'completed' | 'dropped'
+    totalFee: number
+    discountAmount: number
+    netPayable: number
+    installments: Installment[]
+    batches: StudentCourseBatch[]
+    joinedAt: string
 }
 
 export interface InstallmentPlanItem {
@@ -320,12 +432,15 @@ export interface Batch {
 
 export interface BatchFormData {
     name: string
-    description: string
+    description?: string
     startDate: string
-    endDate: string
+    endDate?: string
     startTime: string
     endTime: string
     courseId: string
+    status?: string
+    code?: string
+    maxStudents?: number
 }
 
 // ===========================================
@@ -531,6 +646,8 @@ export interface Staff {
     fathersPhone?: string
     address?: string
     profileImage?: string
+    fullName: string
+    branchName?: string
 
     // Official Info
     department?: string

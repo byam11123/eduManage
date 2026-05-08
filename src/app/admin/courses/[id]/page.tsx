@@ -90,6 +90,7 @@ export default function CourseDetailsPage() {
     const [isDeleteOpen, setIsDeleteOpen] = useState(false)
     const [editFormData, setEditFormData] = useState<CourseFormData>({
         name: '',
+        code: '',
         description: '',
         courseType: '',
         mode: 'offline',
@@ -171,6 +172,7 @@ export default function CourseDetailsPage() {
                 setCourse(data)
                 setEditFormData({
                     name: data.name,
+                    code: data.code || '',
                     description: data.description || '',
                     courseType: data.courseType || '',
                     mode: data.mode || 'offline',

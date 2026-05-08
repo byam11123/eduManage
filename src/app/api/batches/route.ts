@@ -1,11 +1,21 @@
-
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { verifyAuth } from '@/lib/auth-utils'
 
 // GET: List all batches
 export async function GET(req: Request) {
     try {
+        const auth = await verifyAuth(req)
+        if (!auth.success || !auth.organizationId) {
+            return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+        }
+
         const batches = await db.batch.findMany({
+            where: {
+                course: {
+                    organizationId: auth.organizationId
+                }
+            },
             include: {
                 course: {
                     select: { name: true }
@@ -29,6 +39,11 @@ export async function GET(req: Request) {
 // POST: Create a new batch
 export async function POST(req: Request) {
     try {
+        const auth = await verifyAuth(req)
+        if (!auth.success || !auth.organizationId) {
+            return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+        }
+
         const body = await req.json()
         const {
             name,
@@ -45,6 +60,15 @@ export async function POST(req: Request) {
                 { success: false, error: 'Missing required fields' },
                 { status: 400 }
             )
+        }
+
+        // Verify course belongs to the organization
+        const course = await db.course.findFirst({
+            where: { id: courseId, organizationId: auth.organizationId }
+        })
+
+        if (!course) {
+            return NextResponse.json({ success: false, error: 'Course not found or access denied' }, { status: 404 })
         }
 
         const batch = await db.batch.create({

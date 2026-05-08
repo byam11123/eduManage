@@ -15,6 +15,9 @@ model User {
   email         String   @unique
   fullName      String
   password      String
+  phone         String?
+  status        String   @default("active") // active, inactive
+  address       String?
   isVerified    Boolean  @default(false)
   image         String?
   googleId      String?  @unique
@@ -28,6 +31,7 @@ model User {
   ownedOrganization  Organization?          @relation("OrganizationOwner")
   organizations    OrganizationMember[]
   userBranches     UserBranch[]
+  permissions      ModulePermission[]
 
   @@index([email])
   @@index([googleId])
@@ -109,6 +113,7 @@ model Organization {
   courses    Course[]
   enquiries  Enquiry[]
   walletTransactions WalletTransaction[]
+  modulePermissions ModulePermission[]
 
   @@index([slug])
   @@index([ownerId])
@@ -175,6 +180,15 @@ model UserBranch {
   id            String   @id @default(cuid())
   role          String   @default("user") // super_admin, branch_admin, user
   isDefault     Boolean  @default(false)
+  
+  // Staff Details (Branch Specific)
+  employeeCode  String?
+  designation   String?
+  department    String?
+  joiningDate   DateTime?
+  salaryType    String?  // monthly, hourly, fixed
+  salaryAmount  Float?
+  isActive      Boolean  @default(true)
 
   // Relations
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -274,10 +288,15 @@ model Student {
   // Relations - IMPORTANT: Each student belongs to ONE branch
   branch        Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
   branchId      String
+  
+  // Legacy fields (Migration Source) - To be removed after migration
   course        Course?  @relation(fields: [courseId], references: [id])
   courseId      String?
   batch         Batch?   @relation(fields: [batchId], references: [id])
   batchId       String?
+  
+  // New Multi-Course Architecture
+  studentCourses StudentCourse[]
 
   receipts      Receipt[]
 
@@ -290,6 +309,70 @@ model Student {
   // Unique Constraints for ID System
   @@unique([instituteCode, studentYear, studentSequence])
   @@unique([admissionYear, admissionSequence])
+}
+
+// Relational Financial Models
+model StudentCourse {
+  id        String   @id @default(cuid())
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId String
+  course    Course   @relation(fields: [courseId], references: [id])
+  courseId  String
+
+  status    String   @default("ongoing") // ongoing, completed, dropped
+  
+  // Financials (Specific to this enrollment)
+  totalFee        Float    @default(0)
+  discountAmount  Float    @default(0)
+  netPayable      Float    @default(0)
+  
+  // Relations
+  installments    Installment[]
+  batches         StudentCourseBatch[]
+
+  joinedAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([studentId, courseId])
+  @@index([studentId])
+  @@index([courseId])
+}
+
+model StudentCourseBatch {
+  id              String        @id @default(cuid())
+  studentCourse   StudentCourse @relation(fields: [studentCourseId], references: [id], onDelete: Cascade)
+  studentCourseId String
+  batch           Batch         @relation(fields: [batchId], references: [id])
+  batchId         String
+
+  @@unique([studentCourseId, batchId])
+  @@index([studentCourseId])
+  @@index([batchId])
+}
+
+model Installment {
+  id              String        @id @default(cuid())
+  studentCourse   StudentCourse @relation(fields: [studentCourseId], references: [id], onDelete: Cascade)
+  studentCourseId String
+  
+  installmentNo   Int
+  dueDate         DateTime
+  amount          Float
+  
+  // Payment Status
+  paidDate        DateTime?
+  paidAmount      Float    @default(0)
+  status          String   @default("pending") // pending, paid, partial, due
+  mode            String?  // cash, online, upi, cheque
+  receiptNo       String?
+  transactionId   String?
+  remarks         String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([studentCourseId])
+    @@index([status])
 }
 
 // Course model for coaching management
@@ -319,6 +402,7 @@ model Course {
   organizationId  String
   subjects        Subject[]
   students        Student[]
+  studentCourses  StudentCourse[] // New Relation
   batches         Batch[]
   enquiries       Enquiry[]
 
@@ -338,6 +422,7 @@ model Batch {
   course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseId  String
   students  Student[]
+  studentCourseBatches StudentCourseBatch[] // New Relation
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -431,4 +516,19 @@ model Post {
 model Counter {
   key   String @id
   value Int
+}
+
+model ModulePermission {
+  id             String       @id @default(cuid())
+  userId         String
+  organizationId String
+  module         String       // dashboard, students, fees, enquiry, staff, attendance, courses, branches, settings
+  canAccess      Boolean      @default(false)
+  
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId, module])
+  @@index([userId])
+  @@index([organizationId])
 }

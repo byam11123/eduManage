@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
 
     // Check if email already exists
     const existingUser = await db.user.findUnique({
-      where: { email },
+      where: { email: email.toLowerCase() },
     })
 
     if (existingUser) {
@@ -50,13 +50,13 @@ export async function POST(request: NextRequest) {
 
     // Delete any previous OTPs for this email
     await db.otp.deleteMany({
-      where: { email },
+      where: { email: email.toLowerCase() },
     })
 
     // Save OTP to database
     await db.otp.create({
       data: {
-        email,
+        email: email.toLowerCase(),
         code: otp,
         expiresAt,
       },

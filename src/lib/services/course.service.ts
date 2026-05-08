@@ -13,7 +13,7 @@ export const courseService = {
      */
     async getAll(): Promise<ApiResponse<Course[]>> {
         try {
-            const res = await fetch(BASE_URL)
+            const res = await fetch(BASE_URL, { cache: 'no-store' })
             const data = await res.json()
             return {
                 success: data.success,

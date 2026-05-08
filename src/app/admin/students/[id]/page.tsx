@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, use } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { ArrowLeft, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -18,14 +18,24 @@ import { DeleteStudentDialog } from '@/components/admin/students'
 
 export default function StudentDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const router = useRouter()
+    const searchParams = useSearchParams()
+    const pathname = usePathname()
+
     const { fetchStudentById, deleteStudent } = useStudents()
     const [student, setStudent] = useState<any>(null)
     const [loading, setLoading] = useState(true)
     const [isDeleteOpen, setIsDeleteOpen] = useState(false)
     const [deleting, setDeleting] = useState(false)
+    const [activeTab, setActiveTab] = useState('profile')
 
     // Unwrap params using React.use()
     const resolvedParams = use(params)
+
+    // Sync tab from URL
+    useEffect(() => {
+        const tab = searchParams.get('tab')
+        if (tab) setActiveTab(tab)
+    }, [searchParams])
 
     useEffect(() => {
         const loadStudent = async () => {
@@ -37,6 +47,11 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
         }
         loadStudent()
     }, [resolvedParams.id, fetchStudentById])
+
+    const handleTabChange = (value: string) => {
+        setActiveTab(value)
+        router.replace(`${pathname}?tab=${value}`, { scroll: false })
+    }
 
     const handleEdit = () => {
         router.push(`/admin/students/${student.id}/edit`)
@@ -113,7 +128,7 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
 
                 {/* Right Content - Tabs (9 cols) */}
                 <div className="lg:col-span-9">
-                    <Tabs defaultValue="profile" className="w-full">
+                    <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
                         <TabsList className="bg-transparent border-b border-gray-200 w-full justify-start rounded-none h-auto p-0 mb-6 gap-6 overflow-x-auto">
                             <TabsTrigger
                                 value="profile"

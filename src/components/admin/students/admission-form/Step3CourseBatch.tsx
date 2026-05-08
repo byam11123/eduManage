@@ -1,6 +1,6 @@
 'use client'
 
-import { Plus } from 'lucide-react'
+import { Plus, GraduationCap, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import {
@@ -19,6 +19,7 @@ import type {
     CourseFormData,
     BatchFormData
 } from '@/lib/types'
+import { cn } from '@/lib/utils'
 
 interface Step3Props {
     formData: StudentAdmissionFormData
@@ -57,62 +58,80 @@ export function Step3CourseBatch({
     onAddCourse,
     onAddBatch
 }: Step3Props) {
-    return (
-        <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
-            <div className="space-y-4">
-                <h3 className="text-md font-semibold text-gray-700 dark:text-gray-300 border-b pb-2">Select Batch & Course</h3>
+    const inputClasses = "h-14 rounded-2xl bg-gray-50 dark:bg-gray-900 border-none font-bold px-6 text-base focus:ring-2 focus:ring-indigo-500/20 transition-all"
+    const labelClasses = "text-[11px] font-black uppercase tracking-[0.2em] text-indigo-600 mb-2 block"
+    const sectionHeaderClasses = "text-[13px] font-black uppercase tracking-[0.3em] text-gray-400 border-b border-gray-100 dark:border-gray-800 pb-4 mb-8 flex items-center gap-3"
 
-                <div className="space-y-6 pt-2">
+    return (
+        <div className="space-y-12 animate-in fade-in slide-in-from-right-4 duration-500">
+            <div className="space-y-8">
+                <h3 className={sectionHeaderClasses}>
+                    <span className="h-2 w-2 rounded-full bg-indigo-600" />
+                    Course & Batch Selection
+                </h3>
+
+                <div className="space-y-10">
                     {/* Course Selection */}
-                    <div className="flex items-end gap-3 max-w-xl">
-                        <div className="space-y-2 w-full">
-                            <Label htmlFor="courseId">Course *</Label>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-end gap-5 max-w-2xl bg-white dark:bg-gray-900 p-8 rounded-[2.5rem] shadow-xl shadow-gray-100 dark:shadow-none border border-gray-50 dark:border-gray-800">
+                        <div className="space-y-2 flex-1 w-full">
+                            <div className="flex items-center gap-2 mb-2">
+                                <GraduationCap className="h-4 w-4 text-indigo-600" />
+                                <Label htmlFor="courseId" className="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-600">Select Course *</Label>
+                            </div>
                             <Select value={formData.courseId} onValueChange={(val) => onSelectChange('courseId', val)}>
-                                <SelectTrigger className="h-12"><SelectValue placeholder="Select Course" /></SelectTrigger>
-                                <SelectContent>
+                                <SelectTrigger className={cn(inputClasses, "bg-gray-50/50 dark:bg-gray-950/50")}><SelectValue placeholder="Select Course" /></SelectTrigger>
+                                <SelectContent className="rounded-2xl border-none shadow-2xl p-2">
                                     {courses.map(c => (
-                                        <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                        <SelectItem key={c.id} value={c.id} className="rounded-xl py-3 font-bold">{c.name}</SelectItem>
                                     ))}
-                                    {courses.length === 0 && <SelectItem value="disabled" disabled>No courses available</SelectItem>}
+                                    {courses.length === 0 && <SelectItem value="disabled" disabled>No courses found</SelectItem>}
                                 </SelectContent>
                             </Select>
                         </div>
                         <Button
                             type="button"
                             size="icon"
-                            className="h-12 w-12 bg-indigo-600 hover:bg-indigo-700 flex-shrink-0"
+                            className="h-14 w-14 rounded-2xl bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-100 dark:shadow-none transition-all active:scale-90"
                             onClick={() => setIsAddCourseOpen(true)}
                         >
-                            <Plus className="h-5 w-5" />
+                            <Plus className="h-6 w-6" />
                         </Button>
                     </div>
 
                     {/* Batch Selection */}
-                    <div className="flex items-end gap-3 max-w-xl">
-                        <div className="space-y-2 w-full">
-                            <Label htmlFor="batchId">Batch *</Label>
+                    <div className={cn(
+                        "flex flex-col sm:flex-row items-start sm:items-end gap-5 max-w-2xl p-8 rounded-[2.5rem] border transition-all duration-500",
+                        formData.courseId 
+                            ? "bg-white dark:bg-gray-900 shadow-xl shadow-gray-100 dark:shadow-none border-gray-50 dark:border-gray-800 opacity-100" 
+                            : "bg-gray-50/50 dark:bg-gray-900/50 border-transparent opacity-50 grayscale"
+                    )}>
+                        <div className="space-y-2 flex-1 w-full">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Users className="h-4 w-4 text-indigo-600" />
+                                <Label htmlFor="batchId" className="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-600">Select Batch *</Label>
+                            </div>
                             <Select
                                 value={formData.batchId}
                                 onValueChange={(val) => onSelectChange('batchId', val)}
                                 disabled={!formData.courseId}
                             >
-                                <SelectTrigger className="h-12"><SelectValue placeholder={formData.courseId ? "Select Batch" : "Select course first"} /></SelectTrigger>
-                                <SelectContent>
+                                <SelectTrigger className={cn(inputClasses, "bg-gray-50/50 dark:bg-gray-950/50")}><SelectValue placeholder={formData.courseId ? "Select Batch" : "Select course first"} /></SelectTrigger>
+                                <SelectContent className="rounded-2xl border-none shadow-2xl p-2">
                                     {batches.map(b => (
-                                        <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+                                        <SelectItem key={b.id} value={b.id} className="rounded-xl py-3 font-bold">{b.name}</SelectItem>
                                     ))}
-                                    {batches.length === 0 && formData.courseId && <SelectItem value="disabled" disabled>No cohorts/batches for this course</SelectItem>}
+                                    {batches.length === 0 && formData.courseId && <SelectItem value="disabled" disabled>No batches found for this course</SelectItem>}
                                 </SelectContent>
                             </Select>
                         </div>
                         <Button
                             type="button"
                             size="icon"
-                            className="h-12 w-12 bg-indigo-600 hover:bg-indigo-700 flex-shrink-0"
+                            className="h-14 w-14 rounded-2xl bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-100 dark:shadow-none transition-all active:scale-90"
                             onClick={() => setIsAddBatchOpen(true)}
                             disabled={!formData.courseId}
                         >
-                            <Plus className="h-5 w-5" />
+                            <Plus className="h-6 w-6" />
                         </Button>
                     </div>
                 </div>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { verifyToken } from '@/lib/auth-utils'
+import { verifyToken, signToken } from '@/lib/auth-utils'
+import { cookies } from 'next/headers'
 
 export async function GET(request: NextRequest) {
   try {
@@ -26,7 +27,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const payload = verifyToken(token)
+    const payload = await verifyToken(token)
     if (!payload) {
       return NextResponse.json(
         { success: false, error: 'Invalid or expired token' },
@@ -93,7 +94,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const payload = verifyToken(token)
+    const payload = await verifyToken(token)
     if (!payload) {
       return NextResponse.json(
         { success: false, error: 'Invalid or expired token' },
@@ -193,10 +194,43 @@ export async function POST(request: NextRequest) {
           joinedAt: new Date()
         }
       })
+
+      // NEW: Grant all module permissions to the organization owner (Super Admin)
+      const allModules = [
+        'dashboard', 'enquiry', 'leads', 'students', 'fees', 'batches', 
+        'attendance', 'courses', 'branches', 'staff', 'timetable', 
+        'chat', 'notice', 'tickets', 'forms', 'expenses', 'certificate', 'settings'
+      ]
+
+      await db.modulePermission.createMany({
+        data: allModules.map(m => ({
+          userId: payload.userId,
+          organizationId: organization.id,
+          module: m,
+          canAccess: true
+        }))
+      })
     }
 
-    console.log('[API /organization POST] Organization created with Head Office branch')
-    console.log('[API /organization POST] Owner assigned as super_admin')
+    // Refresh session token with new organization and branch context
+    const newToken = await signToken({
+      userId: payload.userId,
+      email: payload.email,
+      role: 'super_admin',
+      branches: [headOfficeBranch.id],
+      organizationId: organization.id,
+      defaultBranchId: headOfficeBranch.id
+    })
+
+    // Set updated session cookie
+    const cookieStore = await cookies()
+    cookieStore.set('session', newToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+      path: '/',
+    })
 
     return NextResponse.json({
       success: true,
@@ -237,7 +271,7 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    const payload = verifyToken(token)
+    const payload = await verifyToken(token)
     if (!payload) {
       return NextResponse.json(
         { success: false, error: 'Invalid or expired token' },

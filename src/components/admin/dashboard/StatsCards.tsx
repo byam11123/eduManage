@@ -1,19 +1,14 @@
-// ============================================
-// STATS CARDS GRID COMPONENT
-// Grid of stats cards for dashboard overview
-// ============================================
-
-'use client'
-
-import { StatsCard } from './StatsCard'
-import {
-    Users,
-    UserCheck,
-    IndianRupee,
-    Clock,
-    BookOpen,
-    Calendar
+import { 
+    Users, 
+    UserCheck, 
+    TrendingUp, 
+    AlertCircle, 
+    BookOpen, 
+    Layers, 
+    PhoneCall,
+    Target
 } from 'lucide-react'
+import { StatsCard } from './StatsCard'
 import type { DashboardStats } from '@/lib/types'
 
 interface StatsCardsProps {
@@ -22,63 +17,80 @@ interface StatsCardsProps {
 }
 
 export function StatsCards({ stats, loading }: StatsCardsProps) {
-    const cards = [
-        {
-            title: 'Total Students',
-            value: loading ? '...' : stats.totalStudents,
-            icon: Users,
-            iconColor: 'text-blue-600',
-            iconBgColor: 'bg-blue-100',
-        },
-        {
-            title: 'Active Students',
-            value: loading ? '...' : stats.activeStudents,
-            icon: UserCheck,
-            iconColor: 'text-green-600',
-            iconBgColor: 'bg-green-100',
-        },
-        {
-            title: 'Total Revenue',
-            value: loading ? '...' : `₹${stats.totalRevenue.toLocaleString()}`,
-            icon: IndianRupee,
-            iconColor: 'text-indigo-600',
-            iconBgColor: 'bg-indigo-100',
-        },
-        {
-            title: 'Pending Fees',
-            value: loading ? '...' : `₹${stats.pendingFees.toLocaleString()}`,
-            icon: Clock,
-            iconColor: 'text-orange-600',
-            iconBgColor: 'bg-orange-100',
-        },
-        {
-            title: 'Total Courses',
-            value: loading ? '...' : stats.totalCourses,
-            icon: BookOpen,
-            iconColor: 'text-purple-600',
-            iconBgColor: 'bg-purple-100',
-        },
-        {
-            title: 'Total Batches',
-            value: loading ? '...' : stats.totalBatches,
-            icon: Calendar,
-            iconColor: 'text-teal-600',
-            iconBgColor: 'bg-teal-100',
-        },
-    ]
-
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-            {cards.map((card) => (
-                <StatsCard
-                    key={card.title}
-                    title={card.title}
-                    value={card.value}
-                    icon={card.icon}
-                    iconColor={card.iconColor}
-                    iconBgColor={card.iconBgColor}
-                />
-            ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <StatsCard
+                title="Total Students"
+                value={stats.totalStudents}
+                icon={Users}
+                description="Overall registered students"
+                trend={{ value: '12%', isUp: true }}
+                color="indigo"
+                loading={loading}
+            />
+            <StatsCard
+                title="Active Enrollment"
+                value={stats.activeStudents}
+                icon={UserCheck}
+                description="Currently active in batches"
+                trend={{ value: '5%', isUp: true }}
+                color="emerald"
+                loading={loading}
+            />
+            <StatsCard
+                title="Revenue"
+                value={`₹${stats.totalRevenue.toLocaleString()}`}
+                icon={TrendingUp}
+                description="Total fees collected"
+                trend={{ value: '24%', isUp: true }}
+                color="purple"
+                loading={loading}
+            />
+            <StatsCard
+                title="Pending Dues"
+                value={`₹${stats.pendingFees.toLocaleString()}`}
+                icon={AlertCircle}
+                description="Awaiting collection"
+                trend={{ value: '2%', isUp: false }}
+                color="rose"
+                loading={loading}
+            />
+            
+            {/* Row 2: Operation Stats */}
+            <StatsCard
+                title="Courses"
+                value={stats.totalCourses}
+                icon={BookOpen}
+                description="Active educational programs"
+                color="indigo"
+                loading={loading}
+            />
+            <StatsCard
+                title="Live Batches"
+                value={stats.totalBatches}
+                icon={Layers}
+                description="Currently running sessions"
+                color="emerald"
+                loading={loading}
+            />
+            <StatsCard
+                title="Total Enquiries"
+                value={stats.totalEnquiries}
+                icon={PhoneCall}
+                description="All-time CRM leads"
+                trend={{ value: '18%', isUp: true }}
+                color="amber"
+                loading={loading}
+            />
+            <StatsCard
+                title="Conversion Rate"
+                value={`${Math.round((stats.activeStudents / (stats.totalEnquiries || 1)) * 100)}%`}
+                icon={Target}
+                description="Leads to Admission ratio"
+                trend={{ value: '3%', isUp: true }}
+                color="indigo"
+                loading={loading}
+            />
         </div>
     )
 }

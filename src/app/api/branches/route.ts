@@ -26,22 +26,19 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        // Get user's organization
-        const organization = await db.organization.findUnique({
-            where: { ownerId: auth.userId }
-        })
-
-        if (!organization) {
+        if (!auth.organizationId) {
             return NextResponse.json(
-                { success: false, error: 'Organization not found. You must be an organization owner to create branches.' },
+                { success: false, error: 'Organization context missing. You must belong to an organization to create branches.' },
                 { status: 403 }
             )
         }
 
+        const organizationId = auth.organizationId
+
         // Check if branch name exists
         const existingBranch = await db.branch.findFirst({
             where: {
-                organizationId: organization.id,
+                organizationId,
                 name: { equals: name }
             }
         })
@@ -54,7 +51,7 @@ export async function POST(request: NextRequest) {
         }
 
         // If Admin User details provided, check if email exists
-        let hashedPassword = null
+        let hashedPassword: string | null = null
         if (adminEmail && adminPassword) {
             const existingUser = await db.user.findUnique({
                 where: { email: adminEmail.toLowerCase() }
@@ -81,13 +78,13 @@ export async function POST(request: NextRequest) {
                     zipCode,
                     phone,
                     email,
-                    organizationId: organization.id,
+                    organizationId,
                     isActive: true
                 }
             })
 
             // 2. Create Admin User (if provided)
-            let adminUser = null
+            let adminUser: any = null
             if (adminEmail && hashedPassword && adminName) {
                 adminUser = await tx.user.create({
                     data: {
@@ -139,35 +136,19 @@ export async function GET(request: NextRequest) {
             )
         }
 
-        // Get user's organization
-        const organization = await db.organization.findUnique({
-            where: { ownerId: auth.userId }
-        })
-
-        // If not owner, maybe check UserBranch map? 
-        // For now, let's assume Super Admin flow (Owner) lists all branches
-
-        let branches = []
-
-        if (organization) {
-            branches = await db.branch.findMany({
-                where: { organizationId: organization.id },
-                orderBy: { createdAt: 'desc' },
-                include: {
-                    _count: {
-                        select: { students: true }
-                    }
-                }
-            })
-        } else {
-            // If not organization owner, maybe just return branches they are assigned to
-            // This part matches the "Scope" logic
-            const userBranches = await db.userBranch.findMany({
-                where: { userId: auth.userId },
-                include: { branch: true }
-            })
-            branches = userBranches.map(ub => ub.branch)
+        if (!auth.organizationId) {
+            return NextResponse.json({ success: false, error: 'Organization context missing' }, { status: 400 })
         }
+
+        const branches = await db.branch.findMany({
+            where: { organizationId: auth.organizationId },
+            orderBy: { createdAt: 'desc' },
+            include: {
+                _count: {
+                    select: { students: true }
+                }
+            }
+        })
 
         return NextResponse.json({
             success: true,

@@ -293,7 +293,7 @@ export default function AddStaffPage() {
 
                                 {/* Intermediate */}
                                 <div className="flex justify-center">
-                                    <Button variant="dashed" className="gap-2 border-dashed border-2 w-full max-w-sm">
+                                    <Button variant="outline" className="gap-2 border-dashed border-2 w-full max-w-sm">
                                         <Plus className="w-4 h-4" /> Add More Education
                                     </Button>
                                 </div>

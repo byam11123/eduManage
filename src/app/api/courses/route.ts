@@ -9,54 +9,19 @@ export async function GET(req: Request) {
             return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
         }
 
-        // Get user's organization
-        const user = await db.user.findUnique({
-            where: { id: auth.userId },
-            include: {
-                ownedOrganization: {
-                    include: {
-                        courses: {
-                            include: {
-                                subjects: true
-                            },
-                            orderBy: {
-                                createdAt: 'desc'
-                            }
-                        }
-                    }
-                },
-                organizations: {
-                    include: {
-                        organization: {
-                            include: {
-                                courses: {
-                                    include: {
-                                        subjects: true
-                                    },
-                                    orderBy: {
-                                        createdAt: 'desc'
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        if (!auth.organizationId) {
+            return NextResponse.json({ success: false, error: 'Organization context missing' }, { status: 400 })
+        }
+
+        const courses = await db.course.findMany({
+            where: { organizationId: auth.organizationId },
+            include: { subjects: true },
+            orderBy: { createdAt: 'desc' }
         })
-
-        if (!user) {
-            return NextResponse.json({ success: false, error: 'User not found' }, { status: 404 })
-        }
-
-        const organization = user.ownedOrganization || user.organizations[0]?.organization
-
-        if (!organization) {
-            return NextResponse.json({ success: false, error: 'Organization not found' }, { status: 404 })
-        }
 
         return NextResponse.json({
             success: true,
-            courses: organization.courses
+            courses
         })
     } catch (error) {
         console.error('Error fetching courses:', error)
@@ -95,23 +60,8 @@ export async function POST(req: Request) {
             return NextResponse.json({ success: false, error: 'Name and fee are required' }, { status: 400 })
         }
 
-        // Get organization
-        const user = await db.user.findUnique({
-            where: { id: auth.userId },
-            include: {
-                ownedOrganization: true,
-                organizations: {
-                    include: {
-                        organization: true
-                    }
-                }
-            }
-        })
-
-        const organization = user?.ownedOrganization || user?.organizations[0]?.organization
-
-        if (!organization) {
-            return NextResponse.json({ success: false, error: 'Organization not found' }, { status: 404 })
+        if (!auth.organizationId) {
+            return NextResponse.json({ success: false, error: 'Organization context missing' }, { status: 400 })
         }
 
         // Create course with subjects
@@ -132,7 +82,7 @@ export async function POST(req: Request) {
                 installmentAmounts: installmentAmounts ? JSON.stringify(installmentAmounts) : null,
                 eligibility: eligibility || null,
                 status: status || 'active',
-                organizationId: organization.id,
+                organizationId: auth.organizationId,
                 subjects: {
                     create: subjects?.filter((s: any) => s && (typeof s === 'string' ? s.trim() : s.name?.trim())).map((s: any) => ({
                         name: typeof s === 'string' ? s : s.name,

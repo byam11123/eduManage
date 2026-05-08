@@ -1,5 +1,9 @@
+'use client'
+
 import { Button } from "@/components/ui/button"
-import { Calendar as CalendarIcon, List as ListIcon } from "lucide-react"
+import { Calendar as CalendarIcon, List as ListIcon, LayoutGrid, Clock } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { PageHeader } from "@/components/shared/PageHeader"
 
 interface AttendanceHeaderProps {
     title: string
@@ -9,34 +13,39 @@ interface AttendanceHeaderProps {
 
 export function AttendanceHeader({ title, view, onViewChange }: AttendanceHeaderProps) {
     return (
-        <div className="flex flex-col gap-4">
-            {/* Breadcrumbs */}
-            <div className="text-sm text-gray-500">
-                <span className="text-indigo-600">Attendance</span>
-                <span className="mx-2">›</span>
-                <span className="text-indigo-600">{title}</span>
-                <span className="mx-2">›</span>
-                <span>{title} attendance</span>
-            </div>
+        <div className="space-y-8">
+            <PageHeader 
+                title={`${title} Attendance`}
+                description={`Daily presence tracking and monthly attendance reports for ${title.toLowerCase()}s.`}
+                actions={[
+                    { label: 'Download Logs', icon: Clock, variant: 'outline' }
+                ]}
+            />
 
-            <div className="flex items-center gap-4 border-b border-gray-200 dark:border-gray-800">
+            <div className="flex bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-1.5 shadow-sm w-fit">
                 <button
                     onClick={() => onViewChange('table')}
-                    className={`pb-2 px-1 text-sm font-medium transition-colors border-b-2 ${view === 'table'
-                            ? 'border-indigo-600 text-indigo-600'
-                            : 'border-transparent text-gray-500 hover:text-gray-700'
-                        }`}
+                    className={cn(
+                        "flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all",
+                        view === 'table' 
+                            ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-none" 
+                            : "text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-indigo-600"
+                    )}
                 >
-                    TABLE VIEW
+                    <ListIcon className="w-4 h-4" />
+                    Daily Table
                 </button>
                 <button
                     onClick={() => onViewChange('calendar')}
-                    className={`pb-2 px-1 text-sm font-medium transition-colors border-b-2 ${view === 'calendar'
-                            ? 'border-indigo-600 text-indigo-600'
-                            : 'border-transparent text-gray-500 hover:text-gray-700'
-                        }`}
+                    className={cn(
+                        "flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all",
+                        view === 'calendar' 
+                            ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-none" 
+                            : "text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-indigo-600"
+                    )}
                 >
-                    CALENDAR VIEW
+                    <CalendarIcon className="w-4 h-4" />
+                    Monthly Calendar
                 </button>
             </div>
         </div>

@@ -69,7 +69,7 @@ export function BatchForm({
                         id="description"
                         name="description"
                         placeholder="CORELDRAW"
-                        value={formData.description}
+                        value={formData.description || ''}
                         onChange={handleChange}
                     />
                 </div>

@@ -124,7 +124,7 @@ export function CourseForm({
         handleChange('subjects', subjects.filter(s => s !== subject))
     }
 
-    const isValid = formData.name && formData.fee
+    const isValid = formData.name && formData.code && formData.fee
 
     const installmentCount = parseInt(formData.maxInstallments) || 1
 
@@ -140,10 +140,19 @@ export function CourseForm({
                             id="name"
                             value={formData.name}
                             onChange={(e) => handleChange('name', e.target.value)}
-                            placeholder="Enter course name"
+                            placeholder="e.g. Computer Science"
                         />
                     </div>
                     <div className="space-y-2">
+                        <Label htmlFor="code">Course Code *</Label>
+                        <Input
+                            id="code"
+                            value={formData.code}
+                            onChange={(e) => handleChange('code', e.target.value)}
+                            placeholder="e.g. CS101"
+                        />
+                    </div>
+                    <div className="col-span-2 space-y-2">
                         <Label htmlFor="description">Course Description</Label>
                         <Input
                             id="description"

@@ -4,33 +4,23 @@ import { verifyToken } from '@/lib/auth-utils'
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('[API /auth/me] Request received')
-
     // Get token from Authorization header or cookie
     const authHeader = request.headers.get('authorization')
     const cookieHeader = request.headers.get('cookie')
-
-    console.log('[API /auth/me] Auth header:', authHeader)
-    console.log('[API /auth/me] Cookie header:', cookieHeader)
 
     let token: string | null = null
 
     if (authHeader?.startsWith('Bearer ')) {
       token = authHeader.substring(7)
-      console.log('[API /auth/me] Using token from auth header')
     } else if (cookieHeader) {
       const cookies = cookieHeader.split(';').map(c => c.trim())
       const sessionCookie = cookies.find(c => c.startsWith('session='))
       if (sessionCookie) {
         token = sessionCookie.substring('session='.length)
-        console.log('[API /auth/me] Using token from cookie')
       }
     }
 
-    console.log('[API /auth/me] Token:', token ? `${token.substring(0, 10)}...` : 'NOT FOUND')
-
     if (!token) {
-      console.log('[API /auth/me] No token found - returning 401')
       return NextResponse.json(
         { success: false, error: 'No session found' },
         { status: 401 }
@@ -38,11 +28,9 @@ export async function GET(request: NextRequest) {
     }
 
     // Verify token
-    const payload = verifyToken(token)
-    console.log('[API /auth/me] Token payload:', payload)
+    const payload = await verifyToken(token)
 
     if (!payload) {
-      console.log('[API /auth/me] Invalid token - returning 401')
       return NextResponse.json(
         { success: false, error: 'Invalid or expired token' },
         { status: 401 }
@@ -63,10 +51,7 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    console.log('[API /auth/me] User found:', !!user)
-
     if (!user) {
-      console.log('[API /auth/me] User not found - returning 404')
       return NextResponse.json(
         { success: false, error: 'User not found' },
         { status: 404 }
@@ -103,13 +88,53 @@ export async function GET(request: NextRequest) {
       defaultBranchId = userBranches[0].branchId;
     }
 
-    console.log('[API /auth/me] Returning user data with branches')
+    // Fetch organization context
+    let organization: any = null
+    if (payload.organizationId) {
+      organization = await db.organization.findUnique({
+        where: { id: payload.organizationId },
+        select: {
+          id: true,
+          name: true,
+          logo: true,
+          slug: true
+        }
+      })
+    } else {
+      // Fallback: check if user owns any organization
+      organization = await db.organization.findFirst({
+        where: { ownerId: payload.userId },
+        select: {
+          id: true,
+          name: true,
+          logo: true,
+          slug: true
+        }
+      })
+    }
+
+    // Fetch permissions
+    const permissions = await db.modulePermission.findMany({
+      where: {
+        userId: payload.userId,
+        canAccess: true
+      },
+      select: { module: true }
+    })
+
     return NextResponse.json({
       success: true,
       user: {
         ...user,
         role: userRole,
-        branches: userBranches.map(ub => ub.branchId),
+        organizationId: organization?.id || payload.organizationId,
+        organization,
+        branches: userBranches.map(ub => ({
+          id: ub.branch.id,
+          name: ub.branch.name,
+          isDefault: ub.isDefault
+        })),
+        permissions: permissions.map(p => p.module),
         defaultBranchId
       },
     })

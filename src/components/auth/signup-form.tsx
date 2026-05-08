@@ -225,11 +225,11 @@ export function SignupForm() {
         return
       }
 
-      setSuccess('Account created successfully! Redirecting to dashboard...')
+      setSuccess('Account created successfully! Redirecting to login...')
 
-      // Redirect to dashboard after 2 seconds
+      // Redirect to login after 2 seconds
       setTimeout(() => {
-        window.location.href = '/?view=dashboard'
+        window.location.href = '/login'
       }, 2000)
     } catch (err) {
       console.error('Signup error:', err)
@@ -508,7 +508,7 @@ export function SignupForm() {
       {/* Sign In Link */}
       <p className="text-center text-sm text-muted-foreground">
         Already have an account?{' '}
-        <Link href="/?view=login" className="text-primary font-medium hover:underline">
+        <Link href="/login" className="text-primary font-medium hover:underline">
           Sign in
         </Link>
       </p>

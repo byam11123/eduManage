@@ -31,7 +31,7 @@ export async function authenticateRequest(request: NextRequest): Promise<JWTPayl
     return null
   }
 
-  return verifyToken(token)
+  return await verifyToken(token)
 }
 
 /**

@@ -69,7 +69,7 @@ export function formatCurrency(amount: number | string | undefined | null): stri
 // STUDENT FINANCIAL HELPERS
 // ===========================================
 
-import type { Student, InstallmentPlanItem } from '@/lib/types'
+import type { Student, InstallmentPlanItem, StudentCourse, Installment } from '@/lib/types'
 
 /**
  * Safely parse the installment plan from a student record
@@ -127,4 +127,66 @@ export function calculateStudentFinancials(student: Student) {
     status,
     installments
   }
+}
+
+// Multi-Course Financial Helpers
+export function calculateCourseFinancials(courseEnrollment: StudentCourse) {
+  if (!courseEnrollment) return null
+
+  // 1. Base Fees
+  const grossFee = Number(courseEnrollment.totalFee) || 0
+  const discount = Number(courseEnrollment.discountAmount) || 0
+  const netPayable = Number(courseEnrollment.netPayable) || (grossFee - discount)
+
+  // 2. Paid & Due (from relational installments)
+  const installments = courseEnrollment.installments || []
+
+  const totalPaid = installments.reduce((acc: number, item: Installment) => {
+    // Only count valid payments (status: paid or partial)
+    // Or trust 'paidAmount' field
+    return acc + (Number(item.paidAmount) || 0)
+  }, 0)
+
+  const totalDue = Math.max(0, netPayable - totalPaid)
+
+  // 3. Status
+  let status: 'PAID' | 'PARTIAL' | 'DUE' | 'PENDING' = 'PENDING'
+  if (totalDue === 0 && totalPaid > 0) status = 'PAID'
+  else if (totalPaid > 0 && totalDue > 0) status = 'PARTIAL'
+  else if (totalPaid === 0) status = 'DUE' // default if enrollment exists
+
+  return {
+    grossFee,
+    discount,
+    netPayable,
+    totalPaid,
+    totalDue,
+    status,
+    installments
+  }
+}
+
+export function calculateAggregatedFinancials(studentCourses: StudentCourse[]) {
+  const totals = {
+    totalCourseFee: 0,
+    totalDiscount: 0,
+    netPayable: 0,
+    totalPaid: 0,
+    totalDue: 0
+  }
+
+  if (!studentCourses || !Array.isArray(studentCourses)) return totals
+
+  studentCourses.forEach(course => {
+    const stats = calculateCourseFinancials(course)
+    if (stats) {
+      totals.totalCourseFee += stats.grossFee
+      totals.totalDiscount += stats.discount
+      totals.netPayable += stats.netPayable
+      totals.totalPaid += stats.totalPaid
+      totals.totalDue += stats.totalDue
+    }
+  })
+
+  return totals
 }

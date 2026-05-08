@@ -38,7 +38,7 @@ export async function requireRole(
     };
   }
 
-  const payload = verifyToken(token);
+  const payload = await verifyToken(token);
 
   if (!payload) {
     return {
@@ -101,7 +101,7 @@ export async function requireBranchAccess(
     };
   }
 
-  const payload = verifyToken(token);
+  const payload = await verifyToken(token);
 
   if (!payload) {
     return {
@@ -169,7 +169,7 @@ export async function requireAnyBranchAccess(
     };
   }
 
-  const payload = verifyToken(token);
+  const payload = await verifyToken(token);
 
   if (!payload) {
     return {

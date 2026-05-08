@@ -18,18 +18,10 @@ import {
     MessageSquare
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Sheet, SheetContent } from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { TopNav } from '@/components/admin/TopNav' // Reusing Admin TopNav
 
-interface User {
-    id: string
-    fullName: string
-    email: string
-    role: string
-    branches: string[]
-    defaultBranchId?: string
-    image?: string
-}
+import { User } from '@/lib/types'
 
 interface NavItem {
     title: string
@@ -147,6 +139,9 @@ export default function BranchLayout({
             {/* Mobile Drawer */}
             <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
                 <SheetContent side="left" className="w-64 p-0 border-r border-gray-200 dark:border-gray-800">
+                    <SheetHeader className="sr-only">
+                        <SheetTitle>Branch Navigation</SheetTitle>
+                    </SheetHeader>
                     <SidebarContent
                         navItems={navItems}
                         pathname={pathname}
@@ -157,7 +152,7 @@ export default function BranchLayout({
             </Sheet>
 
             {/* Desktop sidebar */}
-            <aside className={`hidden lg:flex flex-col bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 h-screen transition-all duration-300 ${isSidebarCollapsed ? 'w-20' : 'w-64'}`}>
+            <aside className={`hidden lg:flex flex-col bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 h-screen transition-all duration-300 ${isSidebarCollapsed ? 'w-24' : 'w-64'}`}>
                 <SidebarContent
                     navItems={navItems}
                     pathname={pathname}
@@ -171,11 +166,7 @@ export default function BranchLayout({
             {/* Main content wrapper */}
             <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
                 {/* Top Navigation */}
-                <TopNav
-                    user={user}
-                    handleLogout={handleLogout}
-                    onSidebarToggle={() => setIsSidebarOpen(true)}
-                />
+                <TopNav />
 
                 {/* Scrollable Content */}
                 <main className="flex-1 overflow-y-auto bg-gray-50/50 dark:bg-gray-900">
@@ -217,8 +208,8 @@ function SidebarContent({
                 )}
                 {isCollapsed && (
                     <div className="w-full flex justify-center">
-                        <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                            <GraduationCap className="h-5 w-5 text-white" />
+                        <div className="h-14 w-14 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-100 dark:shadow-none">
+                            <GraduationCap className="h-8 w-8 text-white" />
                         </div>
                     </div>
                 )}
@@ -245,12 +236,12 @@ function SidebarContent({
                                 <li key={item.title} title={item.title}>
                                     <Link
                                         href={item.url}
-                                        className={`flex justify-center p-2 rounded-lg transition-all duration-200 ${isActive
-                                            ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
-                                            : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700/50'
+                                        className={`flex justify-center items-center h-14 rounded-xl transition-all duration-200 ${isActive
+                                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-none'
+                                            : 'text-gray-500 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-700/50'
                                             }`}
                                     >
-                                        <Icon className={`h-5 w-5 ${isActive ? 'text-indigo-600' : 'text-gray-400'}`} />
+                                        <Icon className={`h-7 w-7 transition-transform group-hover:scale-110 ${isActive ? 'text-white' : 'text-gray-400'}`} />
                                     </Link>
                                 </li>
                             )

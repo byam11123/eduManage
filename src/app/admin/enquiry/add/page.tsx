@@ -20,6 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 interface Course {
     id: string
     name: string
+    description?: string
 }
 
 export default function GenerateEnquiryPage() {
@@ -59,7 +60,12 @@ export default function GenerateEnquiryPage() {
     }
 
     const handleCourseChange = (value: string) => {
-        setFormData(prev => ({ ...prev, courseId: value }))
+        const selectedCourse = courses.find(c => c.id === value)
+        setFormData(prev => ({ 
+            ...prev, 
+            courseId: value,
+            description: selectedCourse?.description || prev.description 
+        }))
     }
 
     const handleSubmit = async (e: React.FormEvent) => {

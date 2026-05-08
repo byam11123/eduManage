@@ -1,8 +1,3 @@
-// ============================================
-// STUDENT LIST COMPONENT
-// Table view for listing students with actions
-// ============================================
-
 'use client'
 
 import {
@@ -22,9 +17,11 @@ import {
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { MoreVertical, Pencil, Trash2, Eye, Users } from 'lucide-react'
+import { MoreVertical, Pencil, Trash2, Eye, Users, Search } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import type { Student } from '@/lib/types'
+import { StatusBadge } from '@/components/shared/StatusBadge'
+import { cn } from '@/lib/utils'
 
 interface StudentListProps {
     students: Student[]
@@ -47,170 +44,106 @@ export function StudentList({
         router.push(`/admin/students/${studentId}`)
     }
 
-    const getStatusBadge = (status: string) => {
-        const styles: Record<string, string> = {
-            active: 'bg-green-100 text-green-700 border-none',
-            inactive: 'bg-gray-100 text-gray-600 border-none',
-            graduated: 'bg-blue-100 text-blue-700 border-none',
-            dropped: 'bg-red-100 text-red-700 border-none'
-        }
-        return styles[status] || ''
-    }
-
-    const getPaymentBadge = (status: string) => {
-        const styles: Record<string, string> = {
-            paid: 'bg-green-100 text-green-700 border-none',
-            pending: 'bg-yellow-100 text-yellow-700 border-none',
-            overdue: 'bg-red-100 text-red-700 border-none',
-            partial: 'bg-orange-100 text-orange-700 border-none'
-        }
-        return styles[status] || ''
-    }
-
     if (loading) {
         return (
-            <Table>
-                <TableHeader className="bg-gray-50/50 dark:bg-gray-800/50">
-                    <TableRow>
-                        <TableHead className="w-[60px]">ACTION</TableHead>
-                        <TableHead>STUDENT</TableHead>
-                        <TableHead>CONTACT</TableHead>
-                        <TableHead>COURSE</TableHead>
-                        <TableHead>STATUS</TableHead>
-                        <TableHead>PAYMENT</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    <TableRow>
-                        <TableCell colSpan={6} className="h-24 text-center text-gray-500">
-                            Loading students...
-                        </TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
+            <div className="p-8 text-center">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="h-10 w-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                    <span className="font-black uppercase tracking-widest text-[10px] text-gray-500">Retrieving student records...</span>
+                </div>
+            </div>
         )
     }
 
     if (students.length === 0) {
         return (
-            <Table>
-                <TableHeader className="bg-gray-50/50 dark:bg-gray-800/50">
-                    <TableRow>
-                        <TableHead className="w-[60px]">ACTION</TableHead>
-                        <TableHead>STUDENT</TableHead>
-                        <TableHead>CONTACT</TableHead>
-                        <TableHead>COURSE</TableHead>
-                        <TableHead>STATUS</TableHead>
-                        <TableHead>PAYMENT</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    <TableRow>
-                        <TableCell colSpan={6} className="h-32 text-center text-gray-500">
-                            <div className="flex flex-col items-center justify-center gap-2">
-                                <Users className="h-8 w-8 text-gray-300" />
-                                <p>No students found</p>
-                            </div>
-                        </TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
+            <div className="p-20 text-center flex flex-col items-center gap-4 opacity-50">
+                <Users className="h-12 w-12 text-gray-300" />
+                <p className="font-bold uppercase tracking-widest text-xs">No student records found.</p>
+            </div>
         )
     }
 
     return (
         <Table>
-            <TableHeader className="bg-gray-50/50 dark:bg-gray-800/50">
-                <TableRow>
-                    <TableHead className="w-[60px] font-semibold text-xs uppercase tracking-wider text-gray-500">
-                        ACTION
-                    </TableHead>
-                    <TableHead className="font-semibold text-xs uppercase tracking-wider text-gray-500">
-                        STUDENT
-                    </TableHead>
-                    <TableHead className="font-semibold text-xs uppercase tracking-wider text-gray-500">
-                        CONTACT
-                    </TableHead>
-                    <TableHead className="font-semibold text-xs uppercase tracking-wider text-gray-500">
-                        COURSE
-                    </TableHead>
-                    <TableHead className="font-semibold text-xs uppercase tracking-wider text-gray-500">
-                        STATUS
-                    </TableHead>
-                    <TableHead className="font-semibold text-xs uppercase tracking-wider text-gray-500">
-                        PAYMENT
-                    </TableHead>
+            <TableHeader>
+                <TableRow className="bg-gray-50/50 dark:bg-gray-800/50 border-y border-gray-50 dark:border-gray-800">
+                    <TableHead className="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-widest">Action</TableHead>
+                    <TableHead className="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-widest">Student Info</TableHead>
+                    <TableHead className="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-widest">Course & Batch</TableHead>
+                    <TableHead className="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-widest">Contact</TableHead>
+                    <TableHead className="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-widest">Academic Status</TableHead>
+                    <TableHead className="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-widest">Fee Status</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
                 {students.map((student) => (
                     <TableRow
                         key={student.id}
-                        className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 cursor-pointer"
+                        className="group hover:bg-gray-50/50 dark:hover:bg-gray-800/30 cursor-pointer border-b border-gray-50 dark:border-gray-800 transition-all"
                         onClick={() => handleRowClick(student.id)}
                     >
-                        <TableCell onClick={(e) => e.stopPropagation()}>
+                        <TableCell className="px-8 py-5" onClick={(e) => e.stopPropagation()}>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                                    <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-gray-400 hover:text-indigo-600">
                                         <MoreVertical className="h-4 w-4" />
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="start">
-                                    <DropdownMenuItem onClick={() => onView?.(student)}>
-                                        <Eye className="h-4 w-4 mr-2" />
-                                        View
+                                <DropdownMenuContent align="start" className="w-56 p-2 rounded-2xl shadow-2xl border-gray-100 dark:border-gray-800">
+                                    <DropdownMenuItem onClick={() => onView?.(student)} className="rounded-xl py-3 cursor-pointer">
+                                        <Eye className="h-4 w-4 mr-2 text-indigo-500" />
+                                        <span className="font-bold">Full Profile</span>
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => onEdit?.(student)}>
-                                        <Pencil className="h-4 w-4 mr-2" />
-                                        Edit
+                                    <DropdownMenuItem onClick={() => onEdit?.(student)} className="rounded-xl py-3 cursor-pointer">
+                                        <Pencil className="h-4 w-4 mr-2 text-amber-500" />
+                                        <span className="font-bold">Update Details</span>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
                                         onClick={() => onDelete?.(student)}
-                                        className="text-red-600 focus:text-red-600"
+                                        className="text-rose-600 focus:text-rose-600 focus:bg-rose-50 rounded-xl py-3 cursor-pointer mt-1 font-bold"
                                     >
                                         <Trash2 className="h-4 w-4 mr-2" />
-                                        Delete
+                                        Delete Record
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </TableCell>
-                        <TableCell>
-                            <div className="flex items-center gap-3">
-                                <Avatar className="h-8 w-8">
+                        <TableCell className="px-8 py-5">
+                            <div className="flex items-center gap-4">
+                                <Avatar className="h-11 w-11 border-2 border-white dark:border-gray-800 shadow-sm ring-2 ring-indigo-50 dark:ring-indigo-900/20">
                                     <AvatarImage src={student.imageUrl} alt={`${student.firstName} ${student.lastName}`} />
-                                    <AvatarFallback className="bg-indigo-100 text-indigo-600 text-xs">
+                                    <AvatarFallback className="bg-indigo-600 text-white font-black text-xs uppercase">
                                         {student.firstName[0]}{student.lastName[0]}
                                     </AvatarFallback>
                                 </Avatar>
                                 <div>
-                                    <p className="font-medium text-gray-900 dark:text-white">
+                                    <p className="font-black text-gray-900 dark:text-white group-hover:text-indigo-600 transition-colors">
                                         {student.firstName} {student.lastName}
                                     </p>
-                                    <p className="text-xs text-gray-500">
-                                        {student.studentDisplayId || student.admissionDisplayId || student.enrollmentNo || '-'}
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mt-1">
+                                        ID: {student.studentDisplayId || student.admissionDisplayId || '-'}
                                     </p>
                                 </div>
                             </div>
                         </TableCell>
-                        <TableCell>
-                            <div>
-                                <p className="text-gray-600 dark:text-gray-300">{student.email || '-'}</p>
-                                <p className="text-xs text-gray-500">{student.phone || '-'}</p>
+                        <TableCell className="px-8 py-5">
+                            <div className="flex flex-col">
+                                <span className="font-bold text-gray-700 dark:text-gray-300">{student.course?.name || '-'}</span>
+                                <span className="text-[10px] font-bold text-indigo-500/70 uppercase tracking-tighter mt-1">Batch: Morning A</span>
                             </div>
                         </TableCell>
-                        <TableCell className="text-gray-600 dark:text-gray-300">
-                            {student.course?.name || '-'}
+                        <TableCell className="px-8 py-5">
+                            <div className="flex flex-col gap-1">
+                                <p className="text-[13px] font-bold text-gray-600 dark:text-gray-400">{student.phone || '-'}</p>
+                                <p className="text-[11px] text-gray-400 truncate max-w-[150px]">{student.email || '-'}</p>
+                            </div>
                         </TableCell>
-                        <TableCell>
-                            <Badge variant="secondary" className={getStatusBadge(student.status)}>
-                                {student.status.toUpperCase()}
-                            </Badge>
+                        <TableCell className="px-8 py-5">
+                            <StatusBadge status={student.status} />
                         </TableCell>
-                        <TableCell>
-                            <Badge variant="secondary" className={getPaymentBadge(student.paymentStatus)}>
-                                {student.paymentStatus.toUpperCase()}
-                            </Badge>
+                        <TableCell className="px-8 py-5">
+                            <StatusBadge status={student.paymentStatus} />
                         </TableCell>
                     </TableRow>
                 ))}

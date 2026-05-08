@@ -28,16 +28,18 @@ interface UseStudentsReturn {
     selectStudent: (student: Student | null) => void
 
     // Stats
-    total: number
-    received: number
-    cash: number
-    online: number
-    unknown: number
-    overdue: number
-    upcoming: number
-    refundedCount: number
-    refundedAmount: number
-    defaulters: number
+    stats: {
+        total: number
+        received: number
+        cash: number
+        online: number
+        unknown: number
+        overdue: number
+        upcoming: number
+        refundedCount: number
+        refundedAmount: number
+        defaulters: number
+    }
 }
 
 export function useStudents(): UseStudentsReturn {

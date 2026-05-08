@@ -9,7 +9,8 @@ import {
   DashboardHeader,
   StatsCards,
   RevenueChart,
-  RecentStudentsTable
+  RecentStudentsTable,
+  RecentEnquiriesTable
 } from '@/components/admin/dashboard'
 import { useDashboard, useAuth } from '@/hooks'
 
@@ -19,6 +20,7 @@ export default function AdminDashboardPage() {
     stats,
     revenueData,
     recentStudents,
+    recentEnquiries,
     loading,
     refreshStats,
     fetchDashboardData
@@ -51,10 +53,14 @@ export default function AdminDashboardPage() {
           />
         </div>
 
-        {/* Recent Students */}
-        <div className="lg:col-span-1">
+        {/* Recent Students & Enquiries */}
+        <div className="lg:col-span-1 space-y-6">
           <RecentStudentsTable
             students={recentStudents}
+            loading={loading}
+          />
+          <RecentEnquiriesTable
+            enquiries={recentEnquiries}
             loading={loading}
           />
         </div>

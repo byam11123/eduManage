@@ -10,6 +10,7 @@ import {
     SelectValue,
 } from '@/components/ui/select'
 import type { StudentAdmissionFormData } from '@/lib/types'
+import { cn } from '@/lib/utils'
 
 interface Step2Props {
     formData: StudentAdmissionFormData
@@ -22,140 +23,159 @@ export function Step2Qualifications({
     onChange,
     onSelectChange
 }: Step2Props) {
+    const inputClasses = "h-14 rounded-2xl bg-gray-50 dark:bg-gray-900 border-none font-bold px-6 text-base focus:ring-2 focus:ring-indigo-500/20 transition-all"
+    const labelClasses = "text-[11px] font-black uppercase tracking-[0.2em] text-indigo-600 mb-2 block"
+    const sectionHeaderClasses = "text-[13px] font-black uppercase tracking-[0.3em] text-gray-400 border-b border-gray-100 dark:border-gray-800 pb-4 mb-8 flex items-center gap-3"
+
     return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+        <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
             {/* Highest Qualification Selector */}
-            <div className="space-y-2 max-w-md">
-                <Label htmlFor="highestQualification">Highest Qualification *</Label>
+            <div className="space-y-4 max-w-md bg-indigo-50/50 dark:bg-indigo-900/10 p-6 rounded-[2rem] border border-indigo-100 dark:border-indigo-900/30">
+                <Label htmlFor="highestQualification" className={labelClasses}>Highest Qualification *</Label>
                 <Select value={formData.highestQualification} onValueChange={(val) => onSelectChange('highestQualification', val)}>
-                    <SelectTrigger><SelectValue placeholder="Select Highest Qualification" /></SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="high_school">High School (10th)</SelectItem>
-                        <SelectItem value="higher_secondary">Higher Secondary (12th)</SelectItem>
-                        <SelectItem value="graduation">Graduation</SelectItem>
-                        <SelectItem value="post_graduation">Post Graduation</SelectItem>
+                    <SelectTrigger className={cn(inputClasses, "bg-white dark:bg-gray-950 shadow-sm font-bold")}><SelectValue placeholder="Select Qualification" /></SelectTrigger>
+                    <SelectContent className="rounded-2xl border-none shadow-2xl p-2">
+                        <SelectItem value="high_school" className="rounded-xl py-3 font-bold">10th Standard</SelectItem>
+                        <SelectItem value="higher_secondary" className="rounded-xl py-3 font-bold">12th Standard</SelectItem>
+                        <SelectItem value="graduation" className="rounded-xl py-3 font-bold">Graduation</SelectItem>
+                        <SelectItem value="post_graduation" className="rounded-xl py-3 font-bold">Post Graduation</SelectItem>
                     </SelectContent>
                 </Select>
+                <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mt-2 px-1">Required for admission</p>
             </div>
 
-            {/* High School (10th) - Show for all qualifications */}
-            {formData.highestQualification && (
-                <div className="border rounded-lg p-4 bg-gray-50/50 dark:bg-gray-800/50 space-y-4">
-                    <h3 className="font-semibold text-gray-700 dark:text-gray-300">High School (10th) Details</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="hsSchoolName">School Name *</Label>
-                            <Input id="hsSchoolName" name="hsSchoolName" value={formData.hsSchoolName} onChange={onChange} placeholder="Enter school name" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="hsBoard">Board *</Label>
-                            <Input id="hsBoard" name="hsBoard" value={formData.hsBoard} onChange={onChange} placeholder="e.g. CBSE, ICSE, State Board" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="hsPassingYear">Passing Year *</Label>
-                            <Input id="hsPassingYear" name="hsPassingYear" value={formData.hsPassingYear} onChange={onChange} placeholder="e.g. 2018" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="hsPercentage">Percentage / Grade *</Label>
-                            <Input id="hsPercentage" name="hsPercentage" value={formData.hsPercentage} onChange={onChange} placeholder="e.g. 85% or A+" />
+            <div className="space-y-12">
+                {/* High School (10th) - Show for all qualifications */}
+                {formData.highestQualification && (
+                    <div className="space-y-8 bg-gray-50/30 dark:bg-gray-900/30 p-10 rounded-[2.5rem] border border-gray-100 dark:border-gray-800 transition-all duration-500">
+                        <h3 className={sectionHeaderClasses}>
+                            <span className="h-2 w-2 rounded-full bg-gray-400" />
+                            10th Details
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="space-y-2">
+                                <Label htmlFor="hsSchoolName" className={labelClasses}>School Name *</Label>
+                                <Input id="hsSchoolName" name="hsSchoolName" value={formData.hsSchoolName} onChange={onChange} placeholder="School Name" className={inputClasses} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="hsBoard" className={labelClasses}>Board *</Label>
+                                <Input id="hsBoard" name="hsBoard" value={formData.hsBoard} onChange={onChange} placeholder="CBSE, ICSE, or State Board" className={inputClasses} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="hsPassingYear" className={labelClasses}>Passing Year *</Label>
+                                <Input id="hsPassingYear" name="hsPassingYear" value={formData.hsPassingYear} onChange={onChange} placeholder="YYYY" className={inputClasses} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="hsPercentage" className={labelClasses}>Percentage / CGPA *</Label>
+                                <Input id="hsPercentage" name="hsPercentage" value={formData.hsPercentage} onChange={onChange} placeholder="Percentage or CGPA" className={inputClasses} />
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )}
 
-            {/* Higher Secondary (12th) - Show for higher_secondary, graduation, post_graduation */}
-            {['higher_secondary', 'graduation', 'post_graduation'].includes(formData.highestQualification) && (
-                <div className="border rounded-lg p-4 bg-amber-50/50 dark:bg-amber-900/20 space-y-4">
-                    <h3 className="font-semibold text-gray-700 dark:text-gray-300">Higher Secondary (12th) Details</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="hssSchoolName">School Name *</Label>
-                            <Input id="hssSchoolName" name="hssSchoolName" value={formData.hssSchoolName} onChange={onChange} placeholder="Enter school name" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="hssBoard">Board *</Label>
-                            <Input id="hssBoard" name="hssBoard" value={formData.hssBoard} onChange={onChange} placeholder="e.g. CBSE, ICSE, State Board" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="hssStream">Stream *</Label>
-                            <Select value={formData.hssStream} onValueChange={(val) => onSelectChange('hssStream', val)}>
-                                <SelectTrigger><SelectValue placeholder="Select Stream" /></SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="science">Science</SelectItem>
-                                    <SelectItem value="commerce">Commerce</SelectItem>
-                                    <SelectItem value="arts">Arts</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="hssPassingYear">Passing Year *</Label>
-                            <Input id="hssPassingYear" name="hssPassingYear" value={formData.hssPassingYear} onChange={onChange} placeholder="e.g. 2020" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="hssPercentage">Percentage *</Label>
-                            <Input id="hssPercentage" name="hssPercentage" value={formData.hssPercentage} onChange={onChange} placeholder="e.g. 90%" />
+                {/* Higher Secondary (12th) - Show for higher_secondary, graduation, post_graduation */}
+                {['higher_secondary', 'graduation', 'post_graduation'].includes(formData.highestQualification) && (
+                    <div className="space-y-8 bg-amber-50/30 dark:bg-amber-900/10 p-10 rounded-[2.5rem] border border-amber-100/50 dark:border-amber-900/20 transition-all duration-500">
+                        <h3 className={sectionHeaderClasses}>
+                            <span className="h-2 w-2 rounded-full bg-amber-500" />
+                            12th Details
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="space-y-2">
+                                <Label htmlFor="hssSchoolName" className={labelClasses}>School Name *</Label>
+                                <Input id="hssSchoolName" name="hssSchoolName" value={formData.hssSchoolName} onChange={onChange} placeholder="School Name" className={inputClasses} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="hssBoard" className={labelClasses}>Board *</Label>
+                                <Input id="hssBoard" name="hssBoard" value={formData.hssBoard} onChange={onChange} placeholder="CBSE, ICSE, or State Board" className={inputClasses} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="hssStream" className={labelClasses}>Stream *</Label>
+                                <Select value={formData.hssStream} onValueChange={(val) => onSelectChange('hssStream', val)}>
+                                    <SelectTrigger className={cn(inputClasses, "bg-white/50 dark:bg-gray-900/50 font-bold shadow-sm")}><SelectValue placeholder="Select Stream" /></SelectTrigger>
+                                    <SelectContent className="rounded-2xl border-none shadow-2xl p-2">
+                                        <SelectItem value="science" className="rounded-xl py-3 font-bold">Science</SelectItem>
+                                        <SelectItem value="commerce" className="rounded-xl py-3 font-bold">Commerce</SelectItem>
+                                        <SelectItem value="arts" className="rounded-xl py-3 font-bold">Arts / Humanities</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="hssPassingYear" className={labelClasses}>Passing Year *</Label>
+                                <Input id="hssPassingYear" name="hssPassingYear" value={formData.hssPassingYear} onChange={onChange} placeholder="YYYY" className={inputClasses} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="hssPercentage" className={labelClasses}>Percentage *</Label>
+                                <Input id="hssPercentage" name="hssPercentage" value={formData.hssPercentage} onChange={onChange} placeholder="Percentage" className={inputClasses} />
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )}
 
-            {/* Graduation - Show for graduation, post_graduation */}
-            {['graduation', 'post_graduation'].includes(formData.highestQualification) && (
-                <div className="border rounded-lg p-4 bg-blue-50/50 dark:bg-blue-900/20 space-y-4">
-                    <h3 className="font-semibold text-gray-700 dark:text-gray-300">Graduation Details</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="gradCollegeName">College Name *</Label>
-                            <Input id="gradCollegeName" name="gradCollegeName" value={formData.gradCollegeName} onChange={onChange} placeholder="Enter college name" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="grad University">University *</Label>
-                            <Input id="gradUniversity" name="gradUniversity" value={formData.gradUniversity} onChange={onChange} placeholder="Enter university name" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="gradDegree">Degree *</Label>
-                            <Input id="gradDegree" name="gradDegree" value={formData.gradDegree} onChange={onChange} placeholder="e.g. BSc, BCom, BTech" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="gradPassingYear">Passing Year *</Label>
-                            <Input id="gradPassingYear" name="gradPassingYear" value={formData.gradPassingYear} onChange={onChange} placeholder="e.g. 2023" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="gradPercentage">Percentage / CGPA *</Label>
-                            <Input id="gradPercentage" name="gradPercentage" value={formData.gradPercentage} onChange={onChange} placeholder="e.g. 75% or 8.5 CGPA" />
+                {/* Graduation - Show for graduation, post_graduation */}
+                {['graduation', 'post_graduation'].includes(formData.highestQualification) && (
+                    <div className="space-y-8 bg-blue-50/30 dark:bg-blue-900/10 p-10 rounded-[2.5rem] border border-blue-100/50 dark:border-blue-900/20 transition-all duration-500">
+                        <h3 className={sectionHeaderClasses}>
+                            <span className="h-2 w-2 rounded-full bg-blue-500" />
+                            Graduation Details
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="space-y-2">
+                                <Label htmlFor="gradCollegeName" className={labelClasses}>College Name *</Label>
+                                <Input id="gradCollegeName" name="gradCollegeName" value={formData.gradCollegeName} onChange={onChange} placeholder="College Name" className={inputClasses} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="gradUniversity" className={labelClasses}>University *</Label>
+                                <Input id="gradUniversity" name="gradUniversity" value={formData.gradUniversity} onChange={onChange} placeholder="University Name" className={inputClasses} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="gradDegree" className={labelClasses}>Degree *</Label>
+                                <Input id="gradDegree" name="gradDegree" value={formData.gradDegree} onChange={onChange} placeholder="e.g. BSc, BCom, BTech" className={inputClasses} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="gradPassingYear" className={labelClasses}>Passing Year *</Label>
+                                <Input id="gradPassingYear" name="gradPassingYear" value={formData.gradPassingYear} onChange={onChange} placeholder="YYYY" className={inputClasses} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="gradPercentage" className={labelClasses}>Percentage / CGPA *</Label>
+                                <Input id="gradPercentage" name="gradPercentage" value={formData.gradPercentage} onChange={onChange} placeholder="Percentage or CGPA" className={inputClasses} />
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )}
 
-            {/* Post Graduation - Show only for post_graduation */}
-            {formData.highestQualification === 'post_graduation' && (
-                <div className="border rounded-lg p-4 bg-purple-50/50 dark:bg-purple-900/20 space-y-4">
-                    <h3 className="font-semibold text-gray-700 dark:text-gray-300">Post Graduation Details</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="pgCollegeName">PG College Name *</Label>
-                            <Input id="pgCollegeName" name="pgCollegeName" value={formData.pgCollegeName} onChange={onChange} placeholder="Enter PG college name" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="pgUniversity">University *</Label>
-                            <Input id="pgUniversity" name="pgUniversity" value={formData.pgUniversity} onChange={onChange} placeholder="Enter university name" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="pgDegree">Degree *</Label>
-                            <Input id="pgDegree" name="pgDegree" value={formData.pgDegree} onChange={onChange} placeholder="e.g. MSc, MCom, MTech" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="pgPassingYear">Passing Year *</Label>
-                            <Input id="pgPassingYear" name="pgPassingYear" value={formData.pgPassingYear} onChange={onChange} placeholder="e.g. 2025" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="pgPercentage">Percentage / CGPA *</Label>
-                            <Input id="pgPercentage" name="pgPercentage" value={formData.pgPercentage} onChange={onChange} placeholder="e.g. 80% or 9.0 CGPA" />
+                {/* Post Graduation - Show only for post_graduation */}
+                {formData.highestQualification === 'post_graduation' && (
+                    <div className="space-y-8 bg-purple-50/30 dark:bg-purple-900/10 p-10 rounded-[2.5rem] border border-purple-100/50 dark:border-purple-900/20 transition-all duration-500">
+                        <h3 className={sectionHeaderClasses}>
+                            <span className="h-2 w-2 rounded-full bg-purple-500" />
+                            Post Graduation Details
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="space-y-2">
+                                <Label htmlFor="pgCollegeName" className={labelClasses}>College Name *</Label>
+                                <Input id="pgCollegeName" name="pgCollegeName" value={formData.pgCollegeName} onChange={onChange} placeholder="College Name" className={inputClasses} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="pgUniversity" className={labelClasses}>University *</Label>
+                                <Input id="pgUniversity" name="pgUniversity" value={formData.pgUniversity} onChange={onChange} placeholder="University Name" className={inputClasses} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="pgDegree" className={labelClasses}>Degree *</Label>
+                                <Input id="pgDegree" name="pgDegree" value={formData.pgDegree} onChange={onChange} placeholder="e.g. MSc, MCom, MTech" className={inputClasses} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="pgPassingYear" className={labelClasses}>Passing Year *</Label>
+                                <Input id="pgPassingYear" name="pgPassingYear" value={formData.pgPassingYear} onChange={onChange} placeholder="YYYY" className={inputClasses} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="pgPercentage" className={labelClasses}>Percentage / CGPA *</Label>
+                                <Input id="pgPercentage" name="pgPercentage" value={formData.pgPercentage} onChange={onChange} placeholder="Percentage or CGPA" className={inputClasses} />
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )}
+            </div>
         </div>
     )
 }
