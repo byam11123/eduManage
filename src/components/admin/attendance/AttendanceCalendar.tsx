@@ -6,9 +6,9 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { getDaysInMonth } from "date-fns"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import type { AttendanceRecord, AttendanceType } from "@/lib/types"
+import { cn } from "@/lib/utils"
 
 interface AttendanceCalendarProps {
     records: AttendanceRecord[]
@@ -45,17 +45,17 @@ export function AttendanceCalendar({
     // Get weekday for column headers
     const getDayName = (day: number) => {
         const date = new Date(year, month, day)
-        return date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()
+        return date.toLocaleDateString('en-US', { weekday: 'short' }).charAt(0)
     }
 
-    const getStatusColor = (status: string) => {
+    const getStatusStyle = (status: string) => {
         switch (status) {
-            case 'present': return 'bg-green-100 text-green-700' // Using color codes from images could also be specific
-            case 'absent': return 'bg-red-100 text-red-700'
-            case 'half-day': return 'bg-yellow-100 text-yellow-700'
-            case 'holiday': return 'bg-blue-100 text-blue-700'
-            case 'week-off': return 'bg-gray-100 text-gray-500' // Sunday
-            default: return 'bg-gray-50 text-gray-400'
+            case 'present': return 'bg-emerald-50 text-emerald-600 font-black'
+            case 'absent': return 'bg-rose-50 text-rose-600 font-black'
+            case 'half-day': return 'bg-amber-50 text-amber-600 font-black'
+            case 'holiday': return 'bg-indigo-50 text-indigo-600 font-black'
+            case 'week-off': return 'bg-gray-50 text-gray-400 font-bold opacity-50'
+            default: return 'bg-transparent text-gray-200'
         }
     }
 
@@ -65,32 +65,44 @@ export function AttendanceCalendar({
             case 'absent': return 'A'
             case 'half-day': return 'HD'
             case 'holiday': return 'H'
-            case 'week-off': return 'WO'
-            default: return '-'
+            case 'week-off': return 'W'
+            default: return '·'
         }
     }
 
     if (loading) {
-        return <div className="p-8 text-center text-gray-500">Loading calendar data...</div>
+        return (
+            <div className="py-40 flex items-center justify-center animate-pulse">
+                <div className="h-4 w-64 bg-gray-100 rounded-full" />
+            </div>
+        )
     }
 
     return (
-        <div className="border border-gray-200 dark:border-gray-800 rounded-lg overflow-x-auto">
-            <Table className="w-full min-w-[1200px]">
-                <TableHeader>
-                    <TableRow className="bg-gray-50 hover:bg-gray-50 font-semibold text-xs text-gray-500">
-                        <TableHead className="w-[200px] sticky left-0 bg-gray-50 z-10">
-                            {type === 'student' ? 'STUDENT NAME' : 'EMPLOYEE NAME'}
+        <div className="overflow-x-auto relative">
+            <Table className="w-full min-w-[1400px] border-collapse">
+                <TableHeader className="bg-gray-50/50 sticky top-0 z-20">
+                    <TableRow className="hover:bg-transparent border-none">
+                        <TableHead className="w-[280px] sticky left-0 bg-white dark:bg-gray-900 z-30 font-black text-[10px] uppercase tracking-widest text-gray-400 py-6 pl-8 border-r border-gray-100 dark:border-gray-800 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
+                            {type === 'student' ? 'Academic Candidate' : 'Professional Staff'}
                         </TableHead>
-                        <TableHead className="w-[100px] bg-gray-50">SUMMARY</TableHead>
-                        {days.map(day => (
-                            <TableHead key={day} className="text-center px-1 min-w-[40px] border-l border-gray-100">
-                                <div className="flex flex-col items-center gap-1">
-                                    <span>{day}</span>
-                                    <span className="text-[10px] font-normal">{getDayName(day)}</span>
-                                </div>
-                            </TableHead>
-                        ))}
+                        <TableHead className="w-[120px] font-black text-[10px] uppercase tracking-widest text-gray-400 py-6 text-center border-r border-gray-100 dark:border-gray-800">
+                            Summary
+                        </TableHead>
+                        {days.map(day => {
+                            const isWeekend = [0, 6].includes(new Date(year, month, day).getDay())
+                            return (
+                                <TableHead key={day} className={cn(
+                                    "text-center p-0 min-w-[42px] border-r border-gray-100 dark:border-gray-800 last:border-r-0",
+                                    isWeekend && "bg-gray-50/30"
+                                )}>
+                                    <div className="flex flex-col items-center py-4">
+                                        <span className="text-[10px] font-black text-gray-900 dark:text-white mb-1">{day}</span>
+                                        <span className="text-[8px] font-black text-gray-400">{getDayName(day)}</span>
+                                    </div>
+                                </TableHead>
+                            )
+                        })}
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -99,24 +111,30 @@ export function AttendanceCalendar({
                         const absentCount = Object.values(statusMap).filter(s => s === 'absent').length
 
                         return (
-                            <TableRow key={info.entityId}>
-                                <TableCell className="sticky left-0 bg-white z-10 border-r border-gray-100 font-medium">
-                                    <div className="flex items-center gap-2">
-                                        <Avatar className="h-8 w-8 bg-indigo-100 text-indigo-600">
-                                            <AvatarFallback>{info.name.charAt(0)}</AvatarFallback>
+                            <TableRow key={info.entityId} className="group hover:bg-indigo-50/10 transition-colors border-b border-gray-50 dark:border-gray-800 last:border-b-0">
+                                <TableCell className="sticky left-0 bg-white dark:bg-gray-900 z-10 border-r border-gray-100 dark:border-gray-800 pl-8 py-4 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
+                                    <div className="flex items-center gap-4">
+                                        <Avatar className="h-10 w-10 rounded-xl bg-indigo-50 text-indigo-600 font-bold transition-all group-hover:scale-110">
+                                            <AvatarFallback className="rounded-xl">{info.name.charAt(0)}</AvatarFallback>
                                         </Avatar>
                                         <div className="flex flex-col">
-                                            <span className="text-sm text-gray-900">{info.name}</span>
-                                            <span className="text-[10px] text-gray-500">
+                                            <span className="font-black text-gray-900 dark:text-white tracking-tight leading-none mb-1">{info.name}</span>
+                                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">
                                                 {type === 'student' ? info.rollNo : info.designation}
                                             </span>
                                         </div>
                                     </div>
                                 </TableCell>
-                                <TableCell className="border-r border-gray-100 bg-gray-50/30">
-                                    <div className="flex flex-col gap-1 text-[10px] font-medium">
-                                        <span className="text-green-600">Present: {presentCount}</span>
-                                        <span className="text-red-500">Absent: {absentCount}</span>
+                                <TableCell className="border-r border-gray-100 dark:border-gray-800 bg-gray-50/20">
+                                    <div className="flex flex-col items-center gap-1">
+                                        <div className="flex items-center gap-1.5">
+                                            <div className="h-1 w-1 rounded-full bg-emerald-500" />
+                                            <span className="text-[9px] font-black text-gray-600">{presentCount}P</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5">
+                                            <div className="h-1 w-1 rounded-full bg-rose-500" />
+                                            <span className="text-[9px] font-black text-gray-600">{absentCount}A</span>
+                                        </div>
                                     </div>
                                 </TableCell>
                                 {days.map(day => {
@@ -125,8 +143,11 @@ export function AttendanceCalendar({
                                     const displayStatus = isSunday && status !== 'holiday' ? 'week-off' : status
 
                                     return (
-                                        <TableCell key={day} className="p-0 text-center border-l border-gray-100">
-                                            <div className={`h-full w-full py-3 flex items-center justify-center text-xs font-medium ${getStatusColor(displayStatus)}`}>
+                                        <TableCell key={day} className="p-0 border-r border-gray-100 dark:border-gray-800 last:border-r-0">
+                                            <div className={cn(
+                                                "h-12 w-full flex items-center justify-center text-[10px] transition-all",
+                                                getStatusStyle(displayStatus)
+                                            )}>
                                                 {getStatusText(displayStatus)}
                                             </div>
                                         </TableCell>

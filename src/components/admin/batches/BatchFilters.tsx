@@ -14,8 +14,9 @@ import {
     SelectTrigger,
     SelectValue
 } from '@/components/ui/select'
-import { Search, RotateCw, X } from 'lucide-react'
+import { Search, RotateCw, X, Layers, Filter } from 'lucide-react'
 import { useFilterStore } from '@/lib/stores'
+import { cn } from '@/lib/utils'
 import type { Course } from '@/lib/types'
 
 interface BatchFiltersProps {
@@ -35,74 +36,81 @@ export function BatchFilters({ onRefresh, loading, courses = [] }: BatchFiltersP
         resetBatchFilters
     } = useFilterStore()
 
-    const hasFilters = batchSearch || batchStatus !== 'all' || batchCourseId
+    const hasFilters = batchSearch || batchStatus !== 'all' || (batchCourseId && batchCourseId !== 'all')
 
     return (
-        <div className="flex items-center gap-4 flex-wrap">
-            {/* Refresh Button */}
-            <Button
-                variant="outline"
-                size="icon"
-                className="h-9 w-9 text-indigo-600 border-indigo-100 bg-indigo-50 hover:bg-indigo-100"
-                onClick={onRefresh}
-                disabled={loading}
-            >
-                <RotateCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-            </Button>
+        <div className="flex flex-col lg:flex-row gap-6 items-center justify-between w-full">
+            {/* Search and Course Section */}
+            <div className="flex flex-col md:flex-row gap-4 w-full lg:w-auto flex-1 items-center">
+                <div className="relative flex-1 min-w-[280px]">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-focus-within:text-indigo-600 transition-colors" />
+                    <Input
+                        placeholder="Search batches by name or ID..."
+                        className="pl-11 h-12 bg-gray-50/50 border-none rounded-xl font-bold text-xs uppercase tracking-widest focus-visible:ring-2 focus-visible:ring-indigo-500/20 transition-all"
+                        value={batchSearch}
+                        onChange={(e) => setBatchSearch(e.target.value)}
+                    />
+                </div>
 
-            {/* Search Input */}
-            <div className="relative flex-1 max-w-sm">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                    placeholder="Search batches..."
-                    className="pl-9 h-9"
-                    value={batchSearch}
-                    onChange={(e) => setBatchSearch(e.target.value)}
-                />
-            </div>
-
-            {/* Status Filter */}
-            <Select value={batchStatus} onValueChange={setBatchStatus}>
-                <SelectTrigger className="w-[130px] h-9">
-                    <SelectValue placeholder="All Status" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                </SelectContent>
-            </Select>
-
-            {/* Course Filter */}
-            {courses.length > 0 && (
-                <Select value={batchCourseId} onValueChange={setBatchCourseId}>
-                    <SelectTrigger className="w-[150px] h-9">
-                        <SelectValue placeholder="All Courses" />
+                <Select value={batchCourseId || 'all'} onValueChange={setBatchCourseId}>
+                    <SelectTrigger className="w-full md:w-[240px] h-12 bg-gray-50/50 border-none rounded-xl font-bold text-xs uppercase tracking-widest focus:ring-2 focus:ring-indigo-500/20 transition-all">
+                        <div className="flex items-center gap-2">
+                            <Layers className="h-4 w-4 text-indigo-500" />
+                            <SelectValue placeholder="All Courses" />
+                        </div>
                     </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All Courses</SelectItem>
+                    <SelectContent className="rounded-xl border-none shadow-2xl p-1">
+                        <SelectItem value="all" className="rounded-lg font-bold text-[10px] uppercase tracking-widest py-3">All Academic Streams</SelectItem>
                         {courses.map((course) => (
-                            <SelectItem key={course.id} value={course.id}>
+                            <SelectItem key={course.id} value={course.id} className="rounded-lg font-bold text-[10px] uppercase tracking-widest py-3">
                                 {course.name}
                             </SelectItem>
                         ))}
                     </SelectContent>
                 </Select>
-            )}
+            </div>
 
-            {/* Clear Filters */}
-            {hasFilters && (
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={resetBatchFilters}
-                    className="h-9 text-gray-500 hover:text-gray-700"
-                >
-                    <X className="h-4 w-4 mr-1" />
-                    Clear
-                </Button>
-            )}
+            {/* Status and Actions Section */}
+            <div className="flex items-center gap-3 w-full lg:w-auto">
+                <Select value={batchStatus} onValueChange={setBatchStatus}>
+                    <SelectTrigger className="w-[160px] h-12 bg-gray-50/50 border-none rounded-xl font-bold text-xs uppercase tracking-widest focus:ring-2 focus:ring-indigo-500/20 transition-all">
+                        <div className="flex items-center gap-2">
+                            <Filter className="h-4 w-4 text-gray-400" />
+                            <SelectValue placeholder="Status" />
+                        </div>
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl border-none shadow-2xl p-1">
+                        <SelectItem value="all" className="rounded-lg font-bold text-[10px] uppercase tracking-widest py-3">All Status</SelectItem>
+                        <SelectItem value="active" className="rounded-lg font-bold text-[10px] uppercase tracking-widest py-3 text-emerald-600">Active</SelectItem>
+                        <SelectItem value="inactive" className="rounded-lg font-bold text-[10px] uppercase tracking-widest py-3 text-amber-600">Inactive</SelectItem>
+                        <SelectItem value="completed" className="rounded-lg font-bold text-[10px] uppercase tracking-widest py-3 text-blue-600">Completed</SelectItem>
+                    </SelectContent>
+                </Select>
+
+                <div className="flex items-center gap-2">
+                    {hasFilters && (
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={resetBatchFilters}
+                            className="h-12 w-12 rounded-xl text-gray-400 hover:text-rose-600 hover:bg-rose-50 transition-all"
+                            title="Reset Filters"
+                        >
+                            <X className="h-4 w-4" />
+                        </Button>
+                    )}
+                    
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-12 w-12 rounded-xl text-indigo-600 border-none bg-indigo-50 hover:bg-indigo-100 transition-all shadow-sm active:scale-95"
+                        onClick={onRefresh}
+                        disabled={loading}
+                    >
+                        <RotateCw className={cn("h-4 w-4", loading && "animate-spin")} />
+                    </Button>
+                </div>
+            </div>
         </div>
     )
 }

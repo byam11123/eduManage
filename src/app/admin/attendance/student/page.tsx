@@ -4,19 +4,21 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import {
-    AttendanceHeader,
     AttendanceFilters,
     AttendanceStatsView,
     AttendanceTable,
     AttendanceCalendar
 } from '@/components/admin/attendance'
-import { useAttendance } from '@/hooks'
-import { ClipboardCheck } from 'lucide-react'
+import { PageHeader } from '@/components/shared/PageHeader'
+import { StatsGrid } from '@/components/shared/StatsGrid'
+import { useAttendance, useBatches } from '@/hooks'
+import { ClipboardCheck, CheckCircle, XCircle, Clock, AlertCircle } from 'lucide-react'
 
 export default function StudentAttendancePage() {
     const [view, setView] = useState<'table' | 'calendar'>('table')
     const [year, setYear] = useState<number>(new Date().getFullYear())
     const [month, setMonth] = useState<number>(new Date().getMonth())
+    const [batchId, setBatchId] = useState<string>('all')
     const [search, setSearch] = useState('')
     const [date, setDate] = useState<Date>(new Date())
 
@@ -26,29 +28,54 @@ export default function StudentAttendancePage() {
         stats,
         fetchMonthlyAttendance,
         fetchDailyAttendance,
-        updateStatus
+        updateStatus,
+        markAllPresent
     } = useAttendance({ type: 'student' })
+
+    const { batches } = useBatches()
 
     useEffect(() => {
         if (view === 'calendar') {
-            fetchMonthlyAttendance(month, year)
+            fetchMonthlyAttendance(month, year, batchId === 'all' ? undefined : batchId)
         } else {
-            fetchDailyAttendance(date)
+            fetchDailyAttendance(date, batchId === 'all' ? undefined : batchId)
         }
-    }, [view, month, year, date, fetchMonthlyAttendance, fetchDailyAttendance])
+    }, [view, month, year, date, batchId, fetchMonthlyAttendance, fetchDailyAttendance])
+
+    const attendanceStats = [
+        { title: 'Present Today', value: stats.present, icon: CheckCircle, color: 'emerald' as const, trend: 'In Campus' },
+        { title: 'Absent', value: stats.absent, icon: XCircle, color: 'rose' as const, trend: 'Missing' },
+        { title: 'Late/Half Day', value: stats.halfDay, icon: Clock, color: 'amber' as const, trend: 'Delayed' },
+        { title: 'Leave', value: stats.leave, icon: AlertCircle, color: 'indigo' as const, trend: 'Approved' },
+    ]
 
     return (
         <div className="p-8 space-y-8 bg-gray-50/30 dark:bg-gray-950 min-h-screen">
-            <AttendanceHeader
-                title="Student"
-                view={view}
-                onViewChange={setView}
+            <PageHeader 
+                title="Student Attendance"
+                description="Monitor daily presence, track monthly patterns, and manage leave records for all batches."
+                actions={[
+                    { 
+                        label: view === 'table' ? 'Switch to Calendar' : 'Switch to Daily Log', 
+                        icon: view === 'table' ? ClipboardCheck : ClipboardCheck, 
+                        variant: 'outline',
+                        onClick: () => setView(view === 'table' ? 'calendar' : 'table')
+                    },
+                    { 
+                        label: 'Mark All Present', 
+                        icon: CheckCircle, 
+                        variant: 'default', 
+                        onClick: () => markAllPresent(date, batchId === 'all' ? undefined : batchId) 
+                    }
+                ]}
             />
+
+            <StatsGrid stats={attendanceStats} columns={4} />
 
             <div className="space-y-6">
                 {/* Filters */}
                 <Card className="border-none shadow-xl shadow-gray-200/50 dark:shadow-none bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
-                    <CardContent className="p-5">
+                    <CardContent className="p-4">
                         <AttendanceFilters
                             search={search}
                             onSearchChange={setSearch}
@@ -56,16 +83,13 @@ export default function StudentAttendancePage() {
                             onYearChange={setYear}
                             month={month}
                             onMonthChange={setMonth}
+                            batchId={batchId}
+                            onBatchChange={setBatchId}
+                            batches={batches}
+                            view={view}
                         />
                     </CardContent>
                 </Card>
-
-                {/* Stats Legend */}
-                {view === 'calendar' && (
-                    <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border-none shadow-xl shadow-gray-200/50 dark:shadow-none">
-                        <AttendanceStatsView type="student" stats={stats} />
-                    </div>
-                )}
 
                 {/* Content */}
                 <Card className="border-none shadow-2xl shadow-gray-200/50 dark:shadow-none bg-white dark:bg-gray-900 rounded-3xl overflow-hidden">
@@ -75,20 +99,22 @@ export default function StudentAttendancePage() {
                                 <ClipboardCheck className="h-5 w-5" />
                             </div>
                             <div>
-                                <h3 className="text-xl font-black tracking-tight">Presence Log</h3>
-                                <p className="text-[10px] text-muted-foreground font-black uppercase tracking-tighter mt-0.5">Automated entry management</p>
+                                <h3 className="text-xl font-black tracking-tight">
+                                    {view === 'table' ? 'Daily Presence Log' : 'Monthly Attendance View'}
+                                </h3>
+                                <p className="text-[10px] text-muted-foreground font-black uppercase tracking-tighter mt-0.5">
+                                    {view === 'table' ? 'Real-time entry management' : 'Academic pattern analysis'}
+                                </p>
                             </div>
                         </div>
-                        {view === 'table' && (
-                            <Button className="h-10 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase tracking-widest text-[10px] shadow-lg shadow-indigo-100 dark:shadow-none">
-                                Submit Registry
-                            </Button>
-                        )}
                     </div>
                     <CardContent className="p-0">
                         {view === 'table' ? (
                             <AttendanceTable
-                                records={records}
+                                records={records.filter(r => 
+                                    r.name.toLowerCase().includes(search.toLowerCase()) || 
+                                    (r.rollNo?.toLowerCase().includes(search.toLowerCase()) ?? false)
+                                )}
                                 loading={loading}
                                 type="student"
                                 onStatusChange={updateStatus}
@@ -107,7 +133,7 @@ export default function StudentAttendancePage() {
 
                 {/* Footer Info */}
                 <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-gray-400 px-4">
-                    <span>Active Registry Count: {view === 'table' ? records.length : 'N/A'}</span>
+                    <span>Active Registry Count: {records.length}</span>
                     <span>Last Synced: Just Now</span>
                 </div>
             </div>
