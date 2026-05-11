@@ -22,6 +22,7 @@ interface PageHeaderProps {
     backHref?: string
     actions?: Action[]
     className?: string
+    children?: React.ReactNode
 }
 
 export function PageHeader({
@@ -29,7 +30,8 @@ export function PageHeader({
     description,
     backHref,
     actions,
-    className
+    className,
+    children
 }: PageHeaderProps) {
     const router = useRouter()
 
@@ -57,8 +59,10 @@ export function PageHeader({
                 )}
             </div>
 
-            {actions && actions.length > 0 && (
-                <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3">
+                {children}
+                {actions && actions.length > 0 && (
+                    <>
                     {actions.map((action, i) => {
                         const Icon = action.icon || (action.label.toLowerCase().includes('add') ? Plus : null)
                         
@@ -102,8 +106,9 @@ export function PageHeader({
                             </Button>
                         )
                     })}
-                </div>
-            )}
+                    </>
+                )}
+            </div>
         </div>
     )
 }

@@ -18,79 +18,84 @@ interface StatsCardsProps {
 
 export function StatsCards({ stats, loading }: StatsCardsProps) {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <StatsCard
-                title="Total Students"
-                value={stats.totalStudents}
-                icon={Users}
-                description="Overall registered students"
-                trend={{ value: '12%', isUp: true }}
-                color="indigo"
-                loading={loading}
-            />
-            <StatsCard
-                title="Active Enrollment"
-                value={stats.activeStudents}
-                icon={UserCheck}
-                description="Currently active in batches"
-                trend={{ value: '5%', isUp: true }}
-                color="emerald"
-                loading={loading}
-            />
-            <StatsCard
-                title="Revenue"
-                value={`₹${stats.totalRevenue.toLocaleString()}`}
-                icon={TrendingUp}
-                description="Total fees collected"
-                trend={{ value: '24%', isUp: true }}
-                color="purple"
-                loading={loading}
-            />
-            <StatsCard
-                title="Pending Dues"
-                value={`₹${stats.pendingFees.toLocaleString()}`}
-                icon={AlertCircle}
-                description="Awaiting collection"
-                trend={{ value: '2%', isUp: false }}
-                color="rose"
-                loading={loading}
-            />
+        <div className="space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+            {/* Primary KPIs */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-8">
+                <StatsCard
+                    title="Total Enrollment"
+                    value={stats.totalStudents}
+                    icon={Users}
+                    description="Total Registered"
+                    trend={{ value: '12%', isUp: true }}
+                    color="indigo"
+                    loading={loading}
+                />
+                <StatsCard
+                    title="Active Cohorts"
+                    value={stats.activeStudents}
+                    icon={UserCheck}
+                    description="Currently Participating"
+                    trend={{ value: '5%', isUp: true }}
+                    color="emerald"
+                    loading={loading}
+                />
+                <StatsCard
+                    title="Total Revenue"
+                    value={`₹${stats.totalRevenue.toLocaleString()}`}
+                    icon={TrendingUp}
+                    description="Total Amount Collected"
+                    trend={{ value: '24%', isUp: true }}
+                    color="violet"
+                    loading={loading}
+                />
+                <StatsCard
+                    title="Pending Fees"
+                    value={`₹${stats.pendingFees.toLocaleString()}`}
+                    icon={AlertCircle}
+                    description="Total Due Amount"
+                    trend={{ value: '2%', isUp: false }}
+                    color="rose"
+                    loading={loading}
+                />
+            </div>
             
-            {/* Row 2: Operation Stats */}
-            <StatsCard
-                title="Courses"
-                value={stats.totalCourses}
-                icon={BookOpen}
-                description="Active educational programs"
-                color="indigo"
-                loading={loading}
-            />
-            <StatsCard
-                title="Live Batches"
-                value={stats.totalBatches}
-                icon={Layers}
-                description="Currently running sessions"
-                color="emerald"
-                loading={loading}
-            />
-            <StatsCard
-                title="Total Enquiries"
-                value={stats.totalEnquiries}
-                icon={PhoneCall}
-                description="All-time CRM leads"
-                trend={{ value: '18%', isUp: true }}
-                color="amber"
-                loading={loading}
-            />
-            <StatsCard
-                title="Conversion Rate"
-                value={`${Math.round((stats.activeStudents / (stats.totalEnquiries || 1)) * 100)}%`}
-                icon={Target}
-                description="Leads to Admission ratio"
-                trend={{ value: '3%', isUp: true }}
-                color="indigo"
-                loading={loading}
-            />
+            {/* Secondary Operational KPIs */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-8 opacity-90">
+                <StatsCard
+                    title="Total Courses"
+                    value={stats.totalCourses}
+                    icon={BookOpen}
+                    description="Active Programs"
+                    color="indigo"
+                    loading={loading}
+                />
+                <StatsCard
+                    title="Total Batches"
+                    value={stats.totalBatches}
+                    icon={Layers}
+                    description="Running Batches"
+                    color="emerald"
+                    loading={loading}
+                />
+                <StatsCard
+                    title="Total Leads"
+                    value={stats.totalEnquiries}
+                    icon={PhoneCall}
+                    description="Total Enquiries"
+                    trend={{ value: '18%', isUp: true }}
+                    color="amber"
+                    loading={loading}
+                />
+                <StatsCard
+                    title="Conversion Rate"
+                    value={`${Math.round((stats.activeStudents / (stats.totalEnquiries || 1)) * 100)}%`}
+                    icon={Target}
+                    description="Lead Conversion"
+                    trend={{ value: '3%', isUp: true }}
+                    color="indigo"
+                    loading={loading}
+                />
+            </div>
         </div>
     )
 }
