@@ -62,6 +62,7 @@ export async function PATCH(
         if (paidAmount > 0) {
             const receiptIdData = await generateId('RECEIPT')
             receiptNo = receiptIdData.displayId
+            console.log(`[API /installments/[id]] Generating Receipt: ${receiptNo} (Year: ${receiptIdData.year}, Seq: ${receiptIdData.sequence})`)
 
             await db.receipt.create({
                 data: {
@@ -97,10 +98,13 @@ export async function PATCH(
             installment: updatedInstallment
         })
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('[API /installments/[id] PATCH] Error:', error)
+        if (error.code === 'P2002') {
+            console.error('Unique constraint failed on fields:', error.meta?.target)
+        }
         return NextResponse.json(
-            { success: false, error: 'Internal Server Error' },
+            { success: false, error: error.message || 'Internal Server Error' },
             { status: 500 }
         )
     }

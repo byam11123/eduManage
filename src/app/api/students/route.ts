@@ -339,7 +339,26 @@ export async function POST(request: NextRequest) {
                 netPayableFee: Number(body.netPayableFee) || 0,
                 isPartPayment: body.isPartPayment === 'true' || body.isPartPayment === true,
                 installmentPlan: body.installmentPlan ? (typeof body.installmentPlan === 'string' ? body.installmentPlan : JSON.stringify(body.installmentPlan)) : null,
-                receivedBy: body.receivedBy
+                receivedBy: body.receivedBy,
+
+                // Unique field sanitization
+                enrollmentNo: (body.enrollmentNo && body.enrollmentNo !== '') ? body.enrollmentNo : null,
+
+                // Referral Logic
+                referral: (body.referrerId && body.referrerId !== 'none') ? {
+                    create: (() => {
+                        // We'll need the referrer's default commission. 
+                        // Since we can't easily fetch it inside a nested create without a separate query,
+                        // we'll use a transaction or a separate fetch.
+                        // However, for now, we'll try to find it.
+                        return {
+                            referrerId: body.referrerId,
+                            organizationId: payload.organizationId!,
+                            status: studentStatus === 'active' ? 'joined' : 'pending',
+                            rewardAmount: Number(body.referralAmount) || 0 // Expecting this from frontend
+                        }
+                    })()
+                } : undefined
             }
         })
 

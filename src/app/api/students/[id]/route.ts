@@ -55,6 +55,17 @@ export async function GET(
                 attendances: {
                     orderBy: { date: 'desc' },
                     take: 50 // Limit to recent records
+                },
+                referral: {
+                    include: {
+                        referrer: {
+                            select: {
+                                id: true,
+                                name: true,
+                                type: true
+                            }
+                        }
+                    }
                 }
             }
         })
@@ -218,16 +229,59 @@ export async function PATCH(
         }
 
         // Prevent "Unknown argument" errors if Prisma Client is out of sync
-        // TODO: Remove this once admission form is updated to use StudentCourse relation
-        // and Prisma Client is regenerated successfully
         if ('courseId' in data) delete data.courseId
         if ('batchId' in data) delete data.batchId
         if ('branchId' in data) delete data.branchId
         if ('action' in data) delete data.action
+        if ('referrerId' in data) delete data.referrerId
+
+        // Unique field sanitization
+        if (data.enrollmentNo !== undefined) {
+            data.enrollmentNo = (data.enrollmentNo && data.enrollmentNo !== '') ? data.enrollmentNo : null
+        }
+        if (data.email !== undefined) {
+            data.email = (data.email && data.email !== '') ? data.email : null
+        }
+        if (data.studentDisplayId !== undefined) {
+            data.studentDisplayId = (data.studentDisplayId && data.studentDisplayId !== '') ? data.studentDisplayId : null
+        }
+
+        // Referral Logic
+        const referrerId = body.referrerId
+        if (referrerId !== undefined) {
+            if (referrerId && referrerId !== 'none') {
+                data.referral = {
+                    upsert: {
+                        create: {
+                            referrerId: referrerId,
+                            organizationId: payload.organizationId!,
+                            status: existingStudent.status === 'active' ? 'joined' : 'pending'
+                        },
+                        update: {
+                            referrerId: referrerId
+                        }
+                    }
+                }
+            } else {
+                // Try to delete if it exists, otherwise ignore
+                try {
+                    await db.referral.deleteMany({
+                        where: { studentId: id }
+                    })
+                } catch (e) {}
+            }
+        }
 
         const updatedStudent = await db.student.update({
             where: { id },
-            data
+            data,
+            include: {
+                referral: {
+                    include: {
+                        referrer: true
+                    }
+                }
+            }
         })
 
         return NextResponse.json({

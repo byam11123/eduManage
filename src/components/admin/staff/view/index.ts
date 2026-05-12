@@ -1,0 +1,5 @@
+export * from './ProfileSidebar'
+export * from './StaffDetailsTab'
+export * from './QualificationTab'
+export * from './SalaryBankTab'
+export * from './DocumentsTab'

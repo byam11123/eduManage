@@ -1,6 +1,6 @@
 'use client'
 
-import { Pencil, User, MapPin, GraduationCap, Users, Info, ShieldCheck, HeartPulse, Building2, MapPinned } from 'lucide-react'
+import { Pencil, User, MapPin, GraduationCap, Users, Info, ShieldCheck, HeartPulse, Building2, MapPinned, BadgeCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import type { Student } from '@/lib/types'
@@ -69,7 +69,15 @@ export function ProfileDetailsTab({ student, onEdit }: ProfileDetailsTabProps) {
                             <RenderField label="Mother's Name" value={student.mothersName} />
                             <RenderField label="Marital Status" value={student.maritalStatus?.toUpperCase()} icon={HeartPulse} />
                             <RenderField label="Category" value={student.category?.toUpperCase()} />
-                            <RenderField label="Referred By" value={student.referredBy} />
+                            <RenderField 
+                                label="Referred By" 
+                                value={
+                                    student.referral?.referrer 
+                                        ? `${student.referral.referrer.name} (${student.referral.referrer.type.toUpperCase()})`
+                                        : student.referredBy
+                                } 
+                                icon={BadgeCheck}
+                            />
                         </div>
                     </CardContent>
                 </Card>
@@ -87,7 +95,7 @@ export function ProfileDetailsTab({ student, onEdit }: ProfileDetailsTabProps) {
                         {/* High School */}
                         <div className="p-8 bg-gray-50/50 dark:bg-gray-800/30 rounded-[2.5rem] border border-gray-100 dark:border-gray-800 relative group transition-all hover:bg-white dark:hover:bg-gray-800 shadow-sm hover:shadow-xl">
                             <div className="inline-block mb-6 px-4 py-1.5 bg-indigo-600 rounded-xl text-[10px] font-black text-white uppercase tracking-widest shadow-lg shadow-indigo-100 dark:shadow-none">
-                                10th (Secondary)
+                                10TH (High School)
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                                 <RenderField label="School Name" value={student.hsSchoolName} icon={Building2} />
@@ -100,7 +108,7 @@ export function ProfileDetailsTab({ student, onEdit }: ProfileDetailsTabProps) {
                         {/* Higher Secondary */}
                         <div className="p-8 bg-gray-50/50 dark:bg-gray-800/30 rounded-[2.5rem] border border-gray-100 dark:border-gray-800 relative group transition-all hover:bg-white dark:hover:bg-gray-800 shadow-sm hover:shadow-xl">
                             <div className="inline-block mb-6 px-4 py-1.5 bg-indigo-600 rounded-xl text-[10px] font-black text-white uppercase tracking-widest shadow-lg shadow-indigo-100 dark:shadow-none">
-                                12th (Senior)
+                                12TH (Higher Secondary)
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
                                 <RenderField label="School Name" value={student.hssSchoolName} icon={Building2} />
@@ -170,8 +178,6 @@ export function ProfileDetailsTab({ student, onEdit }: ProfileDetailsTabProps) {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-8 gap-x-10 opacity-60">
                         <RenderField label="Created" value={formatDate(student.createdAt)} icon={Info} />
                         <RenderField label="Updated" value={formatDate(student.updatedAt)} />
-                        <RenderField label="Staff Code" value={student.receivedBy} />
-                        <RenderField label="ID Code" value={student.instituteCode} />
                     </div>
                 </CardContent>
             </Card>

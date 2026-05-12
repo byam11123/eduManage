@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams, useRouter, useParams } from 'next/navigation'
 import { toast } from 'sonner'
-import { useBranches, useCourses, useBatches } from '@/hooks'
+import { useBranches, useCourses, useBatches, useReferrals } from '@/hooks'
 import { useAdmissionDraftStore } from '@/lib/stores'
 import type {
     StudentAdmissionFormData,
@@ -18,7 +18,7 @@ export const INITIAL_FORM_DATA: StudentAdmissionFormData = {
     lastName: '',
     email: '',
     dateOfBirth: '',
-    enrollmentNo: 'OCI-1',
+    enrollmentNo: '',
     phone: '',
     fathersName: '',
     mothersName: '',
@@ -37,7 +37,9 @@ export const INITIAL_FORM_DATA: StudentAdmissionFormData = {
     country: 'India',
     gender: '',
     referredBy: '',
+    referrerId: '',
     admissionDate: '',
+    referralAmount: '',
     imageUrl: '',
 
     // Step 2: Qualification Details
@@ -95,6 +97,7 @@ export function useAdmissionForm() {
     const { defaultBranch } = useBranches()
     const { courses, createCourse } = useCourses()
     const { batches, fetchBatches, createBatch } = useBatches()
+    const { referrers } = useReferrals()
     const { draftData, currentStep: draftStep, hasDraft, saveDraft, clearDraft } = useAdmissionDraftStore()
 
     const [currentStep, setCurrentStep] = useState(1)
@@ -104,6 +107,7 @@ export function useAdmissionForm() {
     // Dialog states for instant creation
     const [isAddCourseOpen, setIsAddCourseOpen] = useState(false)
     const [isAddBatchOpen, setIsAddBatchOpen] = useState(false)
+    const [isAddReferrerOpen, setIsAddReferrerOpen] = useState(false)
     const [savingNewCourse, setSavingNewCourse] = useState(false)
     const [savingNewBatch, setSavingNewBatch] = useState(false)
 
@@ -201,6 +205,7 @@ export function useAdmissionForm() {
                             country: s.country || '',
                             gender: s.gender || '',
                             referredBy: s.referredBy || '',
+                            referrerId: s.referral?.referrerId || '',
                             admissionDate: s.enrollmentDate ? new Date(s.enrollmentDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
                             imageUrl: s.imageUrl || '',
 
@@ -306,6 +311,21 @@ export function useAdmissionForm() {
             }
         })
     }, [formData.discountAmount, formData.totalAmount])
+    
+    // Update referral amount when referrer changes
+    useEffect(() => {
+        if (formData.referrerId && formData.referrerId !== 'none') {
+            const partner = referrers.find(r => r.id === formData.referrerId)
+            if (partner && !formData.referralAmount) {
+                setFormData(prev => ({ 
+                    ...prev, 
+                    referralAmount: String(partner.defaultCommissionAmount || 0) 
+                }))
+            }
+        } else if (formData.referrerId === 'none') {
+            setFormData(prev => ({ ...prev, referralAmount: '0' }))
+        }
+    }, [formData.referrerId, referrers])
 
     // Update installment rows based on mode and first payment
     useEffect(() => {
@@ -595,7 +615,9 @@ export function useAdmissionForm() {
                 batchId: formData.batchId,
                 enrollmentNo: formData.enrollmentNo,
                 referredBy: formData.referredBy,
+                referrerId: formData.referrerId,
                 enrollmentDate: formData.admissionDate,
+                referralAmount: formData.referralAmount,
                 branchId: formData.branchId || defaultBranch?.id,
                 imageUrl: formData.imageUrl,
 
@@ -696,6 +718,8 @@ export function useAdmissionForm() {
         setIsAddCourseOpen,
         isAddBatchOpen,
         setIsAddBatchOpen,
+        isAddReferrerOpen,
+        setIsAddReferrerOpen,
         savingNewCourse,
         savingNewBatch,
         newCourseData,

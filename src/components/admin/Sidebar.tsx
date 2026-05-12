@@ -23,7 +23,10 @@ import {
     Megaphone,
     Award,
     IdCard,
-    Settings
+    Settings,
+    Share2,
+    LayoutGrid,
+    Compass
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -77,7 +80,7 @@ export function SidebarContent({ isMobile = false }: { isMobile?: boolean }) {
                 { title: 'New Enquiry', url: '/admin/enquiry/add' },
             ]
         },
-        { title: 'Leads', url: '/admin/leads', icon: Users, moduleId: 'leads' },
+        { title: 'Leads', url: '/admin/leads', icon: Compass, moduleId: 'leads' },
         {
             title: 'Student',
             url: '/admin/students',
@@ -105,7 +108,7 @@ export function SidebarContent({ isMobile = false }: { isMobile?: boolean }) {
                 { title: 'Pending Dues', url: '/admin/fees?status=pending' },
             ]
         },
-        { title: 'Batch', url: '/admin/batch', icon: Users, moduleId: 'batches' },
+        { title: 'Batch', url: '/admin/batch', icon: LayoutGrid, moduleId: 'batches' },
         {
             title: 'Attendance',
             url: '/admin/attendance',
@@ -127,6 +130,7 @@ export function SidebarContent({ isMobile = false }: { isMobile?: boolean }) {
             ]
         },
         { title: 'Staff', url: '/admin/staff', icon: UserCheck, moduleId: 'staff' },
+        { title: 'Referrals', url: '/admin/referrals', icon: Share2, moduleId: 'referrals' },
         { title: 'Users & Roles', url: '/admin/users', icon: UserCog, moduleId: 'settings' },
     ]
 

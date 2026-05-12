@@ -35,6 +35,8 @@ export default function StudentAdmissionPage() {
         setIsAddCourseOpen,
         isAddBatchOpen,
         setIsAddBatchOpen,
+        isAddReferrerOpen,
+        setIsAddReferrerOpen,
         savingNewCourse,
         savingNewBatch,
         newCourseData,
@@ -97,6 +99,8 @@ export default function StudentAdmissionPage() {
                                     onDateChange={handleSelectChange}
                                     onImageUpload={handleImageUpload}
                                     onImageRemove={() => handleSelectChange('imageUrl', '')}
+                                    isAddReferrerOpen={isAddReferrerOpen}
+                                    setIsAddReferrerOpen={setIsAddReferrerOpen}
                                 />
                             )}
 

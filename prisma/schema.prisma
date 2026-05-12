@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../src/lib/prisma"
 }
 
 datasource db {
@@ -24,6 +25,45 @@ model User {
   emailVerified DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  // Qualification Details (Mirroring Student)
+  highestQualification String?
+  hsSchoolName       String?
+  hsBoard            String?
+  hsPassingYear      String?
+  hsPercentage       String?
+  hssSchoolName      String?
+  hssBoard           String?
+  hssStream          String?
+  hssPassingYear     String?
+  hssPercentage      String?
+  gradCollegeName    String?
+  gradUniversity     String?
+  gradDegree         String?
+  gradPassingYear    String?
+  gradPercentage     String?
+  pgCollegeName      String?
+  pgUniversity       String?
+  pgDegree           String?
+  pgPassingYear      String?
+  pgPercentage       String?
+  
+  // Staff Specific Fields
+  fathersName        String?
+  fathersPhone       String?
+  gender             String?
+  dateOfBirth        DateTime?
+  experienceYears    Int?
+  skills             String?
+  referredBy         String?
+  bankName           String?
+  accountNumber      String?
+  ifscCode           String?
+  // Document URLs
+  hsMarksheetUrl     String?
+  hssMarksheetUrl    String?
+  gradDegreeUrl      String?
+  pgDegreeUrl        String?
 
   // Relations
   otps          Otp[]
@@ -116,6 +156,8 @@ model Organization {
   walletTransactions WalletTransaction[]
   modulePermissions ModulePermission[]
   attendances      Attendance[]
+  referrers      Referrer[]
+  referrals      Referral[]
 
   @@index([slug])
   @@index([ownerId])
@@ -175,6 +217,7 @@ model Branch {
   students      Student[]
   enquiries     Enquiry[]
   attendances   Attendance[]
+  referrers     Referrer[]
 
   @@index([organizationId])
 }
@@ -192,6 +235,11 @@ model UserBranch {
   salaryType    String?  // monthly, hourly, fixed
   salaryAmount  Float?
   isActive      Boolean  @default(true)
+
+  // Professional Documents
+  appointmentLetterUrl String?
+  joiningReportUrl    String?
+
 
   // Relations
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -285,6 +333,14 @@ model Student {
   fullPayment     String?   // JSON string of full payment details
   receivedBy      String?
 
+  // Document URLs
+  aadhaarCardUrl      String?
+  hsMarksheetUrl      String?
+  hssMarksheetUrl     String?
+  gradDegreeUrl       String?
+  pgDegreeUrl         String?
+  admissionFormUrl    String?
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -303,6 +359,7 @@ model Student {
 
   receipts      Receipt[]
   attendances   Attendance[]
+  referral      Referral?
 
   @@index([branchId])
   @@index([courseId])
@@ -569,4 +626,92 @@ model ModulePermission {
   @@unique([userId, organizationId, module])
   @@index([userId])
   @@index([organizationId])
+}
+
+model Referrer {
+  id             String       @id @default(cuid())
+  name           String
+  phone          String?
+  email          String?
+  type           String       @default("agent") // agent, student, staff, other
+  status         String       @default("active") // active, inactive
+  
+  // Commission Defaults
+  defaultCommissionType   String   @default("percentage") // fixed, percentage
+  defaultCommissionAmount Float    @default(0)
+
+  // Relations
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId String
+  branch         Branch?      @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  branchId       String?
+  
+  referrals      Referral[]
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([organizationId])
+  @@index([branchId])
+}
+
+model Referral {
+  id             String       @id @default(cuid())
+  
+  referrer       Referrer     @relation(fields: [referrerId], references: [id], onDelete: Cascade)
+  referrerId     String
+  
+  student        Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId      String       @unique
+  
+  // Referral Status & Rewards
+  status         String       @default("pending") // pending, joined, rewarded, cancelled
+  rewardAmount   Float        @default(0)
+  rewardStatus   String       @default("unpaid") // unpaid, paid, void
+  paidDate       DateTime?
+  payoutMode     String?      // cash, online, upi, cheque
+  payoutTransactionId String?
+  payoutRemarks  String?
+  
+  notes          String?
+  
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId String
+
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([referrerId])
+  @@index([studentId])
+  @@index([organizationId])
+}
+
+model EducationBoard {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+}
+
+model EducationUniversity {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+}
+
+model EducationCollege {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+}
+
+model EducationSchool {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+}
+
+model EducationDegree {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
 }

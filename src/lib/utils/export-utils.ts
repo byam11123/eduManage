@@ -63,3 +63,27 @@ export const exportToPDF = (
         return false
     }
 }
+/**
+ * Exports data to a CSV file (.csv)
+ * @param fileName Name of the file to save
+ * @param data Array of objects to export
+ */
+export const exportToCSV = (fileName: string, data: any[]) => {
+    try {
+        const worksheet = XLSX.utils.json_to_sheet(data)
+        const csv = XLSX.utils.sheet_to_csv(worksheet)
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+        const link = document.createElement('a')
+        const url = URL.createObjectURL(blob)
+        link.setAttribute('href', url)
+        link.setAttribute('download', fileName.endsWith('.csv') ? fileName : `${fileName}.csv`)
+        link.style.visibility = 'hidden'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        return true
+    } catch (error) {
+        console.error('CSV Export Error:', error)
+        return false
+    }
+}

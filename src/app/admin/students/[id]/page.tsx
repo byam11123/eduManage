@@ -279,7 +279,7 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
                             </TabsContent>
 
                             <TabsContent value="attendance" className="m-0 focus-visible:outline-none focus-visible:ring-0">
-                                <AttendanceDetailsTab />
+                                <AttendanceDetailsTab student={student} />
                             </TabsContent>
 
                             <TabsContent value="documents" className="m-0 focus-visible:outline-none focus-visible:ring-0">

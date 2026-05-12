@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { verifyToken, signToken } from '@/lib/auth-utils'
 import { cookies } from 'next/headers'
+import { generateId } from '@/lib/utils/id-generator'
 
 export async function GET(request: NextRequest) {
   try {
@@ -175,11 +176,13 @@ export async function POST(request: NextRequest) {
     // Assign the organization owner as super_admin of the Head Office branch
     const headOfficeBranch = organization.branches[0]
     if (headOfficeBranch) {
+      const idData = await generateId('STAFF')
       await db.userBranch.create({
         data: {
           userId: payload.userId,
           branchId: headOfficeBranch.id,
           role: 'super_admin',
+          employeeCode: idData.displayId,
           isDefault: true,
         }
       })

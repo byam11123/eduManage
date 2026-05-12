@@ -1,14 +1,12 @@
 
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { db as prisma } from '@/lib/db'
 
 /**
  * Generates a new ID based on the entity type, year, and sequence.
  * Uses atomic counters to guarantee uniqueness.
  */
 export async function generateId(
-    type: 'ENQUIRY' | 'ADMISSION' | 'STUDENT' | 'RECEIPT',
+    type: 'ENQUIRY' | 'ADMISSION' | 'STUDENT' | 'RECEIPT' | 'STAFF',
     instituteCode: string = 'OCI'
 ): Promise<{ displayId: string; year: number; sequence: number }> {
     const now = new Date()
@@ -46,6 +44,9 @@ export async function generateId(
     } else if (type === 'RECEIPT') {
         // RCP/26/000123
         displayId = `RCP/${shortYear}/${sequence.toString().padStart(6, '0')}`
+    } else if (type === 'STAFF') {
+        // STF/26/00001
+        displayId = `STF/${shortYear}/${sequence.toString().padStart(5, '0')}`
     }
 
     return {

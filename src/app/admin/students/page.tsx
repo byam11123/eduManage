@@ -11,7 +11,7 @@ import { StudentList, StudentFilters, StudentStats, DeleteStudentDialog, BulkUpl
 import { useStudents, useCourses, useBranches } from '@/hooks'
 import type { Student } from '@/lib/types'
 import { ExportButton } from '@/components/shared/ExportButton'
-import { exportToCSV } from '@/lib/utils/export'
+import { exportToCSV } from '@/lib/utils/export-utils'
 import { toast } from 'sonner'
 
 export default function StudentsPage() {

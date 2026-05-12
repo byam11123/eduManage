@@ -122,7 +122,7 @@ export default function BranchesPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="border-b border-gray-50 dark:border-gray-800 hover:bg-transparent">
-                    <TableHead className="w-[100px] font-black text-[10px] uppercase tracking-widest text-gray-400 pl-8">Ops</TableHead>
+                    <TableHead className="w-[100px] font-black text-[10px] uppercase tracking-widest text-gray-400 pl-8">Action</TableHead>
                     <TableHead className="font-black text-[10px] uppercase tracking-widest text-gray-400">Branch Details</TableHead>
                     <TableHead className="font-black text-[10px] uppercase tracking-widest text-gray-400">Geo-Location</TableHead>
                     <TableHead className="font-black text-[10px] uppercase tracking-widest text-gray-400">Communication</TableHead>

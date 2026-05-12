@@ -48,11 +48,21 @@ export interface Organization {
     id: string
     name: string
     slug: string
+    description?: string
     logo?: string
-    email?: string
+    industry?: string
+    size?: string
+    website?: string
     phone?: string
+    email?: string
     address?: string
+    city?: string
+    state?: string
+    country?: string
+    zipCode?: string
+    attendanceRules?: string // JSON string
     createdAt: string
+    updatedAt: string
 }
 
 export interface Branch {
@@ -192,6 +202,14 @@ export interface Student {
     pgDegree?: string
     pgPassingYear?: string
     pgPercentage?: string
+    
+    // Document URLs
+    aadhaarCardUrl?: string | null;
+    hsMarksheetUrl?: string | null;
+    hssMarksheetUrl?: string | null;
+    gradDegreeUrl?: string | null;
+    pgDegreeUrl?: string | null;
+    admissionFormUrl?: string | null;
 
     // IDs
     admissionDisplayId: string
@@ -323,7 +341,8 @@ export interface StudentAdmissionFormData {
     pinCode: string
     country: string
     gender: string
-    referredBy: string
+    referrerId: string
+    referralAmount: string
     admissionDate: string
     imageUrl: string
 
@@ -399,6 +418,7 @@ export interface StudentFormData {
     district: string
     schoolCollege: string
     referredBy: string
+    referralAmount?: string
     notes: string
     branchId: string
     courseId: string
@@ -651,16 +671,42 @@ export interface Staff {
 
     // Official Info
     department?: string
-    designation: string // 'Teacher', 'Admin', 'Staff'
+    designation: string // 'Teacher', 'Admin', 'Staff', etc.
     dateOfJoining: string
     status: 'active' | 'inactive' | 'on_leave'
 
     // Qualification & Experience
     highestQualification?: string
     education?: Education[]
-    skills?: string[]
+    skills?: string
     experienceYears?: number
     referredBy?: string
+
+    // Academic Milestone Details (Flat Fields for DB Parity)
+    hsSchoolName?: string
+    hsBoard?: string
+    hsPassingYear?: string
+    hsPercentage?: string
+    hssSchoolName?: string
+    hssBoard?: string
+    hssStream?: string
+    hssPassingYear?: string
+    hssPercentage?: string
+    gradCollegeName?: string
+    gradUniversity?: string
+    gradDegree?: string
+    gradPassingYear?: string
+    gradPercentage?: string
+    pgCollegeName?: string
+    pgUniversity?: string
+    pgDegree?: string
+    pgPassingYear?: string
+    pgPercentage?: string
+
+    // Banking Details
+    bankName?: string
+    accountNumber?: string
+    ifscCode?: string
 
     // Salary Info
     salaryType: 'fixed' | 'hourly'
@@ -672,6 +718,12 @@ export interface Staff {
     // Documents
     aadharCard?: string
     panCard?: string
+    hsMarksheetUrl?: string | null;
+    hssMarksheetUrl?: string | null;
+    gradDegreeUrl?: string | null;
+    pgDegreeUrl?: string | null;
+    appointmentLetterUrl?: string | null;
+    joiningReportUrl?: string | null;
 
     createdAt: string
     updatedAt: string
@@ -692,6 +744,7 @@ export interface StaffFormData {
 
     // Official
     department: string
+    designation: string
     dateOfJoining: string
 
     // Qualification
@@ -710,4 +763,28 @@ export interface StaffFormData {
     accountNumber: string
     confirmAccountNumber: string
     ifscCode: string
+
+    // Academic Details
+    hsSchoolName: string
+    hsBoard: string
+    hsPassingYear: string
+    hsPercentage: string
+    hssSchoolName: string
+    hssBoard: string
+    hssStream: string
+    hssPassingYear: string
+    hssPercentage: string
+    gradCollegeName: string
+    gradUniversity: string
+    gradDegree: string
+    gradPassingYear: string
+    gradPercentage: string
+    pgCollegeName: string
+    pgUniversity: string
+    pgDegree: string
+    pgPassingYear: string
+    pgPercentage: string
+
+    imageUrl?: string
+    status?: string
 }

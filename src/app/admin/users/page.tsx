@@ -255,7 +255,7 @@ export default function UsersPage() {
                   <TableHead className="px-8 font-black text-[10px] uppercase tracking-widest text-gray-400">Security Role</TableHead>
                   <TableHead className="px-8 font-black text-[10px] uppercase tracking-widest text-gray-400">Module RBAC</TableHead>
                   <TableHead className="px-8 font-black text-[10px] uppercase tracking-widest text-gray-400">Operational Scope</TableHead>
-                  <TableHead className="px-8 font-black text-[10px] uppercase tracking-widest text-gray-400 text-right">Ops</TableHead>
+                  <TableHead className="px-8 font-black text-[10px] uppercase tracking-widest text-gray-400 text-right">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

@@ -6,7 +6,9 @@ export const attendanceService = {
         type: AttendanceType,
         month: number,
         year: number,
-        batchId?: string
+        batchId?: string,
+        studentId?: string,
+        employeeId?: string
     ): Promise<ApiResponse<{ records: AttendanceRecord[] }>> {
         try {
             const params = new URLSearchParams({
@@ -15,6 +17,8 @@ export const attendanceService = {
                 year: year.toString(),
             })
             if (batchId && batchId !== 'all') params.append('batchId', batchId)
+            if (studentId) params.append('studentId', studentId)
+            if (employeeId) params.append('employeeId', employeeId)
 
             const response = await fetch(`/api/admin/attendance?${params.toString()}`)
             return await response.json()

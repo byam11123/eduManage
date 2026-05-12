@@ -10,9 +10,11 @@ import { startOfMonth, endOfMonth, format } from 'date-fns'
 
 interface UseAttendanceProps {
     type: AttendanceType
+    studentId?: string
+    employeeId?: string
 }
 
-export function useAttendance({ type }: UseAttendanceProps) {
+export function useAttendance({ type, studentId, employeeId }: UseAttendanceProps) {
     const [loading, setLoading] = useState(false)
     const [records, setRecords] = useState<AttendanceRecord[]>([])
     const [stats, setStats] = useState<AttendanceStats>({
@@ -28,7 +30,7 @@ export function useAttendance({ type }: UseAttendanceProps) {
     const fetchMonthlyAttendance = useCallback(async (month: number, year: number, batchId?: string) => {
         setLoading(true)
         try {
-            const res = await attendanceService.getMonthlyAttendance(type, month, year, batchId)
+            const res = await attendanceService.getMonthlyAttendance(type, month, year, batchId, studentId, employeeId)
             if (res.success && res.data) {
                 setRecords(res.data.records)
             }
@@ -37,7 +39,7 @@ export function useAttendance({ type }: UseAttendanceProps) {
         } finally {
             setLoading(false)
         }
-    }, [type])
+    }, [type, studentId, employeeId])
 
     // Fetch data for table view
     const fetchDailyAttendance = useCallback(async (date: Date, batchId?: string) => {

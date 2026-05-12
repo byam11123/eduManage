@@ -53,6 +53,20 @@ export function useStaff() {
         }
     }
 
+    const fetchStaffById = useCallback(async (id: string) => {
+        try {
+            const res = await staffService.getById(id)
+            if (res.success) {
+                return res.data
+            }
+            return null
+        } catch (error) {
+            console.error(error)
+            toast.error('Failed to fetch staff details')
+            return null
+        }
+    }, [])
+
     return {
         staff,
         loading,
@@ -60,6 +74,7 @@ export function useStaff() {
         search,
         setSearch,
         fetchStaff,
+        fetchStaffById,
         deleteStaff
     }
 }

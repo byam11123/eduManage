@@ -45,6 +45,7 @@ export async function GET(request: NextRequest) {
                 firstName: true, 
                 lastName: true, 
                 email: true, 
+                phone: true,
                 studentDisplayId: true, 
                 admissionDisplayId: true 
             }
@@ -99,7 +100,7 @@ export async function GET(request: NextRequest) {
                 ]
             },
             take: 5,
-            select: { id: true, fullName: true, email: true, image: true }
+            select: { id: true, fullName: true, email: true, phone: true, image: true }
         })
 
         console.log(`[Global Search] Results - Students: ${students.length}, Courses: ${courses.length}, Enquiries: ${enquiries.length}, Staff: ${staff.length}`)
@@ -112,6 +113,8 @@ export async function GET(request: NextRequest) {
                     title: `${s.firstName} ${s.lastName}`, 
                     subtitle: s.studentDisplayId || s.admissionDisplayId || s.email || 'Student',
                     type: 'student',
+                    phone: s.phone,
+                    email: s.email,
                     href: `/admin/students/${s.id}`
                 })),
                 courses: courses.map(c => ({ 
@@ -133,6 +136,8 @@ export async function GET(request: NextRequest) {
                     title: s.fullName, 
                     subtitle: s.email || 'Staff',
                     type: 'staff',
+                    phone: s.phone,
+                    email: s.email,
                     href: `/admin/staff`
                 }))
             }

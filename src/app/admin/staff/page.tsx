@@ -137,10 +137,10 @@ export default function StaffListPage() {
     return (
         <div className="p-8 space-y-8 bg-gray-50/30 dark:bg-gray-950 min-h-screen">
             <PageHeader 
-                title="Staff Directory"
-                description="Coordinate institutional hierarchy, manage professional profiles, and oversee regional personnel assignments."
+                title="Staff List"
+                description="Manage staff records, professional profiles, and branch assignments."
                 actions={[
-                    { label: 'Onboard Staff', icon: Plus, variant: 'default', href: '/admin/staff/add' }
+                    { label: 'Add Staff', icon: Plus, variant: 'default', href: '/admin/staff/add' }
                 ]}
             >
                 <ExportButton 
@@ -165,7 +165,7 @@ export default function StaffListPage() {
                         { header: 'Placement', dataKey: 'branch' },
                     ]}
                     fileName="EduManage_Staff_Roster"
-                    title="Institutional Workforce Registry"
+                    title="Staff List Export"
                     variant="outline"
                 />
             </PageHeader>
@@ -205,8 +205,8 @@ export default function StaffListPage() {
                             <ShieldCheck className="h-5 w-5" />
                         </div>
                         <div>
-                            <h3 className="text-xl font-black tracking-tight">Personnel Registry</h3>
-                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-tighter mt-0.5">Authorized institutional workforce</p>
+                            <h3 className="text-xl font-black tracking-tight">Staff List</h3>
+                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-tighter mt-0.5">List of all registered staff members</p>
                         </div>
                     </div>
                     <div className="flex-none">
@@ -229,7 +229,7 @@ export default function StaffListPage() {
                                 {isColumnVisible('contact') && <TableHead className="font-black text-[10px] uppercase tracking-widest text-gray-400">Connectivity</TableHead>}
                                 {isColumnVisible('tenure') && <TableHead className="font-black text-[10px] uppercase tracking-widest text-gray-400">Tenure</TableHead>}
                                 {isColumnVisible('status') && <TableHead className="font-black text-[10px] uppercase tracking-widest text-gray-400">Status</TableHead>}
-                                <TableHead className="text-right font-black text-[10px] uppercase tracking-widest text-gray-400 pr-8">Ops</TableHead>
+                                <TableHead className="text-right font-black text-[10px] uppercase tracking-widest text-gray-400 pr-8">Action</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -278,7 +278,9 @@ export default function StaffListPage() {
                                                     <span className={`absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-white dark:border-gray-900 ${s.status === 'active' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-gray-300'}`} />
                                                 </div>
                                                 <div className="flex flex-col">
-                                                    <span className="font-black text-gray-900 dark:text-white group-hover:text-indigo-600 transition-colors tracking-tight">{s.fullName}</span>
+                                                    <Link href={`/admin/staff/${s.id}`} className="font-black text-gray-900 dark:text-white hover:text-indigo-600 transition-colors tracking-tight cursor-pointer">
+                                                        {s.fullName}
+                                                    </Link>
                                                     <span className="text-[10px] font-black text-indigo-500 uppercase tracking-tighter mt-0.5">{s.employeeCode}</span>
                                                 </div>
                                             </div>
@@ -354,13 +356,13 @@ export default function StaffListPage() {
                                                         className="rounded-xl gap-3 cursor-pointer py-3 focus:bg-indigo-50 dark:focus:bg-indigo-900/20 focus:text-indigo-600 font-bold text-[10px] uppercase tracking-widest"
                                                         onClick={() => router.push(`/admin/staff/${s.id}/edit`)}
                                                     >
-                                                        <Edit className="w-4 h-4" /> Professional Settings
+                                                        <Edit className="w-4 h-4" /> Edit Staff
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem 
                                                         className="rounded-xl gap-3 cursor-pointer py-3 text-rose-600 focus:text-rose-600 focus:bg-rose-50 dark:focus:bg-rose-900/20 font-black text-[10px] uppercase tracking-widest" 
                                                         onClick={() => handleDelete(s)}
                                                     >
-                                                        <Trash2 className="w-4 h-4" /> Terminate Access
+                                                        <Trash2 className="w-4 h-4" /> Delete Staff
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>

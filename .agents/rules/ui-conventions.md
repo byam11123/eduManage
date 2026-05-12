@@ -27,4 +27,8 @@ activation: always
 ## File/Image Uploads
 - Use Sharp for image processing
 - Always show upload progress
-- Validate file type and size client-side before upload
+## Nomenclature & Text
+- **NEVER** modernize or "professionalize" text labels, headers, or buttons.
+- Keep text simple, direct, and exactly as provided in the original project files.
+- Focus ONLY on UI/UX enhancements (styling, layout, glassmorphism) without changing terminology.
+- Revert any "modernized" jargon (e.g., 'Academic Pedigree', 'Compensation Matrix') back to standard project labels (e.g., 'Education Details', 'Salary Details').

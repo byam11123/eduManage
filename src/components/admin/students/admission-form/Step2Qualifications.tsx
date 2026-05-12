@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/select'
 import type { StudentAdmissionFormData } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { CreatableSuggestionInput } from '@/components/shared/creatable-suggestion-input'
 
 interface Step2Props {
     formData: StudentAdmissionFormData
@@ -55,11 +56,21 @@ export function Step2Qualifications({
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-2">
                                 <Label htmlFor="hsSchoolName" className={labelClasses}>School Name *</Label>
-                                <Input id="hsSchoolName" name="hsSchoolName" value={formData.hsSchoolName} onChange={onChange} placeholder="School Name" className={inputClasses} />
+                                <CreatableSuggestionInput 
+                                    type="school" 
+                                    value={formData.hsSchoolName} 
+                                    onChange={(val) => onSelectChange('hsSchoolName', val)} 
+                                    placeholder="Select or type School"
+                                />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="hsBoard" className={labelClasses}>Board *</Label>
-                                <Input id="hsBoard" name="hsBoard" value={formData.hsBoard} onChange={onChange} placeholder="CBSE, ICSE, or State Board" className={inputClasses} />
+                                <CreatableSuggestionInput 
+                                    type="board" 
+                                    value={formData.hsBoard} 
+                                    onChange={(val) => onSelectChange('hsBoard', val)} 
+                                    placeholder="Select or type Board"
+                                />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="hsPassingYear" className={labelClasses}>Passing Year *</Label>
@@ -83,11 +94,21 @@ export function Step2Qualifications({
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-2">
                                 <Label htmlFor="hssSchoolName" className={labelClasses}>School Name *</Label>
-                                <Input id="hssSchoolName" name="hssSchoolName" value={formData.hssSchoolName} onChange={onChange} placeholder="School Name" className={inputClasses} />
+                                <CreatableSuggestionInput 
+                                    type="school" 
+                                    value={formData.hssSchoolName} 
+                                    onChange={(val) => onSelectChange('hssSchoolName', val)} 
+                                    placeholder="Select or type School"
+                                />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="hssBoard" className={labelClasses}>Board *</Label>
-                                <Input id="hssBoard" name="hssBoard" value={formData.hssBoard} onChange={onChange} placeholder="CBSE, ICSE, or State Board" className={inputClasses} />
+                                <CreatableSuggestionInput 
+                                    type="board" 
+                                    value={formData.hssBoard} 
+                                    onChange={(val) => onSelectChange('hssBoard', val)} 
+                                    placeholder="Select or type Board"
+                                />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="hssStream" className={labelClasses}>Stream *</Label>
@@ -122,15 +143,30 @@ export function Step2Qualifications({
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-2">
                                 <Label htmlFor="gradCollegeName" className={labelClasses}>College Name *</Label>
-                                <Input id="gradCollegeName" name="gradCollegeName" value={formData.gradCollegeName} onChange={onChange} placeholder="College Name" className={inputClasses} />
+                                <CreatableSuggestionInput 
+                                    type="college" 
+                                    value={formData.gradCollegeName} 
+                                    onChange={(val) => onSelectChange('gradCollegeName', val)} 
+                                    placeholder="Select or type College"
+                                />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="gradUniversity" className={labelClasses}>University *</Label>
-                                <Input id="gradUniversity" name="gradUniversity" value={formData.gradUniversity} onChange={onChange} placeholder="University Name" className={inputClasses} />
+                                <CreatableSuggestionInput 
+                                    type="university" 
+                                    value={formData.gradUniversity} 
+                                    onChange={(val) => onSelectChange('gradUniversity', val)} 
+                                    placeholder="Select or type University"
+                                />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="gradDegree" className={labelClasses}>Degree *</Label>
-                                <Input id="gradDegree" name="gradDegree" value={formData.gradDegree} onChange={onChange} placeholder="e.g. BSc, BCom, BTech" className={inputClasses} />
+                                <CreatableSuggestionInput 
+                                    type="degree" 
+                                    value={formData.gradDegree} 
+                                    onChange={(val) => onSelectChange('gradDegree', val)} 
+                                    placeholder="e.g. BSc, BCom, BTech"
+                                />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="gradPassingYear" className={labelClasses}>Passing Year *</Label>
@@ -154,15 +190,30 @@ export function Step2Qualifications({
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-2">
                                 <Label htmlFor="pgCollegeName" className={labelClasses}>College Name *</Label>
-                                <Input id="pgCollegeName" name="pgCollegeName" value={formData.pgCollegeName} onChange={onChange} placeholder="College Name" className={inputClasses} />
+                                <CreatableSuggestionInput 
+                                    type="college" 
+                                    value={formData.pgCollegeName} 
+                                    onChange={(val) => onSelectChange('pgCollegeName', val)} 
+                                    placeholder="Select or type College"
+                                />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="pgUniversity" className={labelClasses}>University *</Label>
-                                <Input id="pgUniversity" name="pgUniversity" value={formData.pgUniversity} onChange={onChange} placeholder="University Name" className={inputClasses} />
+                                <CreatableSuggestionInput 
+                                    type="university" 
+                                    value={formData.pgUniversity} 
+                                    onChange={(val) => onSelectChange('pgUniversity', val)} 
+                                    placeholder="Select or type University"
+                                />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="pgDegree" className={labelClasses}>Degree *</Label>
-                                <Input id="pgDegree" name="pgDegree" value={formData.pgDegree} onChange={onChange} placeholder="e.g. MSc, MCom, MTech" className={inputClasses} />
+                                <CreatableSuggestionInput 
+                                    type="degree" 
+                                    value={formData.pgDegree} 
+                                    onChange={(val) => onSelectChange('pgDegree', val)} 
+                                    placeholder="e.g. MSc, MCom, MTech"
+                                />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="pgPassingYear" className={labelClasses}>Passing Year *</Label>

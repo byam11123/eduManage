@@ -15,6 +15,8 @@ export async function GET(request: NextRequest) {
     const month = searchParams.get('month') // 0-11
     const year = searchParams.get('year')
     const batchId = searchParams.get('batchId')
+    const studentId = searchParams.get('studentId')
+    const employeeId = searchParams.get('employeeId')
 
     try {
         if (date) {
@@ -119,6 +121,8 @@ export async function GET(request: NextRequest) {
                         lte: end
                     },
                     batchId: batchId === 'all' || !batchId ? undefined : batchId,
+                    studentId: studentId || undefined,
+                    employeeId: employeeId || undefined,
                 },
                 include: {
                     student: { select: { firstName: true, lastName: true, studentDisplayId: true } },

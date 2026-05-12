@@ -15,7 +15,13 @@ import {
     LayoutGrid,
     Banknote,
     BadgeCheck,
-    Loader2
+    Loader2,
+    Briefcase,
+    Building2,
+    ArrowLeft,
+    Sparkles,
+    ShieldCheck,
+    Camera
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -34,14 +40,16 @@ import { cn } from '@/lib/utils'
 import { staffService } from '@/lib/services/staff.service'
 import { toast } from 'sonner'
 import { StaffFormData } from '@/lib/types'
+import { Badge } from '@/components/ui/badge'
+import { CreatableSuggestionInput } from '@/components/shared/creatable-suggestion-input'
 
 const steps = [
-    { id: 1, title: 'Personal info', description: 'Setup information', icon: User },
-    { id: 2, title: 'Highest Qualification', description: 'Select highest education', icon: GraduationCap },
-    { id: 3, title: 'Education details', description: 'Enter education details', icon: BookOpen },
-    { id: 4, title: 'Employee monthly salary', description: 'Enter salary details', icon: Banknote },
-    { id: 5, title: 'Bank details', description: 'Enter bank details', icon: CreditCard },
-    { id: 6, title: 'Review details', description: 'Check Filled Details', icon: BadgeCheck },
+    { id: 1, title: 'Personal info', description: 'Setup information', icon: User, color: 'indigo' },
+    { id: 2, title: 'Academic Qualifications', description: 'Education history', icon: GraduationCap, color: 'emerald' },
+    { id: 3, title: 'Professional Details', description: 'Experience & Skills', icon: Briefcase, color: 'amber' },
+    { id: 4, title: 'Salary Details', description: 'Enter salary details', icon: Banknote, color: 'blue' },
+    { id: 5, title: 'Bank details', description: 'Enter bank details', icon: CreditCard, color: 'rose' },
+    { id: 6, title: 'Review details', description: 'Check Filled Details', icon: BadgeCheck, color: 'violet' },
 ]
 
 export default function AddStaffPage() {
@@ -50,7 +58,6 @@ export default function AddStaffPage() {
     const [isSubmitting, setIsSubmitting] = useState(false)
 
     const [formData, setFormData] = useState<StaffFormData>({
-        // Personal
         firstName: '',
         lastName: '',
         employeeCode: '',
@@ -62,29 +69,45 @@ export default function AddStaffPage() {
         fathersPhone: '',
         address: '',
         department: '',
+        designation: '',
         dateOfJoining: '',
-
-        // Qualification
         highestQualification: '',
-
-        // Education
-        education: [], // simplified for now
-
-        // Additional
+        education: [],
         experienceYears: '',
         skills: '',
         referredBy: '',
-
-        // Salary
         salaryType: 'fixed',
         salaryAmount: '',
-
-        // Bank
         bankName: '',
         accountNumber: '',
         confirmAccountNumber: '',
-        ifscCode: ''
+        ifscCode: '',
+        imageUrl: '',
+        // Academic Details
+        hsSchoolName: '',
+        hsBoard: '',
+        hsPassingYear: '',
+        hsPercentage: '',
+        hssSchoolName: '',
+        hssBoard: '',
+        hssStream: '',
+        hssPassingYear: '',
+        hssPercentage: '',
+        gradCollegeName: '',
+        gradUniversity: '',
+        gradDegree: '',
+        gradPassingYear: '',
+        gradPercentage: '',
+        pgCollegeName: '',
+        pgUniversity: '',
+        pgDegree: '',
+        pgPassingYear: '',
+        pgPercentage: ''
     })
+
+    const inputClasses = "h-14 rounded-2xl bg-gray-50 dark:bg-gray-900 border-none font-bold px-6 text-base focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder:text-gray-400"
+    const labelClasses = "text-[11px] font-black uppercase tracking-[0.2em] text-indigo-600 mb-2 block ml-1"
+    const sectionHeaderClasses = "text-[13px] font-black uppercase tracking-[0.3em] text-gray-400 border-b border-gray-100 dark:border-gray-800 pb-4 mb-10 flex items-center gap-3"
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target
@@ -95,24 +118,67 @@ export default function AddStaffPage() {
         setFormData(prev => ({ ...prev, [name]: value }))
     }
 
-    const validateStep = (step: number) => {
-        switch (step) {
-            case 1:
-                return formData.firstName && formData.phone && formData.email
-            default:
-                return true
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (file) {
+            const reader = new FileReader()
+            reader.onloadend = () => {
+                setFormData(prev => ({ ...prev, imageUrl: reader.result as string }))
+            }
+            reader.readAsDataURL(file)
+        }
+    }
+
+    const validateAllFields = () => {
+        const missingFields = []
+        if (!formData.firstName) missingFields.push('First Name')
+        if (!formData.phone) missingFields.push('Phone Number')
+        if (!formData.email) missingFields.push('Email')
+        if (!formData.bankName) missingFields.push('Bank Name')
+        if (!formData.accountNumber) missingFields.push('Account Number')
+        if (!formData.ifscCode) missingFields.push('IFSC Code')
+        
+        return missingFields
+    }
+
+    const handleSaveDraft = async () => {
+        try {
+            setIsSubmitting(true)
+            const res = await staffService.create({ ...formData, status: 'draft' })
+            if (res.success) {
+                toast.success('Staff saved as draft')
+                router.push('/admin/staff')
+            } else {
+                toast.error(res.error || 'Failed to save draft')
+            }
+        } catch (error) {
+            toast.error('Error saving draft')
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
     const handleNext = () => {
-        if (validateStep(currentStep)) {
-            setCurrentStep(prev => prev + 1)
-        } else {
-            toast.error('Please fill required fields (marked *)')
-        }
+        setCurrentStep(prev => prev + 1)
     }
 
     const handleSubmit = async () => {
+        const missingFields = validateAllFields()
+        
+        if (missingFields.length > 0) {
+            toast.error(`Please fill required fields: ${missingFields.join(', ')}`, {
+                duration: 5000,
+                description: 'These fields are mandatory for staff registration.'
+            })
+            // Optionally jump to the first step with errors
+            if (!formData.firstName || !formData.phone || !formData.email) {
+                setCurrentStep(1)
+            } else if (!formData.bankName || !formData.accountNumber || !formData.ifscCode) {
+                setCurrentStep(5)
+            }
+            return
+        }
+
         try {
             setIsSubmitting(true)
             const res = await staffService.create(formData)
@@ -120,306 +186,650 @@ export default function AddStaffPage() {
                 toast.success('Staff added successfully')
                 router.push('/admin/staff')
             } else {
-                toast.error(res.error || 'Failed to create staff')
+                toast.error(res.error || 'Failed to add staff')
             }
         } catch (error) {
-            console.error(error)
-            toast.error('Error submitting form')
+            toast.error('Error adding staff')
         } finally {
             setIsSubmitting(false)
         }
     }
 
     return (
-        <div className="min-h-screen bg-gray-50/50 dark:bg-gray-900 p-6 flex flex-col gap-6">
-            <h1 className="text-2xl font-bold">Add New Staff</h1>
+        <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950 p-6 md:p-10 lg:p-12 space-y-10 animate-in fade-in duration-1000">
+            {/* Top Bar */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 max-w-7xl mx-auto w-full">
+                <div className="space-y-3">
+                    <Button 
+                        variant="ghost" 
+                        className="p-0 hover:bg-transparent text-gray-400 hover:text-indigo-600 font-bold text-xs uppercase tracking-widest gap-2 transition-all group"
+                        onClick={() => router.back()}
+                    >
+                        <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+                        Back to Staff List
+                    </Button>
+                    <div className="flex items-center gap-4">
+                        <div className="h-12 w-12 rounded-[1.25rem] bg-indigo-600 flex items-center justify-center shadow-2xl shadow-indigo-500/20">
+                            <User className="h-6 w-6 text-white" />
+                        </div>
+                        <div>
+                            <h1 className="text-4xl font-black tracking-tight text-gray-900 dark:text-white">Add New Staff</h1>
+                            <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mt-1">Staff Management Portal</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex items-center gap-4">
+                    <Button
+                        variant="outline"
+                        onClick={handleSaveDraft}
+                        disabled={isSubmitting}
+                        className="h-12 rounded-2xl border-indigo-200 dark:border-indigo-900 bg-indigo-50/50 dark:bg-indigo-900/10 px-6 font-black uppercase tracking-widest text-[10px] text-indigo-600 hover:bg-indigo-100 transition-all gap-2"
+                    >
+                        <Upload className="h-4 w-4" />
+                        Save as Draft
+                    </Button>
+                    <Badge variant="outline" className="h-12 rounded-2xl border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-6 font-black uppercase tracking-widest text-[10px] text-gray-500">
+                        Draft ID: {formData.employeeCode || 'PENDING'}
+                    </Badge>
+                </div>
+            </div>
 
-            <div className="flex flex-col md:flex-row gap-6 h-[calc(100vh-10rem)]">
-                {/* Sidebar Navigation */}
-                <Card className="w-full md:w-80 border-r border-gray-100 dark:border-gray-800 shadow-sm overflow-y-auto">
-                    <CardContent className="p-6 space-y-6">
+            {/* Main Content Area */}
+            <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-10 items-start relative">
+                
+                {/* Glass Stepper Sidebar */}
+                <div className="lg:col-span-3 space-y-4 lg:sticky lg:top-12 z-20">
+                    <div className="bg-white/70 dark:bg-gray-900/70 backdrop-blur-2xl border border-white dark:border-gray-800 rounded-[2.5rem] p-6 shadow-2xl shadow-gray-200/50 dark:shadow-none space-y-2 border-opacity-50">
                         {steps.map((step, index) => {
                             const Icon = step.icon
                             const isActive = currentStep === step.id
                             const isCompleted = currentStep > step.id
 
                             return (
-                                <div
+                                <button
                                     key={step.id}
+                                    onClick={() => setCurrentStep(step.id)}
                                     className={cn(
-                                        "relative flex items-center gap-4 transition-all duration-200",
-                                        isActive || isCompleted ? "opacity-100" : "opacity-50"
+                                        "w-full flex items-center gap-4 p-4 rounded-2xl transition-all duration-500 group relative text-left",
+                                        isActive ? "bg-white dark:bg-gray-800 shadow-xl shadow-indigo-100 dark:shadow-none lg:translate-x-2" : "hover:bg-white/50 dark:hover:bg-gray-800/30"
                                     )}
                                 >
-                                    {/* Connecting Line */}
-                                    {index !== steps.length - 1 && (
-                                        <div className={cn(
-                                            "absolute left-[15px] top-10 w-[2px] h-[30px]",
-                                            isCompleted ? "bg-indigo-600" : "bg-gray-200"
-                                        )} />
+                                    {isActive && (
+                                        <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-indigo-600 rounded-full animate-in slide-in-from-left duration-500" />
                                     )}
-
                                     <div className={cn(
-                                        "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center border-2 transition-colors z-10 bg-white dark:bg-gray-800",
-                                        isActive ? "border-indigo-600 text-indigo-600 shadow-[0_0_0_4px_rgba(79,70,229,0.1)]" :
-                                            isCompleted ? "border-indigo-600 bg-indigo-600 text-white" : "border-gray-300 text-gray-400"
+                                        "h-10 w-10 rounded-xl flex items-center justify-center transition-all duration-500 shrink-0",
+                                        isActive ? `bg-${step.color}-600 text-white shadow-lg shadow-${step.color}-500/30` : 
+                                        isCompleted ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30" : "bg-gray-100 dark:bg-gray-800 text-gray-400"
                                     )}>
-                                        {isCompleted ? <FileCheck className="w-4 h-4" /> : <Icon className="w-4 h-4" />}
+                                        {isCompleted ? <CheckCircle2 className="h-5 w-5" /> : <Icon className={cn("h-5 w-5", isActive && "animate-pulse")} />}
                                     </div>
-
-                                    <div className="flex flex-col">
-                                        <span className={cn(
-                                            "text-sm font-semibold transition-colors",
-                                            isActive ? "text-indigo-600" : "text-gray-700 dark:text-gray-300"
+                                    <div className="flex-1 min-w-0">
+                                        <p className={cn(
+                                            "text-xs font-black uppercase tracking-widest leading-none mb-1 transition-colors truncate",
+                                            isActive ? "text-gray-900 dark:text-white" : "text-gray-400"
                                         )}>
                                             {step.title}
-                                        </span>
-                                        <span className="text-xs text-gray-400">
-                                            {step.description}
-                                        </span>
+                                        </p>
+                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter truncate">{step.description}</p>
                                     </div>
-                                </div>
+                                </button>
                             )
                         })}
-                    </CardContent>
-                </Card>
-
-                {/* Form Content */}
-                <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col overflow-hidden">
-                    <div className="flex-1 overflow-y-auto p-8">
-
-                        {/* Step 1: Personal Info */}
-                        {currentStep === 1 && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                                <div className="space-y-2">
-                                    <Label>First name *</Label>
-                                    <Input name="firstName" value={formData.firstName} onChange={handleInputChange} placeholder="John" />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Last name</Label>
-                                    <Input name="lastName" value={formData.lastName} onChange={handleInputChange} placeholder="Doe" />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Employee code</Label>
-                                    <Input name="employeeCode" value={formData.employeeCode} onChange={handleInputChange} placeholder="EMP-001" />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Phone number *</Label>
-                                    <Input name="phone" value={formData.phone} onChange={handleInputChange} placeholder="+91 98765 43210" />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Date of birth *</Label>
-                                    <DateInput name="dateOfBirth" value={formData.dateOfBirth} onChange={(val) => setFormData(prev => ({ ...prev, dateOfBirth: val }))} />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Email *</Label>
-                                    <Input type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="john@example.com" />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Father/Guardian name</Label>
-                                    <Input name="fathersName" value={formData.fathersName} onChange={handleInputChange} />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Father/Guardian phone</Label>
-                                    <Input name="fathersPhone" value={formData.fathersPhone} onChange={handleInputChange} />
-                                </div>
-                                <div className="col-span-2 space-y-2">
-                                    <Label>Address</Label>
-                                    <Textarea name="address" value={formData.address} onChange={handleInputChange} placeholder="Full residential address" />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Date of joining</Label>
-                                    <DateInput name="dateOfJoining" value={formData.dateOfJoining} onChange={(val) => setFormData(prev => ({ ...prev, dateOfJoining: val }))} />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Gender</Label>
-                                    <Select onValueChange={(val) => handleSelectChange('gender', val)} value={formData.gender}>
-                                        <SelectTrigger><SelectValue placeholder="Select Gender" /></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="male">Male</SelectItem>
-                                            <SelectItem value="female">Female</SelectItem>
-                                            <SelectItem value="other">Other</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Department</Label>
-                                    <Select onValueChange={(val) => handleSelectChange('department', val)} value={formData.department}>
-                                        <SelectTrigger><SelectValue placeholder="Select Department" /></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Teaching">Teaching</SelectItem>
-                                            <SelectItem value="Management">Management</SelectItem>
-                                            <SelectItem value="Support">Support</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Step 2: Highest Qualification */}
-                        {currentStep === 2 && (
-                            <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                                <div className="space-y-2 w-full md:w-1/2">
-                                    <Label>Highest Education</Label>
-                                    <Select onValueChange={(val) => handleSelectChange('highestQualification', val)} value={formData.highestQualification}>
-                                        <SelectTrigger><SelectValue placeholder="Select Qualification" /></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="phd">PhD</SelectItem>
-                                            <SelectItem value="masters">Masters</SelectItem>
-                                            <SelectItem value="bachelors">Bachelors</SelectItem>
-                                            <SelectItem value="diploma">Diploma</SelectItem>
-                                            <SelectItem value="high_school">High School</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Step 3: Education Details */}
-                        {currentStep === 3 && (
-                            <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
-                                {/* High School */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border p-4 rounded-lg bg-gray-50/50">
-                                    <h3 className="col-span-2 font-medium text-gray-700">High School Details</h3>
-                                    <Input placeholder="School Name" />
-                                    <Input placeholder="Percentage %" />
-                                    <Input placeholder="Board" />
-                                    <Input placeholder="Passing Year" />
-                                    <Button variant="outline" className="w-full gap-2 text-indigo-600 border-indigo-200 bg-indigo-50">
-                                        <Upload className="w-4 h-4" /> Upload Certificate
-                                    </Button>
-                                    <Button variant="ghost" className="text-red-500">Remove</Button>
-                                </div>
-
-                                {/* Intermediate */}
-                                <div className="flex justify-center">
-                                    <Button variant="outline" className="gap-2 border-dashed border-2 w-full max-w-sm">
-                                        <Plus className="w-4 h-4" /> Add More Education
-                                    </Button>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Step 4: Salary */}
-                        {currentStep === 4 && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                                <div className="space-y-2">
-                                    <Label>Salary Type</Label>
-                                    <Select onValueChange={(val) => handleSelectChange('salaryType', val)} value={formData.salaryType}>
-                                        <SelectTrigger><SelectValue placeholder="Select Type" /></SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="fixed">Fixed Salary</SelectItem>
-                                            <SelectItem value="hourly">Hourly</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Amount</Label>
-                                    <Input name="salaryAmount" value={formData.salaryAmount} onChange={handleInputChange} placeholder="25000" />
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Step 5: Bank Details */}
-                        {currentStep === 5 && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                                <div className="space-y-2">
-                                    <Label>Bank Name *</Label>
-                                    <Input name="bankName" value={formData.bankName} onChange={handleInputChange} />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Account Number *</Label>
-                                    <Input name="accountNumber" value={formData.accountNumber} onChange={handleInputChange} />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Confirm Account Number *</Label>
-                                    <Input name="confirmAccountNumber" value={formData.confirmAccountNumber} onChange={handleInputChange} />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>IFSC Code *</Label>
-                                    <Input name="ifscCode" value={formData.ifscCode} onChange={handleInputChange} />
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Step 6: Review */}
-                        {currentStep === 6 && (
-                            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                                <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
-                                    <h3 className="font-semibold mb-4 text-lg">Personal Details</h3>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                                        <div>
-                                            <div className="text-gray-500">Name</div>
-                                            <div className="font-medium">{formData.firstName} {formData.lastName}</div>
-                                        </div>
-                                        <div>
-                                            <div className="text-gray-500">Phone</div>
-                                            <div className="font-medium">{formData.phone}</div>
-                                        </div>
-                                        <div>
-                                            <div className="text-gray-500">Email</div>
-                                            <div className="font-medium">{formData.email}</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
-                                    <h3 className="font-semibold mb-4 text-lg">Financial Details</h3>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                                        <div>
-                                            <div className="text-gray-500">Salary</div>
-                                            <div className="font-medium">₹{formData.salaryAmount} ({formData.salaryType})</div>
-                                        </div>
-                                        <div>
-                                            <div className="text-gray-500">Bank</div>
-                                            <div className="font-medium">{formData.bankName}</div>
-                                        </div>
-                                        <div>
-                                            <div className="text-gray-500">Account</div>
-                                            <div className="font-medium">{formData.accountNumber}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
                     </div>
+                </div>
 
-                    <div className="p-6 border-t border-gray-100 dark:border-gray-700 flex justify-between bg-gray-50/30">
-                        <Button
-                            variant="outline"
-                            onClick={() => setCurrentStep(prev => prev - 1)}
-                            disabled={currentStep === 1}
-                            className="w-32 uppercase tracking-wide font-semibold"
-                        >
-                            Back
-                        </Button>
+                {/* Form Panels */}
+                <div className="lg:col-span-9 space-y-8 relative z-10">
+                    <Card className="border-none shadow-2xl shadow-gray-200/50 dark:shadow-none bg-white dark:bg-gray-900 rounded-[3rem] overflow-hidden">
+                        <CardContent className="p-10 md:p-14 min-h-[600px] flex flex-col">
+                            
+                            {/* Step 1: Personal info */}
+                            {currentStep === 1 && (
+                                <div className="space-y-10 animate-in fade-in slide-in-from-right-8 duration-700">
+                                    <h3 className={sectionHeaderClasses}>
+                                        <span className="h-2 w-2 rounded-full bg-indigo-600" />
+                                        Personal info
+                                    </h3>
 
-                        {currentStep < steps.length ? (
-                            <Button
-                                onClick={handleNext}
-                                className="w-32 bg-indigo-600 hover:bg-indigo-700 uppercase tracking-wide font-semibold shadow-lg shadow-indigo-200"
-                            >
-                                Next
-                            </Button>
-                        ) : (
-                            <Button
-                                onClick={handleSubmit}
-                                disabled={isSubmitting}
-                                className="w-40 bg-emerald-600 hover:bg-emerald-700 uppercase tracking-wide font-semibold shadow-lg shadow-emerald-200"
-                            >
-                                {isSubmitting ? (
-                                    <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Saving...
-                                    </>
+                                    {/* Photo Upload Section */}
+                                    <div className="flex flex-col md:flex-row items-center gap-10 bg-gray-50/50 dark:bg-gray-900/50 p-8 rounded-[2.5rem] border border-dashed border-gray-200 dark:border-gray-800">
+                                        <div className="relative group">
+                                            <div className="h-40 w-40 rounded-[2.5rem] border-4 border-white dark:border-gray-800 overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center shadow-2xl transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3">
+                                                {formData.imageUrl ? (
+                                                    <img src={formData.imageUrl} alt="Staff" className="h-full w-full object-cover" />
+                                                ) : (
+                                                    <User className="h-16 w-16 text-gray-300" />
+                                                )}
+                                            </div>
+                                            <label htmlFor="staff-image" className="absolute -bottom-2 -right-2 h-12 w-12 bg-indigo-600 rounded-2xl flex items-center justify-center border-4 border-white dark:border-gray-900 cursor-pointer hover:bg-indigo-700 transition-all shadow-xl hover:scale-110 active:scale-90">
+                                                <Camera className="h-5 w-5 text-white" />
+                                                <input
+                                                    id="staff-image"
+                                                    type="file"
+                                                    accept="image/*"
+                                                    className="hidden"
+                                                    onChange={handleImageUpload}
+                                                />
+                                            </label>
+                                        </div>
+                                        <div className="flex-1 space-y-3 text-center md:text-left">
+                                            <h4 className="text-xl font-black tracking-tight text-gray-900 dark:text-white">Staff Photo</h4>
+                                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest leading-relaxed">
+                                                Upload a staff profile picture.<br />
+                                                Max 2MB • JPG, PNG, WEBP
+                                            </p>
+                                            {formData.imageUrl && (
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-900/10 font-black uppercase tracking-widest text-[10px] mt-2"
+                                                    onClick={() => setFormData(prev => ({ ...prev, imageUrl: '' }))}
+                                                >
+                                                    Remove Photo
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
+                                        <div className="space-y-2">
+                                            <Label className={labelClasses}>First name *</Label>
+                                            <Input name="firstName" value={formData.firstName} onChange={handleInputChange} placeholder="First name" className={inputClasses} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className={labelClasses}>Last name</Label>
+                                            <Input name="lastName" value={formData.lastName} onChange={handleInputChange} placeholder="Last name" className={inputClasses} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className={labelClasses}>Employee code</Label>
+                                            <Input name="employeeCode" value={formData.employeeCode} onChange={handleInputChange} placeholder="Auto-generated on Submit" className={cn(inputClasses, "bg-gray-100/50 cursor-not-allowed opacity-70")} disabled />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className={labelClasses}>Phone number *</Label>
+                                            <Input name="phone" value={formData.phone} onChange={handleInputChange} placeholder="+91 98765 43210" className={inputClasses} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className={labelClasses}>Email *</Label>
+                                            <Input type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="john@example.com" className={inputClasses} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className={labelClasses}>Date of birth *</Label>
+                                            <DateInput name="dateOfBirth" value={formData.dateOfBirth} onChange={(val) => handleSelectChange('dateOfBirth', val)} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className={labelClasses}>Gender *</Label>
+                                            <Select onValueChange={(val) => handleSelectChange('gender', val)} value={formData.gender}>
+                                                <SelectTrigger className={cn(inputClasses, "bg-white dark:bg-gray-950 shadow-sm font-bold")}><SelectValue placeholder="Select Gender" /></SelectTrigger>
+                                                <SelectContent className="rounded-2xl border-none shadow-2xl p-2">
+                                                    <SelectItem value="male" className="rounded-xl py-3 font-bold">Male</SelectItem>
+                                                    <SelectItem value="female" className="rounded-xl py-3 font-bold">Female</SelectItem>
+                                                    <SelectItem value="other" className="rounded-xl py-3 font-bold">Other</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className={labelClasses}>Father's name</Label>
+                                            <Input name="fathersName" value={formData.fathersName} onChange={handleInputChange} placeholder="Father's full name" className={inputClasses} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className={labelClasses}>Father's phone</Label>
+                                            <Input name="fathersPhone" value={formData.fathersPhone} onChange={handleInputChange} placeholder="+91 98765 43210" className={inputClasses} />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2 pt-4">
+                                        <Label className={labelClasses}>Address</Label>
+                                        <Textarea name="address" value={formData.address} onChange={handleInputChange} placeholder="Full residential address" className="min-h-[120px] rounded-[2rem] bg-gray-50 dark:bg-gray-900 border-none font-bold p-8 text-base focus:ring-2 focus:ring-indigo-500/20 transition-all resize-none" />
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Step 2: Academic Qualifications */}
+                            {currentStep === 2 && (
+                                <div className="space-y-10 animate-in fade-in slide-in-from-right-8 duration-700">
+                                    <h3 className={sectionHeaderClasses}>
+                                        <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                                        Academic Qualifications
+                                    </h3>
+                                    
+                                    <div className="space-y-4 max-w-md bg-indigo-50/50 dark:bg-indigo-900/10 p-6 rounded-[2rem] border border-indigo-100 dark:border-indigo-900/30">
+                                        <Label className={labelClasses}>Highest Qualification *</Label>
+                                        <Select value={formData.highestQualification} onValueChange={(val) => handleSelectChange('highestQualification', val)}>
+                                            <SelectTrigger className={cn(inputClasses, "bg-white dark:bg-gray-950 shadow-sm font-bold")}><SelectValue placeholder="Select Qualification" /></SelectTrigger>
+                                            <SelectContent className="rounded-2xl border-none shadow-2xl p-2">
+                                                <SelectItem value="high_school" className="rounded-xl py-3 font-bold">10th Standard</SelectItem>
+                                                <SelectItem value="higher_secondary" className="rounded-xl py-3 font-bold">12th Standard</SelectItem>
+                                                <SelectItem value="graduation" className="rounded-xl py-3 font-bold">Graduation</SelectItem>
+                                                <SelectItem value="post_graduation" className="rounded-xl py-3 font-bold">Post Graduation</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+
+                                    <div className="space-y-12">
+                                        {/* High School (10th) - Show for all qualifications */}
+                                        {formData.highestQualification && (
+                                            <div className="space-y-8 bg-gray-50/30 dark:bg-gray-900/30 p-10 rounded-[2.5rem] border border-gray-100 dark:border-gray-800 transition-all duration-500">
+                                                <h3 className={sectionHeaderClasses}>
+                                                    <span className="h-2 w-2 rounded-full bg-gray-400" />
+                                                    10th Details
+                                                </h3>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                                    <div className="space-y-2">
+                                                        <Label className={labelClasses}>School Name</Label>
+                                                        <CreatableSuggestionInput 
+                                                            type="school" 
+                                                            value={formData.hsSchoolName} 
+                                                            onChange={(val) => handleSelectChange('hsSchoolName', val)} 
+                                                            placeholder="Select or type School"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label className={labelClasses}>Board</Label>
+                                                        <CreatableSuggestionInput 
+                                                            type="board" 
+                                                            value={formData.hsBoard} 
+                                                            onChange={(val) => handleSelectChange('hsBoard', val)} 
+                                                            placeholder="Select or type Board"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label className={labelClasses}>Passing Year</Label>
+                                                        <Input name="hsPassingYear" value={formData.hsPassingYear} onChange={handleInputChange} placeholder="YYYY" className={inputClasses} />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label className={labelClasses}>Percentage / CGPA</Label>
+                                                        <Input name="hsPercentage" value={formData.hsPercentage} onChange={handleInputChange} placeholder="e.g. 85%" className={inputClasses} />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Higher Secondary (12th) - Show for higher_secondary, graduation, post_graduation */}
+                                        {['higher_secondary', 'graduation', 'post_graduation'].includes(formData.highestQualification) && (
+                                            <div className="space-y-8 bg-amber-50/30 dark:bg-amber-900/10 p-10 rounded-[2.5rem] border border-amber-100/50 dark:border-amber-900/20 transition-all duration-500">
+                                                <h3 className={sectionHeaderClasses}>
+                                                    <span className="h-2 w-2 rounded-full bg-amber-500" />
+                                                    12th Details
+                                                </h3>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                                    <div className="space-y-2">
+                                                        <Label className={labelClasses}>School Name</Label>
+                                                        <CreatableSuggestionInput 
+                                                            type="school" 
+                                                            value={formData.hssSchoolName} 
+                                                            onChange={(val) => handleSelectChange('hssSchoolName', val)} 
+                                                            placeholder="Select or type School"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label className={labelClasses}>Board</Label>
+                                                        <CreatableSuggestionInput 
+                                                            type="board" 
+                                                            value={formData.hssBoard} 
+                                                            onChange={(val) => handleSelectChange('hssBoard', val)} 
+                                                            placeholder="Select or type Board"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label className={labelClasses}>Stream</Label>
+                                                        <Select value={formData.hssStream} onValueChange={(val) => handleSelectChange('hssStream', val)}>
+                                                            <SelectTrigger className={cn(inputClasses, "bg-white/50 dark:bg-gray-900/50 font-bold shadow-sm")}><SelectValue placeholder="Select Stream" /></SelectTrigger>
+                                                            <SelectContent className="rounded-2xl border-none shadow-2xl p-2">
+                                                                <SelectItem value="science" className="rounded-xl py-3 font-bold">Science</SelectItem>
+                                                                <SelectItem value="commerce" className="rounded-xl py-3 font-bold">Commerce</SelectItem>
+                                                                <SelectItem value="arts" className="rounded-xl py-3 font-bold">Arts / Humanities</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label className={labelClasses}>Passing Year</Label>
+                                                        <Input name="hssPassingYear" value={formData.hssPassingYear} onChange={handleInputChange} placeholder="YYYY" className={inputClasses} />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label className={labelClasses}>Percentage</Label>
+                                                        <Input name="hssPercentage" value={formData.hssPercentage} onChange={handleInputChange} placeholder="e.g. 85%" className={inputClasses} />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Graduation - Show for graduation, post_graduation */}
+                                        {['graduation', 'post_graduation'].includes(formData.highestQualification) && (
+                                            <div className="space-y-8 bg-blue-50/30 dark:bg-blue-900/10 p-10 rounded-[2.5rem] border border-blue-100/50 dark:border-blue-900/20 transition-all duration-500">
+                                                <h3 className={sectionHeaderClasses}>
+                                                    <span className="h-2 w-2 rounded-full bg-blue-500" />
+                                                    Graduation Details
+                                                </h3>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                                    <div className="space-y-2">
+                                                        <Label className={labelClasses}>College Name</Label>
+                                                        <CreatableSuggestionInput 
+                                                            type="college" 
+                                                            value={formData.gradCollegeName} 
+                                                            onChange={(val) => handleSelectChange('gradCollegeName', val)} 
+                                                            placeholder="Select or type College"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label className={labelClasses}>University</Label>
+                                                        <CreatableSuggestionInput 
+                                                            type="university" 
+                                                            value={formData.gradUniversity} 
+                                                            onChange={(val) => handleSelectChange('gradUniversity', val)} 
+                                                            placeholder="Select or type University"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label className={labelClasses}>Degree</Label>
+                                                        <CreatableSuggestionInput 
+                                                            type="degree" 
+                                                            value={formData.gradDegree} 
+                                                            onChange={(val) => handleSelectChange('gradDegree', val)} 
+                                                            placeholder="e.g. BSc, BCom, BTech"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label className={labelClasses}>Passing Year</Label>
+                                                        <Input name="gradPassingYear" value={formData.gradPassingYear} onChange={handleInputChange} placeholder="YYYY" className={inputClasses} />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label className={labelClasses}>Percentage / CGPA</Label>
+                                                        <Input name="gradPercentage" value={formData.gradPercentage} onChange={handleInputChange} placeholder="e.g. 8.5 CGPA" className={inputClasses} />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Post Graduation - Show only for post_graduation */}
+                                        {formData.highestQualification === 'post_graduation' && (
+                                            <div className="space-y-8 bg-purple-50/30 dark:bg-purple-900/10 p-10 rounded-[2.5rem] border border-purple-100/50 dark:border-purple-900/20 transition-all duration-500">
+                                                <h3 className={sectionHeaderClasses}>
+                                                    <span className="h-2 w-2 rounded-full bg-purple-500" />
+                                                    Post Graduation Details
+                                                </h3>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                                    <div className="space-y-2">
+                                                        <Label className={labelClasses}>College Name</Label>
+                                                        <CreatableSuggestionInput 
+                                                            type="college" 
+                                                            value={formData.pgCollegeName} 
+                                                            onChange={(val) => handleSelectChange('pgCollegeName', val)} 
+                                                            placeholder="Select or type College"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label className={labelClasses}>University</Label>
+                                                        <CreatableSuggestionInput 
+                                                            type="university" 
+                                                            value={formData.pgUniversity} 
+                                                            onChange={(val) => handleSelectChange('pgUniversity', val)} 
+                                                            placeholder="Select or type University"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label className={labelClasses}>Degree</Label>
+                                                        <CreatableSuggestionInput 
+                                                            type="degree" 
+                                                            value={formData.pgDegree} 
+                                                            onChange={(val) => handleSelectChange('pgDegree', val)} 
+                                                            placeholder="e.g. MSc, MCom, MTech"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label className={labelClasses}>Passing Year</Label>
+                                                        <Input name="pgPassingYear" value={formData.pgPassingYear} onChange={handleInputChange} placeholder="YYYY" className={inputClasses} />
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        <Label className={labelClasses}>Percentage / CGPA</Label>
+                                                        <Input name="pgPercentage" value={formData.pgPercentage} onChange={handleInputChange} placeholder="e.g. 8.5 CGPA" className={inputClasses} />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Step 3: Professional Details */}
+                            {currentStep === 3 && (
+                                <div className="space-y-10 animate-in fade-in slide-in-from-right-8 duration-700">
+                                    <h3 className={sectionHeaderClasses}>
+                                        <span className="h-2 w-2 rounded-full bg-amber-500" />
+                                        Professional Details
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
+                                        <div className="space-y-2">
+                                            <Label className={labelClasses}>Department</Label>
+                                            <Input name="department" value={formData.department} onChange={handleInputChange} placeholder="e.g. Computer Science" className={inputClasses} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className={labelClasses}>Designation</Label>
+                                            <Input name="designation" value={formData.designation} onChange={handleInputChange} placeholder="e.g. Senior Teacher, HOD" className={inputClasses} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className={labelClasses}>Date of joining</Label>
+                                            <DateInput name="dateOfJoining" value={formData.dateOfJoining} onChange={(val) => handleSelectChange('dateOfJoining', val)} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className={labelClasses}>Total Experience (Years)</Label>
+                                            <Input name="experienceYears" value={formData.experienceYears} onChange={handleInputChange} placeholder="e.g. 5" className={inputClasses} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className={labelClasses}>Referred By</Label>
+                                            <Input name="referredBy" value={formData.referredBy} onChange={handleInputChange} placeholder="Employee name or ID" className={inputClasses} />
+                                        </div>
+                                        <div className="col-span-2 space-y-2 pt-4">
+                                            <Label className={labelClasses}>Skills</Label>
+                                            <Textarea name="skills" value={formData.skills} onChange={handleInputChange} placeholder="Teaching, Management, Data Analysis..." className="min-h-[120px] rounded-[2rem] bg-gray-50 dark:bg-gray-900 border-none font-bold p-8 text-base focus:ring-2 focus:ring-indigo-500/20 transition-all resize-none" />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Step 4: Employee monthly salary */}
+                            {currentStep === 4 && (
+                                <div className="space-y-10 animate-in fade-in slide-in-from-right-8 duration-700">
+                                    <h3 className={sectionHeaderClasses}>
+                                        <span className="h-2 w-2 rounded-full bg-blue-500" />
+                                        Employee monthly salary
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
+                                        <div className="space-y-2">
+                                            <Label className={labelClasses}>Salary Type</Label>
+                                            <Select onValueChange={(val) => handleSelectChange('salaryType', val)} value={formData.salaryType}>
+                                                <SelectTrigger className={cn(inputClasses, "text-gray-400 font-bold")}><SelectValue placeholder="Select Type" /></SelectTrigger>
+                                                <SelectContent className="rounded-2xl border-none shadow-2xl p-2">
+                                                    <SelectItem value="fixed" className="rounded-xl py-3 font-bold">Fixed Salary</SelectItem>
+                                                    <SelectItem value="hourly" className="rounded-xl py-3 font-bold">Hourly</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className={labelClasses}>Amount</Label>
+                                            <Input name="salaryAmount" value={formData.salaryAmount} onChange={handleInputChange} placeholder="25000" className={inputClasses} />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Step 5: Bank details */}
+                            {currentStep === 5 && (
+                                <div className="space-y-10 animate-in fade-in slide-in-from-right-8 duration-700">
+                                    <h3 className={sectionHeaderClasses}>
+                                        <span className="h-2 w-2 rounded-full bg-rose-500" />
+                                        Bank details
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
+                                        <div className="space-y-2">
+                                            <Label className={labelClasses}>Bank name *</Label>
+                                            <Input name="bankName" value={formData.bankName} onChange={handleInputChange} placeholder="Bank Name" className={inputClasses} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className={labelClasses}>IFSC code *</Label>
+                                            <Input name="ifscCode" value={formData.ifscCode} onChange={handleInputChange} placeholder="IFSC Code" className={inputClasses} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className={labelClasses}>Account number *</Label>
+                                            <Input name="accountNumber" value={formData.accountNumber} onChange={handleInputChange} placeholder="Account Number" className={inputClasses} />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className={labelClasses}>Confirm account number *</Label>
+                                            <Input name="confirmAccountNumber" value={formData.confirmAccountNumber} onChange={handleInputChange} placeholder="Confirm Account Number" className={inputClasses} />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Step 6: Review details */}
+                            {currentStep === 6 && (
+                                <div className="space-y-10 animate-in fade-in slide-in-from-right-8 duration-700">
+                                    <h3 className={sectionHeaderClasses}>
+                                        <span className="h-2 w-2 rounded-full bg-violet-600" />
+                                        Review details
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <div className="p-8 rounded-[2.5rem] bg-gray-50 dark:bg-gray-800/50 space-y-6">
+                                            <div className="flex items-center gap-4 border-b border-gray-200 dark:border-gray-700 pb-4">
+                                                <div className="h-12 w-12 rounded-2xl bg-indigo-600 flex items-center justify-center font-black text-white text-lg overflow-hidden">
+                                                    {formData.imageUrl ? (
+                                                        <img src={formData.imageUrl} alt="Avatar" className="h-full w-full object-cover" />
+                                                    ) : (
+                                                        formData.firstName[0]
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-black text-xl">{formData.firstName} {formData.lastName}</h4>
+                                                    <p className="text-xs font-bold text-indigo-600 uppercase tracking-widest">{formData.department || 'Staff'}</p>
+                                                </div>
+                                            </div>
+                                            <div className="space-y-4 text-sm font-bold">
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-400 uppercase tracking-widest text-[10px]">Employee code</span>
+                                                    <span>{formData.employeeCode}</span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-400 uppercase tracking-widest text-[10px]">Phone number</span>
+                                                    <span>{formData.phone}</span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-400 uppercase tracking-widest text-[10px]">Email</span>
+                                                    <span className="lowercase">{formData.email}</span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-400 uppercase tracking-widest text-[10px]">Highest Qualification</span>
+                                                    <span className="capitalize">{formData.highestQualification?.replace('_', ' ')}</span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-400 uppercase tracking-widest text-[10px]">Gender</span>
+                                                    <span className="capitalize">{formData.gender || 'Not Specified'}</span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-400 uppercase tracking-widest text-[10px]">Experience</span>
+                                                    <span>{formData.experienceYears} Years</span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-400 uppercase tracking-widest text-[10px]">Referred By</span>
+                                                    <span>{formData.referredBy || 'Direct'}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="p-8 rounded-[2.5rem] bg-gray-900 text-white space-y-6 shadow-2xl shadow-gray-900/20">
+                                            <div className="flex items-center justify-between pb-4 border-b border-white/10">
+                                                <h4 className="font-black text-xl tracking-tight">Review details</h4>
+                                                <Badge className="bg-emerald-500 text-white border-none font-black text-[9px] uppercase tracking-widest">VERIFIED</Badge>
+                                            </div>
+                                            <div className="space-y-4 font-bold">
+                                                <div className="flex justify-between items-end">
+                                                    <span className="text-white/40 uppercase tracking-widest text-[10px]">Salary Amount</span>
+                                                    <span className="text-3xl font-black tracking-tighter">₹{Number(formData.salaryAmount).toLocaleString()}</span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-white/40 uppercase tracking-widest text-[10px]">Bank name</span>
+                                                    <span>{formData.bankName}</span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-white/40 uppercase tracking-widest text-[10px]">Account number</span>
+                                                    <span>{formData.accountNumber}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Footer Actions */}
+                            <div className="mt-auto pt-14 flex items-center justify-between border-t border-gray-50 dark:border-gray-800">
+                                <div className="flex items-center gap-3">
+                                    <Button
+                                        variant="ghost"
+                                        onClick={() => setCurrentStep(prev => prev - 1)}
+                                        disabled={currentStep === 1}
+                                        className="h-14 rounded-2xl px-8 font-black uppercase tracking-widest text-[10px] text-gray-400 hover:text-indigo-600 transition-all disabled:opacity-20"
+                                    >
+                                        Back
+                                    </Button>
+                                    <Button
+                                        variant="ghost"
+                                        onClick={handleSaveDraft}
+                                        disabled={isSubmitting}
+                                        className="h-14 rounded-2xl px-8 font-black uppercase tracking-widest text-[10px] text-indigo-400 hover:text-indigo-600 transition-all border border-transparent hover:border-indigo-100 dark:hover:border-indigo-900"
+                                    >
+                                        Save Draft
+                                    </Button>
+                                </div>
+                                
+                                {currentStep < steps.length ? (
+                                    <Button
+                                        onClick={handleNext}
+                                        className="h-14 rounded-2xl px-12 bg-indigo-600 hover:bg-indigo-700 shadow-2xl shadow-indigo-500/30 font-black uppercase tracking-widest text-[10px] text-white gap-3 transition-all"
+                                    >
+                                        Next
+                                        <ChevronRight className="h-4 w-4" />
+                                    </Button>
                                 ) : (
-                                    'Submit Staff'
+                                    <Button
+                                        onClick={handleSubmit}
+                                        disabled={isSubmitting}
+                                        className="h-14 rounded-2xl px-12 bg-emerald-600 hover:bg-emerald-700 shadow-2xl shadow-emerald-500/30 font-black uppercase tracking-widest text-[10px] text-white gap-3 transition-all"
+                                    >
+                                        {isSubmitting ? (
+                                            <>
+                                                <Loader2 className="h-4 w-4 animate-spin" />
+                                                Adding...
+                                            </>
+                                        ) : (
+                                            <>
+                                                Submit Staff
+                                                <Sparkles className="h-4 w-4" />
+                                            </>
+                                        )}
+                                    </Button>
                                 )}
-                            </Button>
-                        )}
-                    </div>
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
         </div>
+    )
+}
+
+function CheckCircle2(props: any) {
+    return (
+        <svg
+            {...props}
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
+            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
+            <path d="m9 12 2 2 4-4" />
+        </svg>
     )
 }

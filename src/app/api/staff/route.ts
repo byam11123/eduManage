@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { extractToken, verifyToken } from '@/lib/auth-utils'
 import { hashPassword } from '@/lib/auth-utils'
+import { generateId } from '@/lib/utils/id-generator'
 
 export async function GET(request: NextRequest) {
     try {
@@ -84,10 +85,23 @@ export async function POST(request: NextRequest) {
         const { 
             email, firstName, lastName, fullName: bodyFullName, password, phone, address, 
             branchId, role, employeeCode, designation, department, joiningDate, salaryType, salaryAmount,
-            fathersName, fathersPhone, gender, dateOfBirth
+            fathersName, fathersPhone, gender, dateOfBirth,
+            hsSchoolName, hsBoard, hsPassingYear, hsPercentage,
+            hssSchoolName, hssBoard, hssStream, hssPassingYear, hssPercentage,
+            gradCollegeName, gradUniversity, gradDegree, gradPassingYear, gradPercentage,
+            pgCollegeName, pgUniversity, pgDegree, pgPassingYear, pgPercentage,
+            experienceYears, skills, referredBy,
+            bankName, accountNumber, ifscCode
         } = body
 
         const fullName = bodyFullName || `${firstName} ${lastName}`.trim()
+
+        // 1. Generate Employee Code if not provided
+        let finalEmployeeCode = employeeCode
+        if (!finalEmployeeCode && body.status !== 'draft') {
+            const idData = await generateId('STAFF')
+            finalEmployeeCode = idData.displayId
+        }
 
         // 0. Verify branch belongs to organization
         const targetBranchId = branchId || payload.branches[0]
@@ -112,7 +126,37 @@ export async function POST(request: NextRequest) {
                 password: hashedPassword,
                 phone,
                 address,
-                status: 'active',
+                status: body.status || 'active',
+                fathersName,
+                fathersPhone,
+                gender,
+                dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
+                highestQualification: body.highestQualification,
+                hsSchoolName,
+                hsBoard,
+                hsPassingYear,
+                hsPercentage,
+                hssSchoolName,
+                hssBoard,
+                hssStream,
+                hssPassingYear,
+                hssPercentage,
+                gradCollegeName,
+                gradUniversity,
+                gradDegree,
+                gradPassingYear,
+                gradPercentage,
+                pgCollegeName,
+                pgUniversity,
+                pgDegree,
+                pgPassingYear,
+                pgPercentage,
+                experienceYears: Number(experienceYears) || 0,
+                skills,
+                referredBy,
+                bankName,
+                accountNumber,
+                ifscCode
             }
         })
 
@@ -120,21 +164,21 @@ export async function POST(request: NextRequest) {
         await db.userBranch.create({
             data: {
                 userId: newUser.id,
-                branchId: branchId || payload.branches[0],
+                branchId: targetBranchId,
                 role: role || 'user',
-                employeeCode,
+                employeeCode: finalEmployeeCode,
                 designation: designation || 'Staff',
                 department,
                 joiningDate: joiningDate ? new Date(joiningDate) : new Date(),
                 salaryType,
                 salaryAmount: Number(salaryAmount) || 0,
-                isActive: true
+                isActive: body.status === 'draft' ? false : true
             }
         })
 
         return NextResponse.json({
             success: true,
-            message: 'Staff created successfully',
+            message: body.status === 'draft' ? 'Staff saved as draft' : 'Staff created successfully',
             data: newUser
         })
 
