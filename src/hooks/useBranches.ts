@@ -16,6 +16,11 @@ interface UseBranchesReturn {
     // Loading States
     loading: boolean
     saving: boolean
+    stats: {
+        total: number
+        active: number
+        totalStudents: number
+    }
 
     // Actions
     fetchBranches: () => Promise<void>
@@ -149,6 +154,11 @@ export function useBranches(): UseBranchesReturn {
         updateBranch,
         deleteBranch,
         selectBranch,
-        setDefaultBranch
+        setDefaultBranch,
+        stats: {
+            total: branches.length,
+            active: branches.filter(b => b.isActive).length,
+            totalStudents: branches.reduce((acc, curr) => acc + (curr._count?.students || 0), 0)
+        }
     }
 }

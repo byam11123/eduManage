@@ -83,7 +83,18 @@ export async function GET(request: NextRequest) {
                         id: true,
                         name: true
                     }
-                }
+                },
+                studentCourses: {
+                    include: {
+                        course: true,
+                        batches: {
+                            include: { batch: true }
+                        },
+                        installments: true
+                    }
+                },
+                course: true,
+                batch: true
             },
             orderBy: { createdAt: 'desc' }
         })

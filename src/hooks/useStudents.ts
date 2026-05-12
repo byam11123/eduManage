@@ -40,6 +40,7 @@ interface UseStudentsReturn {
         refundedAmount: number
         defaulters: number
     }
+    bulkCreate: (data: { students: any[]; branchId: string; courseId: string; batchId?: string }) => Promise<boolean>
 }
 
 export function useStudents(): UseStudentsReturn {
@@ -174,11 +175,12 @@ export function useStudents(): UseStudentsReturn {
 
         let studentTotalOverdue = 0
 
-        // Use centralized helper
-        const { installments, totalPaid: helperTotalPaid } = calculateStudentFinancials(student)
-
-        // Process Installments (Financial Breakdown)
-        if (installments.length > 0) {
+        // Use new relational multi-course helper
+        const studentCourses = student.studentCourses || []
+        
+        studentCourses.forEach(course => {
+            const installments = course.installments || []
+            
             installments.forEach(inst => {
                 const amount = Number(inst.amount || 0)
                 const paidAmount = Number(inst.paidAmount || 0)
@@ -207,13 +209,14 @@ export function useStudents(): UseStudentsReturn {
                     }
                 }
             })
-            // Add total paid from installments to received accumulator
-            acc.received += helperTotalPaid
-        }
+            
+            // Add total paid from this course
+            acc.received += installments.reduce((sum: number, inst: any) => sum + (Number(inst.paidAmount) || 0), 0)
+        })
 
         // Process Full Payment (Legacy/Fallback)
-        // If helper returned 0 paid (no paid installments) but logic implies full payment existing elsewhere
-        if (helperTotalPaid === 0 && student.paymentStatus === 'paid') {
+        // If no relational installments exist, fallback to legacy
+        if (studentCourses.length === 0 && student.paymentStatus === 'paid') {
             try {
                 const fullPayData = student.fullPayment ? (typeof student.fullPayment === 'string' ? JSON.parse(student.fullPayment) : student.fullPayment) : null
 
@@ -272,6 +275,22 @@ export function useStudents(): UseStudentsReturn {
         updateStudent,
         deleteStudent,
         selectStudent,
+        bulkCreate: async (data: { students: any[]; branchId: string; courseId: string; batchId?: string }) => {
+            setSaving(true)
+            try {
+                const response = await studentService.bulkCreate(data)
+                if (response.success) {
+                    await fetchStudents()
+                    return true
+                }
+                return false
+            } catch (err) {
+                console.error('useStudents.bulkCreate error:', err)
+                return false
+            } finally {
+                setSaving(false)
+            }
+        },
         stats
     }
 }

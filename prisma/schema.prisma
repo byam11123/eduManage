@@ -32,6 +32,7 @@ model User {
   organizations    OrganizationMember[]
   userBranches     UserBranch[]
   permissions      ModulePermission[]
+  attendances      Attendance[]
 
   @@index([email])
   @@index([googleId])
@@ -114,6 +115,7 @@ model Organization {
   enquiries  Enquiry[]
   walletTransactions WalletTransaction[]
   modulePermissions ModulePermission[]
+  attendances      Attendance[]
 
   @@index([slug])
   @@index([ownerId])
@@ -172,6 +174,7 @@ model Branch {
   userBranches  UserBranch[]
   students      Student[]
   enquiries     Enquiry[]
+  attendances   Attendance[]
 
   @@index([organizationId])
 }
@@ -299,6 +302,7 @@ model Student {
   studentCourses StudentCourse[]
 
   receipts      Receipt[]
+  attendances   Attendance[]
 
   @@index([branchId])
   @@index([courseId])
@@ -421,8 +425,9 @@ model Batch {
   status    String   @default("active") // active, inactive, completed
   course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseId  String
-  students  Student[]
+  students      Student[]
   studentCourseBatches StudentCourseBatch[] // New Relation
+  attendances   Attendance[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -516,6 +521,39 @@ model Post {
 model Counter {
   key   String @id
   value Int
+}
+
+model Attendance {
+  id        String   @id @default(cuid())
+  date      DateTime
+  status    String   // present, absent, leave, half-day, holiday
+  type      String   // student, employee
+  remarks   String?
+  
+  // Relations
+  studentId String?
+  student   Student? @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  employeeId String? // userId in UserBranch context
+  employee   User?   @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  
+  branchId  String
+  branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  batchId   String?
+  batch     Batch?   @relation(fields: [batchId], references: [id], onDelete: SetNull)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([date, studentId, type])
+  @@unique([date, employeeId, type])
+  @@index([date])
+  @@index([studentId])
+  @@index([employeeId])
+  @@index([branchId])
+  @@index([batchId])
+  @@index([organizationId])
 }
 
 model ModulePermission {

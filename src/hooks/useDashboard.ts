@@ -44,28 +44,28 @@ export function useDashboard(): UseDashboardReturn {
         setLoading(true)
         try {
             // Fetch stats
-            const statsRes = await fetch('/api/dashboard/stats')
+            const statsRes = await fetch('/api/dashboard/stats', { cache: 'no-store' })
             const statsData = await statsRes.json()
             if (statsData.success) {
                 setStats(statsData.stats)
             }
 
             // Fetch revenue data
-            const revenueRes = await fetch('/api/dashboard/revenue')
+            const revenueRes = await fetch('/api/dashboard/revenue', { cache: 'no-store' })
             const revenueDataRes = await revenueRes.json()
             if (revenueDataRes.success) {
                 setRevenueData(revenueDataRes.data)
             }
 
             // Fetch recent students
-            const studentsRes = await fetch('/api/students?limit=5&sort=createdAt:desc')
+            const studentsRes = await fetch('/api/students?limit=5&sort=createdAt:desc', { cache: 'no-store' })
             const studentsData = await studentsRes.json()
             if (studentsData.success) {
                 setRecentStudents(studentsData.students?.slice(0, 5) || [])
             }
 
             // Fetch recent enquiries
-            const enquiriesRes = await fetch('/api/enquiries?limit=5&sort=createdAt:desc')
+            const enquiriesRes = await fetch('/api/enquiries?limit=5&sort=createdAt:desc', { cache: 'no-store' })
             const enquiriesData = await enquiriesRes.json()
             if (enquiriesData.success) {
                 setRecentEnquiries(enquiriesData.enquiries?.slice(0, 5) || [])
@@ -80,7 +80,7 @@ export function useDashboard(): UseDashboardReturn {
     // Refresh just the stats
     const refreshStats = useCallback(async () => {
         try {
-            const statsRes = await fetch('/api/dashboard/stats')
+            const statsRes = await fetch('/api/dashboard/stats', { cache: 'no-store' })
             const statsData = await statsRes.json()
             if (statsData.success) {
                 setStats(statsData.stats)

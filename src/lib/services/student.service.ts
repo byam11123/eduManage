@@ -20,7 +20,7 @@ export const studentService = {
             if (params?.status) searchParams.set('status', params.status)
 
             const url = searchParams.toString() ? `${BASE_URL}?${searchParams}` : BASE_URL
-            const res = await fetch(url)
+            const res = await fetch(url, { cache: 'no-store' })
             const data = await res.json()
             return {
                 success: data.success,
@@ -38,7 +38,7 @@ export const studentService = {
      */
     async getById(id: string): Promise<ApiResponse<Student>> {
         try {
-            const res = await fetch(`${BASE_URL}/${id}`)
+            const res = await fetch(`${BASE_URL}/${id}`, { cache: 'no-store' })
             const data = await res.json()
             return {
                 success: data.success,
@@ -112,6 +112,28 @@ export const studentService = {
         } catch (error) {
             console.error('studentService.delete error:', error)
             return { success: false, error: 'Failed to delete student' }
+        }
+    },
+
+    /**
+     * Bulk create students
+     */
+    async bulkCreate(data: { students: any[]; branchId: string; courseId: string; batchId?: string }): Promise<ApiResponse<any>> {
+        try {
+            const res = await fetch(`${BASE_URL}/bulk`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            const result = await res.json()
+            return {
+                success: result.success,
+                data: result,
+                error: result.error
+            }
+        } catch (error) {
+            console.error('studentService.bulkCreate error:', error)
+            return { success: false, error: 'Failed to upload students' }
         }
     }
 }

@@ -22,6 +22,7 @@ import {
     Wallet,
     Megaphone,
     Award,
+    IdCard,
     Settings
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -64,7 +65,7 @@ export function SidebarContent({ isMobile = false }: { isMobile?: boolean }) {
         router.push('/login')
     }
 
-    const allNavItems: NavItem[] = [
+    const activeNavItems: NavItem[] = [
         { title: 'Dashboard', url: '/admin', icon: LayoutDashboard, moduleId: 'dashboard' },
         {
             title: 'Enquiry',
@@ -87,6 +88,12 @@ export function SidebarContent({ isMobile = false }: { isMobile?: boolean }) {
                 { title: 'Draft Admissions', url: '/admin/students/drafts' },
                 { title: 'Student Admission', url: '/admin/students/add' },
             ]
+        },
+        { 
+            title: 'ID Cards', 
+            url: '/admin/id-cards', 
+            icon: IdCard, 
+            moduleId: 'id_cards' 
         },
         {
             title: 'Fees',
@@ -119,9 +126,12 @@ export function SidebarContent({ isMobile = false }: { isMobile?: boolean }) {
                 { title: 'All Branches', url: '/admin/branches' },
             ]
         },
-        { title: 'Time Table', url: '/admin/timetable', icon: Clock, moduleId: 'timetable' },
         { title: 'Staff', url: '/admin/staff', icon: UserCheck, moduleId: 'staff' },
         { title: 'Users & Roles', url: '/admin/users', icon: UserCog, moduleId: 'settings' },
+    ]
+
+    const upcomingNavItems: NavItem[] = [
+        { title: 'Time Table', url: '/admin/timetable', icon: Clock, moduleId: 'timetable' },
         { title: 'Chat', url: '/admin/chat', icon: MessageSquare, moduleId: 'chat' },
         { title: 'Notice Board', url: '/admin/notice', icon: Megaphone, moduleId: 'notice' },
         { title: 'Tickets', url: '/admin/tickets', icon: Ticket, moduleId: 'tickets' },
@@ -132,20 +142,23 @@ export function SidebarContent({ isMobile = false }: { isMobile?: boolean }) {
     ]
 
     // RBAC Filter
-    const navItems = allNavItems.filter(item => {
+    const filterItems = (items: NavItem[]) => items.filter(item => {
         if (isLoading && !user) return true
         if (!user) return false
         if (user.role === 'super_admin') return true
-        if (!item.moduleId) return true // Show items without specific module mapping
+        if (!item.moduleId) return true
         return user.permissions?.includes(item.moduleId)
     })
 
+    const filteredActive = filterItems(activeNavItems)
+    const filteredUpcoming = filterItems(upcomingNavItems)
+
     return (
-        <TooltipProvider delayDuration={0}>
+        <>
             <div className={cn(
                 "relative flex h-full flex-col border-r border-gray-100 bg-white transition-all duration-300 dark:border-gray-800 dark:bg-gray-950",
                 isMobile ? "w-full" : "",
-                collapsed ? "w-24" : "w-[280px]"
+                collapsed ? "w-24" : "w-[240px]"
             )}>
 
                 {/* Logo Section */}
@@ -170,84 +183,30 @@ export function SidebarContent({ isMobile = false }: { isMobile?: boolean }) {
 
                 {/* Navigation Items */}
                 <div className={cn(
-                    "flex-1 overflow-y-auto py-6 space-y-1.5 custom-scrollbar",
+                    "flex-1 overflow-y-auto py-6 space-y-8 custom-scrollbar",
                     collapsed ? "px-4" : "px-3"
                 )}>
-                    {navItems.map((item) => {
-                        const isActive = pathname === item.url || (item.url !== '/admin' && pathname?.startsWith(item.url))
-                        const isExpanded = sidebarExpandedItems.includes(item.title)
+                    {/* Active Modules */}
+                    <div className="space-y-1.5">
+                        {!collapsed && (
+                            <p className="px-4 text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 mb-4 flex items-center gap-2">
+                                <span className="h-1 w-1 bg-indigo-600 rounded-full" />
+                                Main Menu
+                            </p>
+                        )}
+                        {filteredActive.map((item) => renderNavItem(item, pathname, sidebarExpandedItems, toggleSidebarItem, closeSidebar, collapsed, isMobile))}
+                    </div>
 
-                        if (item.children && !collapsed) {
-                            return (
-                                <div key={item.title} className="space-y-1">
-                                    <button
-                                        onClick={() => toggleSidebarItem(item.title)}
-                                        className={cn(
-                                            "w-full flex items-center justify-between px-4 py-3 text-sm font-bold rounded-2xl transition-all duration-200 group",
-                                            isActive || isExpanded
-                                                ? 'bg-gray-50/80 text-gray-900 dark:bg-gray-800/50 dark:text-white border border-gray-100 dark:border-gray-800 shadow-sm'
-                                                : 'text-gray-500 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800/30 hover:text-indigo-600'
-                                        )}
-                                    >
-                                        <div className="flex items-center gap-3.5">
-                                            <item.icon className={cn("h-4.5 w-4.5 transition-transform group-hover:scale-110", (isActive || isExpanded) ? "text-indigo-600" : "text-gray-400")} />
-                                            <span>{item.title}</span>
-                                        </div>
-                                        <ChevronDown className={cn("h-3.5 w-3.5 transition-transform duration-300 opacity-40", isExpanded ? "rotate-180" : "rotate-0")} />
-                                    </button>
-
-                                    {isExpanded && (
-                                        <div className="mt-1 space-y-1 ml-4 border-l-2 border-gray-100 dark:border-gray-800 pl-4 animate-in slide-in-from-top-2 duration-200">
-                                            {item.children.map((child) => (
-                                                <Link
-                                                    key={child.url}
-                                                    href={child.url}
-                                                    onClick={closeSidebar}
-                                                    className={cn(
-                                                        "block px-4 py-2.5 text-[13px] rounded-xl transition-all duration-200 font-bold",
-                                                        pathname === child.url
-                                                            ? 'text-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/10'
-                                                            : 'text-gray-500 hover:text-indigo-600 hover:bg-gray-50 dark:hover:bg-gray-800/30'
-                                                    )}
-                                                >
-                                                    {child.title}
-                                                </Link>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            )
-                        }
-
-                        return (
-                            <Tooltip key={item.title}>
-                                <TooltipTrigger asChild>
-                                    <Link
-                                        href={item.url}
-                                        onClick={closeSidebar}
-                                        className={cn(
-                                            "flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 group relative",
-                                            collapsed ? "h-14 justify-center px-0" : "justify-start",
-                                            isActive
-                                                ? 'bg-[#4f46e5] text-white shadow-xl shadow-indigo-200 dark:shadow-none'
-                                                : 'text-gray-500 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800/50 hover:text-indigo-600'
-                                        )}
-                                    >
-                                        <item.icon className={cn("shrink-0 transition-transform group-hover:scale-110", collapsed ? "h-7 w-7" : "h-5 w-5", isActive ? "text-white" : "text-gray-400")} />
-                                        {!collapsed && <span className="text-[15px] font-bold tracking-tight">{item.title}</span>}
-                                        {isActive && collapsed && (
-                                            <div className="absolute left-0 w-1 h-6 bg-white rounded-r-full" />
-                                        )}
-                                    </Link>
-                                </TooltipTrigger>
-                                {collapsed && (
-                                    <TooltipContent side="right" className="bg-indigo-600 text-white border-none font-black text-[11px] py-2 px-3 shadow-2xl rounded-lg">
-                                        {item.title}
-                                    </TooltipContent>
-                                )}
-                            </Tooltip>
-                        )
-                    })}
+                    {/* Upcoming Modules */}
+                    <div className="space-y-1.5">
+                        {!collapsed && (
+                            <p className="px-4 text-[10px] font-black uppercase tracking-[0.3em] text-amber-500 mb-4 flex items-center gap-2">
+                                <span className="h-1 w-1 bg-amber-500 rounded-full" />
+                                More Modules
+                            </p>
+                        )}
+                        {filteredUpcoming.map((item) => renderNavItem(item, pathname, sidebarExpandedItems, toggleSidebarItem, closeSidebar, collapsed, isMobile))}
+                    </div>
                 </div>
 
                 {/* Footer Section */}
@@ -291,6 +250,99 @@ export function SidebarContent({ isMobile = false }: { isMobile?: boolean }) {
                     </div>
                 </div>
             </div>
-        </TooltipProvider>
+        </>
     )
 }
+
+function renderNavItem(
+    item: NavItem, 
+    pathname: string, 
+    sidebarExpandedItems: string[], 
+    toggleSidebarItem: (title: string) => void, 
+    closeSidebar: () => void, 
+    collapsed: boolean,
+    isMobile: boolean
+) {
+    const isActive = pathname === item.url || (item.url !== '/admin' && pathname?.startsWith(item.url))
+    const isExpanded = sidebarExpandedItems.includes(item.title)
+
+    if (item.children && !collapsed) {
+        return (
+            <div key={item.title} className="space-y-1">
+                <Link
+                    href={item.url}
+                    onClick={() => {
+                        toggleSidebarItem(item.title)
+                        if (isMobile) closeSidebar()
+                    }}
+                    className={cn(
+                        "w-full flex items-center justify-between px-4 py-3.5 text-sm font-bold rounded-2xl transition-all duration-200 group",
+                        isActive || isExpanded
+                            ? 'bg-gray-50/80 text-gray-900 dark:bg-gray-800/50 dark:text-white border border-gray-100 dark:border-gray-800 shadow-sm'
+                            : 'text-gray-500 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800/30 hover:text-indigo-600'
+                    )}
+                >
+                    <div className="flex items-center gap-4">
+                        <div className="flex h-5 w-5 items-center justify-center">
+                            <item.icon className={cn("h-5 w-5 shrink-0 transition-transform group-hover:scale-110", (isActive || isExpanded) ? "text-indigo-600" : "text-gray-400")} />
+                        </div>
+                        <span className="leading-none">{item.title}</span>
+                    </div>
+                    <ChevronDown className={cn("h-3.5 w-3.5 transition-transform duration-300 opacity-40", isExpanded ? "rotate-180" : "rotate-0")} />
+                </Link>
+
+                {isExpanded && (
+                    <div className="mt-1 space-y-1 ml-4 border-l-2 border-gray-100 dark:border-gray-800 pl-4 animate-in slide-in-from-top-2 duration-200">
+                        {item.children.map((child) => (
+                            <Link
+                                key={child.url}
+                                href={child.url}
+                                onClick={closeSidebar}
+                                className={cn(
+                                    "block px-4 py-2.5 text-[13px] rounded-xl transition-all duration-200 font-bold",
+                                    pathname === child.url
+                                        ? 'text-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/10'
+                                        : 'text-gray-500 hover:text-indigo-600 hover:bg-gray-50 dark:hover:bg-gray-800/30'
+                                )}
+                            >
+                                {child.title}
+                            </Link>
+                        ))}
+                    </div>
+                )}
+            </div>
+        )
+    }
+
+    return (
+        <Tooltip key={item.title}>
+            <TooltipTrigger asChild>
+                <Link
+                    href={item.url}
+                    onClick={closeSidebar}
+                    className={cn(
+                        "flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 group relative",
+                        collapsed ? "h-14 justify-center px-0" : "justify-start",
+                        isActive
+                            ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-200 dark:shadow-none'
+                            : 'text-gray-500 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800/50 hover:text-indigo-600'
+                    )}
+                >
+                    <div className={cn("flex items-center justify-center shrink-0", collapsed ? "h-6 w-6" : "h-5 w-5")}>
+                        <item.icon className={cn("shrink-0 transition-transform group-hover:scale-110", collapsed ? "h-6 w-6" : "h-5 w-5", isActive ? "text-white" : "text-gray-400")} />
+                    </div>
+                    {!collapsed && <span className="text-[15px] font-bold tracking-tight leading-none">{item.title}</span>}
+                    {isActive && collapsed && (
+                        <div className="absolute left-0 w-1 h-6 bg-white rounded-r-full" />
+                    )}
+                </Link>
+            </TooltipTrigger>
+            {collapsed && (
+                <TooltipContent side="right" className="bg-indigo-600 text-white border-none font-black text-[11px] py-2 px-3 shadow-2xl rounded-lg">
+                    {item.title}
+                </TooltipContent>
+            )}
+        </Tooltip>
+    )
+}
+

@@ -62,7 +62,7 @@ export function formatCurrency(amount: number | string | undefined | null): stri
     style: 'currency',
     currency: 'INR',
     maximumFractionDigits: 0
-  }).format(val)
+  }).format(val).replace('₹', '₹ ')
 }
 
 // ===========================================

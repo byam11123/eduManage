@@ -9,6 +9,7 @@ import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
+import { toast } from 'sonner'
 
 // Modular components
 import {
@@ -19,11 +20,18 @@ import {
     DeleteCourseDialog
 } from '@/components/admin/courses'
 
+// Shared components
+import { PageHeader } from '@/components/shared/PageHeader'
+import { StatsGrid } from '@/components/shared/StatsGrid'
+
 // Custom hooks
 import { useCourses } from '@/hooks'
+import { formatCurrency } from '@/lib/utils'
 
 // Types
 import type { Course, CourseFormData } from '@/lib/types'
+import { BookOpen, CheckCircle, XCircle, IndianRupee } from 'lucide-react'
+import { ExportButton } from '@/components/shared/ExportButton'
 
 // Default form data
 const defaultFormData: CourseFormData = {
@@ -60,8 +68,48 @@ export default function CoursesPage() {
         fetchCourses,
         createCourse,
         updateCourse,
-        deleteCourse
+        deleteCourse,
+        stats
     } = useCourses()
+
+    const [isBulkDeleting, setIsBulkDeleting] = useState(false)
+    const [isBulkExporting, setIsBulkExporting] = useState(false)
+
+    const handleBulkDelete = async (ids: string[]) => {
+        if (!confirm(`Delete ${ids.length} course(s)? This cannot be undone.`)) return
+        setIsBulkDeleting(true)
+        for (const id of ids) {
+            await deleteCourse(id)
+        }
+        setIsBulkDeleting(false)
+        toast.success(`${ids.length} course(s) deleted`)
+    }
+
+    const handleBulkExport = (ids: string[]) => {
+        setIsBulkExporting(true)
+        const selected = filteredCourses.filter(c => ids.includes(c.id))
+        const data = selected.map(c => ({
+            name: c.name,
+            code: c.code || 'N/A',
+            fee: `₹${c.fee.toLocaleString()}`,
+            duration: `${c.durationYears}y ${c.durationMonths}m`,
+            type: (c as any).courseType || 'N/A',
+            mode: (c as any).mode?.toUpperCase() || 'OFFLINE',
+            status: c.status.toUpperCase()
+        }))
+        const headers = ['Program Name', 'Code', 'Fee', 'Duration', 'Type', 'Mode', 'Status']
+        const keys = ['name', 'code', 'fee', 'duration', 'type', 'mode', 'status']
+        const csv = [headers.join(','), ...data.map(row => keys.map(k => `"${(row as any)[k]}"`).join(','))].join('\n')
+        const blob = new Blob([csv], { type: 'text/csv' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'EduManage_Courses_Export.csv'
+        a.click()
+        URL.revokeObjectURL(url)
+        setIsBulkExporting(false)
+        toast.success(`${ids.length} course(s) exported`)
+    }
 
     // Dialog states
     const [isAddOpen, setIsAddOpen] = useState(false)
@@ -141,54 +189,82 @@ export default function CoursesPage() {
         setIsAddOpen(true)
     }
 
-    return (
-        <div className="min-h-screen bg-gray-50/50 dark:bg-gray-900 p-6">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                        Courses
-                    </h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Manage your institute&apos;s courses
-                    </p>
-                </div>
+    const courseStats = [
+        { title: 'Total Courses', value: stats.total, icon: BookOpen, color: 'indigo' as const, trend: 'All Programs' },
+        { title: 'Active', value: stats.active, icon: CheckCircle, color: 'emerald' as const, trend: 'Live' },
+        { title: 'Inactive', value: stats.inactive, icon: XCircle, color: 'rose' as const, trend: 'Paused' },
+        { title: 'Avg. Course Fee', value: formatCurrency(stats.avgFee), icon: IndianRupee, color: 'amber' as const, trend: 'Pricing Base' },
+    ]
 
-                <Button
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2"
-                    onClick={handleAddOpen}
-                >
-                    <Plus className="h-4 w-4" />
-                    ADD COURSE
-                </Button>
+    return (
+        <div className="p-8 space-y-8 bg-gray-50/30 dark:bg-gray-950 min-h-screen">
+            <PageHeader 
+                title="Course Management"
+                description="Design, price, and organize your educational programs and curricula."
+                actions={[
+                    { label: 'Add New Course', icon: Plus, variant: 'default', onClick: handleAddOpen }
+                ]}
+            >
+                <ExportButton 
+                    data={filteredCourses.map(c => ({
+                        name: c.name,
+                        code: c.code || 'N/A',
+                        fee: `₹${c.fee.toLocaleString()}`,
+                        duration: `${c.durationYears}y ${c.durationMonths}m`,
+                        type: (c as any).courseType || 'N/A',
+                        mode: (c as any).mode?.toUpperCase() || 'OFFLINE',
+                        status: c.status.toUpperCase()
+                    }))}
+                    columns={[
+                        { header: 'Program Name', dataKey: 'name' },
+                        { header: 'Code', dataKey: 'code' },
+                        { header: 'Fee', dataKey: 'fee' },
+                        { header: 'Duration', dataKey: 'duration' },
+                        { header: 'Type', dataKey: 'type' },
+                        { header: 'Mode', dataKey: 'mode' },
+                        { header: 'Status', dataKey: 'status' },
+                    ]}
+                    fileName="EduManage_Course_Catalog"
+                    title="Academic Program Master Catalog"
+                    variant="outline"
+                />
+            </PageHeader>
+
+            <StatsGrid stats={courseStats} columns={4} />
+
+            {/* Filter Bar */}
+            <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center justify-between">
+                <div className="w-full lg:flex-1">
+                    <Card className="border-none shadow-xl shadow-gray-200/50 dark:shadow-none bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
+                        <CardContent className="p-4">
+                            <CourseFilters
+                                onRefresh={fetchCourses}
+                                loading={loading}
+                            />
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
 
-            {/* Main Content */}
-            <Card className="border-none shadow-sm">
+            {/* Main List Section */}
+            <Card className="border-none shadow-2xl shadow-gray-200/50 dark:shadow-none bg-white dark:bg-gray-900 rounded-3xl overflow-hidden">
                 <CardContent className="p-0">
-                    {/* Filters */}
-                    <div className="p-4 border-b border-gray-100 dark:border-gray-800">
-                        <CourseFilters onRefresh={fetchCourses} loading={loading} />
-                    </div>
-
-                    {/* Course List */}
-                    <div className="rounded-md border-t border-gray-100 dark:border-gray-800">
-                        <CourseList
-                            courses={filteredCourses}
-                            loading={loading}
-                            onEdit={handleEdit}
-                            onDelete={handleDelete}
-                        />
-                    </div>
+                    <CourseList
+                        courses={filteredCourses}
+                        loading={loading}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                        onBulkDelete={handleBulkDelete}
+                        onBulkExport={handleBulkExport}
+                        isBulkDeleting={isBulkDeleting}
+                        isBulkExporting={isBulkExporting}
+                    />
 
                     {/* Pagination info */}
-                    <div className="p-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-2 text-xs text-gray-500">
-                        <span>Rows per page: 10</span>
-                        <span>
-                            {filteredCourses.length > 0
-                                ? `1-${filteredCourses.length} of ${filteredCourses.length}`
-                                : '0-0 of 0'}
-                        </span>
+                    <div className="p-8 border-t border-gray-50 dark:border-gray-800 flex items-center justify-between">
+                        <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+                            Showing {filteredCourses.length} Courses
+                        </p>
                     </div>
                 </CardContent>
             </Card>

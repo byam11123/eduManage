@@ -28,6 +28,14 @@ interface UseCoursesReturn {
 
     // Helpers
     getCourseById: (id: string) => Course | undefined
+
+    // Stats
+    stats: {
+        total: number
+        active: number
+        inactive: number
+        avgFee: number
+    }
 }
 
 export function useCourses(): UseCoursesReturn {
@@ -148,6 +156,16 @@ export function useCourses(): UseCoursesReturn {
         fetchCourses()
     }, [fetchCourses])
 
+    // Stats calculation
+    const stats = {
+        total: courses.length,
+        active: courses.filter(c => c.status === 'active').length,
+        inactive: courses.filter(c => c.status !== 'active').length,
+        avgFee: courses.length > 0 
+            ? Math.round(courses.reduce((acc, curr) => acc + curr.fee, 0) / courses.length) 
+            : 0
+    }
+    
     return {
         courses,
         filteredCourses,
@@ -160,6 +178,7 @@ export function useCourses(): UseCoursesReturn {
         updateCourse,
         deleteCourse,
         selectCourse,
-        getCourseById
+        getCourseById,
+        stats
     }
 }

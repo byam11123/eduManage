@@ -51,6 +51,10 @@ export async function GET(
                             orderBy: { installmentNo: 'asc' }
                         }
                     }
+                },
+                attendances: {
+                    orderBy: { date: 'desc' },
+                    take: 50 // Limit to recent records
                 }
             }
         })

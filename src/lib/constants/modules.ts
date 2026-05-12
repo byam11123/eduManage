@@ -16,6 +16,7 @@ export const AVAILABLE_MODULES = [
   { id: 'forms', label: 'Forms', icon: '📝' },
   { id: 'expenses', label: 'Expenses', icon: '💸' },
   { id: 'certificate', label: 'Certificate', icon: '📜' },
+  { id: 'id_cards', label: 'ID Cards', icon: '🪪' },
   { id: 'settings', label: 'Settings', icon: '⚙️' },
 ] as const
 

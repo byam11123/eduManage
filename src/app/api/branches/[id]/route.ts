@@ -40,7 +40,12 @@ export async function GET(
     try {
         const { id } = await params
         const branch = await db.branch.findUnique({
-            where: { id }
+            where: { id },
+            include: {
+                _count: {
+                    select: { students: true }
+                }
+            }
         })
 
         if (!branch) {

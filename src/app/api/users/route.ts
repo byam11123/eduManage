@@ -169,12 +169,17 @@ export async function PUT(request: NextRequest) {
         }
 
         const body = await request.json()
-        const { fullName, email, role, branches, defaultBranchId, permissions } = body
+        const { fullName, email, password, role, branches, defaultBranchId, permissions } = body
 
         await db.$transaction(async (tx) => {
+            const updateData: any = { fullName, email }
+            if (password && password.trim().length > 0) {
+                updateData.password = await hashPassword(password)
+            }
+
             await tx.user.update({
                 where: { id },
-                data: { fullName, email }
+                data: updateData
             })
 
             await tx.userBranch.deleteMany({ where: { userId: id } })

@@ -9,10 +9,11 @@ import { useCourses } from '@/hooks/useCourses'
 import { useBatches } from '@/hooks/useBatches'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
-import { Plus } from 'lucide-react'
+import { Plus, GraduationCap, Layers, Activity, ChevronRight, Loader2 } from 'lucide-react'
 import { AddCourseDialog } from '@/components/admin/courses'
 import { AddBatchDialog } from '@/components/admin/batches'
 import type { CourseFormData, BatchFormData } from '@/lib/types'
+import { cn } from '@/lib/utils'
 
 interface CourseActionDialogProps {
     isOpen: boolean
@@ -60,7 +61,6 @@ export function CourseActionDialog({
         startDate: new Date().toISOString().split('T')[0], maxStudents: 30
     })
 
-    // Reset form when dialog opens/closes
     const handleClose = () => {
         setSelectedCourseId('')
         setSelectedBatchId('')
@@ -136,7 +136,6 @@ export function CourseActionDialog({
         }
     }
 
-    // Handlers for New Resource Creation
     const handleAddCourse = async () => {
         setSavingNewCourse(true)
         try {
@@ -156,7 +155,7 @@ export function CourseActionDialog({
                 installmentAmounts: [], durationYears: '0', durationMonths: '0', subjects: [],
                 eligibility: 'high_school'
             })
-            router.refresh() // Force full page data refresh
+            router.refresh()
         } catch (error) {
             toast.error('Failed to create course')
         } finally {
@@ -181,7 +180,7 @@ export function CourseActionDialog({
                 name: '', code: '', courseId: '', startTime: '', endTime: '', status: 'active',
                 startDate: new Date().toISOString().split('T')[0], maxStudents: 30
             })
-            router.refresh() // Force full page data refresh
+            router.refresh()
         } catch (error) {
             toast.error('Failed to create batch')
         } finally {
@@ -189,34 +188,43 @@ export function CourseActionDialog({
         }
     }
 
-    // Filter batches based on selected course (for Add) or current course (for Reassign)
     const targetCourseId = actionType === 'add' ? selectedCourseId : course?.courseId
     const relevantBatches = batches.filter((b: any) => b.courseId === targetCourseId && b.status === 'active')
+
+    const sectionHeaderClasses = "text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2 flex items-center gap-2"
+    const inputClasses = "h-12 bg-gray-50 dark:bg-gray-800 border-none rounded-xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all"
 
     return (
         <>
             <Dialog open={isOpen} onOpenChange={handleClose}>
-                <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle>
-                            {actionType === 'add' ? 'Add New Course' :
-                                actionType === 'status' ? 'Update Enrollment Status' :
-                                    actionType === 'batch' ? 'Reassign Batch' : ''}
-                        </DialogTitle>
-                    </DialogHeader>
+                <DialogContent className="sm:max-w-md p-0 overflow-hidden border-none rounded-[2.5rem] shadow-2xl bg-white dark:bg-gray-950">
+                    <div className="bg-indigo-600 p-8 text-white relative overflow-hidden">
+                        <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+                        <div className="relative z-10">
+                            <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-60 mb-2">Enrollment Details</p>
+                            <DialogTitle className="text-2xl font-black uppercase tracking-tight">
+                                {actionType === 'add' ? 'Course Enrollment' :
+                                    actionType === 'status' ? 'Update Status' :
+                                        actionType === 'batch' ? 'Assign to Batch' : 'Update Course'}
+                            </DialogTitle>
+                        </div>
+                    </div>
 
-                    <div className="space-y-4 py-4">
+                    <div className="p-8 space-y-6">
                         {/* ADD MODE: Course Selection */}
                         {actionType === 'add' && (
                             <div className="space-y-2">
-                                <Label>Select Course</Label>
-                                <div className="flex items-center gap-2">
-                                    <div className="w-full">
+                                <Label className={sectionHeaderClasses}>
+                                    <GraduationCap className="h-3 w-3" />
+                                    Select Course
+                                </Label>
+                                <div className="flex items-center gap-3">
+                                    <div className="flex-1">
                                         <Select value={selectedCourseId} onValueChange={setSelectedCourseId}>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Choose a course..." />
+                                            <SelectTrigger className={inputClasses}>
+                                                <SelectValue placeholder="Choose course..." />
                                             </SelectTrigger>
-                                            <SelectContent>
+                                            <SelectContent className="rounded-2xl border-none shadow-2xl">
                                                 {courses.filter((c: any) => c.status === 'active').map((c: any) => (
                                                     <SelectItem key={c.id} value={c.id}>
                                                         {c.name}
@@ -228,8 +236,7 @@ export function CourseActionDialog({
                                     <Button
                                         type="button"
                                         size="icon"
-                                        variant="outline"
-                                        className="mb-0 shrink-0 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border-indigo-200"
+                                        className="h-12 w-12 rounded-xl bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-100 transition-all"
                                         onClick={() => setIsAddCourseOpen(true)}
                                     >
                                         <Plus className="h-4 w-4" />
@@ -241,14 +248,17 @@ export function CourseActionDialog({
                         {/* BATCH SELECTION: Add or Reassign Mode */}
                         {(actionType === 'add' || actionType === 'batch') && (
                             <div className="space-y-2">
-                                <Label>Select Batch {actionType === 'add' && '(Optional)'}</Label>
-                                <div className="flex items-center gap-2">
-                                    <div className="w-full">
+                                <Label className={sectionHeaderClasses}>
+                                    <Layers className="h-3 w-3" />
+                                    Select Batch {actionType === 'add' && '(Optional)'}
+                                </Label>
+                                <div className="flex items-center gap-3">
+                                    <div className="flex-1">
                                         <Select value={selectedBatchId} onValueChange={setSelectedBatchId}>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Choose a batch..." />
+                                            <SelectTrigger className={inputClasses}>
+                                                <SelectValue placeholder="Choose batch..." />
                                             </SelectTrigger>
-                                            <SelectContent>
+                                            <SelectContent className="rounded-2xl border-none shadow-2xl">
                                                 {relevantBatches.length > 0 ? (
                                                     relevantBatches.map((b: any) => (
                                                         <SelectItem key={b.id} value={b.id}>
@@ -256,7 +266,7 @@ export function CourseActionDialog({
                                                         </SelectItem>
                                                     ))
                                                 ) : (
-                                                    <div className="p-2 text-sm text-gray-500 text-center">No active batches</div>
+                                                    <div className="p-4 text-[10px] font-black uppercase tracking-widest text-gray-400 text-center">No Active Batches</div>
                                                 )}
                                             </SelectContent>
                                         </Select>
@@ -264,8 +274,7 @@ export function CourseActionDialog({
                                     <Button
                                         type="button"
                                         size="icon"
-                                        variant="outline"
-                                        className="mb-0 shrink-0 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border-indigo-200"
+                                        className="h-12 w-12 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-100 transition-all disabled:opacity-50"
                                         onClick={() => {
                                             if (targetCourseId) {
                                                 setNewBatchData(prev => ({ ...prev, courseId: targetCourseId }))
@@ -280,7 +289,7 @@ export function CourseActionDialog({
                                     </Button>
                                 </div>
                                 {actionType === 'add' && !selectedCourseId && (
-                                    <p className="text-xs text-muted-foreground">Select a course first to see batches.</p>
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-2">Select a course to see batches</p>
                                 )}
                             </div>
                         )}
@@ -288,25 +297,40 @@ export function CourseActionDialog({
                         {/* STATUS SELECTION: Status Mode */}
                         {actionType === 'status' && (
                             <div className="space-y-2">
-                                <Label>Enrollment Status</Label>
+                                <Label className={sectionHeaderClasses}>
+                                    <Activity className="h-3 w-3" />
+                                    Enrollment Status
+                                </Label>
                                 <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select status..." />
+                                    <SelectTrigger className={inputClasses}>
+                                        <SelectValue placeholder="Update status..." />
                                     </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="ongoing">Ongoing</SelectItem>
-                                        <SelectItem value="completed">Completed</SelectItem>
-                                        <SelectItem value="dropped">Dropped</SelectItem>
+                                    <SelectContent className="rounded-2xl border-none shadow-2xl">
+                                        <SelectItem value="ongoing">Active Enrollment</SelectItem>
+                                        <SelectItem value="completed">Curriculum Completed</SelectItem>
+                                        <SelectItem value="dropped">Withdrawal / Dropped</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
                         )}
                     </div>
 
-                    <DialogFooter>
-                        <Button variant="outline" onClick={handleClose} disabled={loading}>Cancel</Button>
-                        <Button onClick={handleSubmit} disabled={loading}>
-                            {loading ? 'Saving...' : 'Save Changes'}
+                    <DialogFooter className="p-8 pt-0 gap-3 sm:gap-0">
+                        <Button 
+                            variant="ghost" 
+                            onClick={handleClose} 
+                            disabled={loading}
+                            className="h-12 px-8 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-400"
+                        >
+                            CANCEL
+                        </Button>
+                        <Button 
+                            onClick={handleSubmit} 
+                            disabled={loading}
+                            className="h-12 px-10 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-black uppercase tracking-widest shadow-xl shadow-indigo-100 dark:shadow-none transition-all hover:scale-105 active:scale-95"
+                        >
+                            {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <ChevronRight className="h-4 w-4 mr-2" />}
+                            SAVE CHANGES
                         </Button>
                     </DialogFooter>
                 </DialogContent>

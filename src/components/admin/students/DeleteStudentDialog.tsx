@@ -1,8 +1,3 @@
-// ============================================
-// DELETE STUDENT DIALOG COMPONENT
-// Standardized confirmation dialog for deleting students
-// ============================================
-
 'use client'
 
 import {
@@ -14,8 +9,9 @@ import {
     DialogDescription
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Loader2, Trash2 } from 'lucide-react'
+import { Loader2, Trash2, AlertTriangle, X } from 'lucide-react'
 import type { Student } from '@/lib/types'
+import { cn } from '@/lib/utils'
 
 interface DeleteStudentDialogProps {
     open: boolean
@@ -36,23 +32,34 @@ export function DeleteStudentDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-md">
-                <DialogHeader>
-                    <div className="mx-auto w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-4">
-                        <Trash2 className="h-6 w-6 text-red-600" />
+            <DialogContent className="max-w-md p-0 overflow-hidden border-none rounded-[2.5rem] shadow-2xl bg-white dark:bg-gray-950">
+                <div className="bg-rose-500 p-8 text-white relative overflow-hidden text-center">
+                    <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+                    <div className="relative z-10 flex flex-col items-center">
+                        <div className="h-16 w-16 rounded-3xl bg-white/20 backdrop-blur-md flex items-center justify-center mb-6 shadow-xl">
+                            <AlertTriangle className="h-8 w-8 text-white" />
+                        </div>
+                        <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-60 mb-2">Delete Student</p>
+                        <DialogTitle className="text-2xl font-black uppercase tracking-tight">Confirm Delete</DialogTitle>
                     </div>
-                    <DialogTitle className="text-xl font-semibold text-center">Delete Student</DialogTitle>
-                    <DialogDescription className="text-center">
+                </div>
+
+                <div className="p-10 text-center">
+                    <p className="text-sm font-medium text-gray-500 leading-relaxed">
                         Are you sure you want to delete <strong>{student.firstName} {student.lastName}</strong>?
-                        This will permanently remove their record, enrollment data, and payment history.
-                        This action cannot be undone.
-                    </DialogDescription>
-                </DialogHeader>
-                <DialogFooter className="flex flex-row gap-3 sm:justify-center mt-4">
+                    </p>
+                    <div className="mt-6 p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/30">
+                        <p className="text-[10px] font-black text-rose-600 dark:text-rose-400 uppercase tracking-widest leading-relaxed">
+                            WARNING: This action will permanently remove their record, enrollment data, and payment history.
+                        </p>
+                    </div>
+                </div>
+
+                <DialogFooter className="p-10 pt-0 gap-3 sm:gap-0 flex flex-col sm:flex-row">
                     <Button
-                        variant="outline"
+                        variant="ghost"
                         onClick={() => onOpenChange(false)}
-                        className="flex-1"
+                        className="flex-1 h-12 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-400"
                     >
                         CANCEL
                     </Button>
@@ -60,9 +67,9 @@ export function DeleteStudentDialog({
                         variant="destructive"
                         onClick={onConfirm}
                         disabled={loading}
-                        className="flex-1 bg-red-600 hover:bg-red-700"
+                        className="flex-1 h-12 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-[10px] font-black uppercase tracking-widest shadow-xl shadow-rose-100 dark:shadow-none transition-all hover:scale-105 active:scale-95"
                     >
-                        {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                        {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Trash2 className="h-4 w-4 mr-2" />}
                         DELETE STUDENT
                     </Button>
                 </DialogFooter>

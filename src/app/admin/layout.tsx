@@ -41,7 +41,7 @@ export default function AdminLayout({
       <Sheet open={isSidebarOpen} onOpenChange={setSidebarOpen}>
         <SheetContent
           side="left"
-          className="w-[280px] max-w-[calc(100vw-2rem)] gap-0 border-r-0 bg-transparent p-0 shadow-none sm:max-w-none [&>button]:hidden"
+          className="w-[240px] max-w-[calc(100vw-2rem)] gap-0 border-r-0 bg-transparent p-0 shadow-none sm:max-w-none [&>button]:hidden"
         >
           <SheetHeader className="sr-only">
             <SheetTitle>Navigation Menu</SheetTitle>

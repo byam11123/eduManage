@@ -19,12 +19,27 @@ import {
     IndianRupee,
     History
 } from 'lucide-react'
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table'
 import { useFees, useBranches } from '@/hooks'
 import { format } from 'date-fns'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { StatsGrid } from '@/components/shared/StatsGrid'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { cn } from '@/lib/utils'
+import { CollectFeeDialog } from '@/components/admin/fees/CollectFeeDialog'
+import { ExportButton } from '@/components/shared/ExportButton'
+import { Checkbox } from '@/components/ui/checkbox'
+import { useTableFeatures, ColumnDef } from '@/hooks/useTableFeatures'
+import { TableToolbar } from '@/components/shared/table/TableToolbar'
+import { BulkActionBar } from '@/components/shared/table/BulkActionBar'
+import { toast } from 'sonner'
 
 export default function FeesPage() {
     const { installments, stats, loading, fetchFees } = useFees()
@@ -33,12 +48,72 @@ export default function FeesPage() {
     const [statusFilter, setStatusFilter] = useState('all')
     const [branchFilter, setBranchFilter] = useState('all')
 
+    // Collection State
+    const [isCollectOpen, setIsCollectOpen] = useState(false)
+    const [selectedInstallment, setSelectedInstallment] = useState<any>(null)
+    const [isBulkExporting, setIsBulkExporting] = useState(false)
+
+    const feeColumns: ColumnDef[] = [
+        { id: 'student', label: 'Student & Course' },
+        { id: 'dueDate', label: 'Due Date' },
+        { id: 'amount', label: 'Amount' },
+        { id: 'paid', label: 'Paid' },
+        { id: 'status', label: 'Status' },
+        { id: 'branch', label: 'Branch' },
+    ]
+
+    const {
+        selectedIds,
+        selectedArray,
+        toggleSelection,
+        selectAll,
+        clearSelection,
+        isAllSelected,
+        isSomeSelected,
+        visibleColumns,
+        toggleColumn,
+        isColumnVisible,
+        availableColumns
+    } = useTableFeatures(installments, feeColumns)
+
     const handleFilter = () => {
         fetchFees({
             search: searchTerm,
             status: statusFilter,
             branchId: branchFilter
         })
+    }
+
+    const handleCollect = (inst: any) => {
+        setSelectedInstallment(inst)
+        setIsCollectOpen(true)
+    }
+
+    const handleBulkExport = (ids: string[]) => {
+        setIsBulkExporting(true)
+        const selected = installments.filter(i => ids.includes(i.id))
+        const data = selected.map(inst => ({
+            student: inst.studentCourse?.student ? `${inst.studentCourse.student.firstName} ${inst.studentCourse.student.lastName}` : 'N/A',
+            course: inst.studentCourse?.course?.name || 'N/A',
+            dueDate: inst.dueDate ? format(new Date(inst.dueDate), 'dd MMM yyyy') : 'N/A',
+            amount: inst.amount || 0,
+            paid: inst.paidAmount || 0,
+            balance: (inst.amount || 0) - (inst.paidAmount || 0),
+            status: inst.status?.toUpperCase() || 'UNKNOWN',
+            branch: inst.studentCourse?.student?.branch?.name || 'N/A'
+        }))
+        const headers = ['Student Name', 'Program', 'Due Date', 'Expected (₹)', 'Received (₹)', 'Balance (₹)', 'Status', 'Branch']
+        const keys = ['student', 'course', 'dueDate', 'amount', 'paid', 'balance', 'status', 'branch']
+        const csv = [headers.join(','), ...data.map(row => keys.map(k => `"${(row as any)[k]}"`).join(','))].join('\n')
+        const blob = new Blob([csv], { type: 'text/csv' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'EduManage_Fees_Selected_Export.csv'
+        a.click()
+        URL.revokeObjectURL(url)
+        setIsBulkExporting(false)
+        toast.success(`${ids.length} installment(s) exported`)
     }
 
     const feeStats = [
@@ -78,10 +153,35 @@ export default function FeesPage() {
                 title="Fees Management"
                 description="Monitor installments, track revenue, and manage student dues with automated collection tracking."
                 actions={[
-                    { label: 'Export Report', icon: Download, variant: 'outline' },
                     { label: 'Revenue Insights', icon: TrendingUp, variant: 'default' }
                 ]}
-            />
+            >
+                <ExportButton 
+                    data={installments.map(inst => ({
+                        student: inst.studentCourse?.student ? `${inst.studentCourse.student.firstName} ${inst.studentCourse.student.lastName}` : 'N/A',
+                        course: inst.studentCourse?.course?.name || 'N/A',
+                        dueDate: inst.dueDate ? format(new Date(inst.dueDate), 'dd MMM yyyy') : 'N/A',
+                        amount: inst.amount || 0,
+                        paid: inst.paidAmount || 0,
+                        balance: (inst.amount || 0) - (inst.paidAmount || 0),
+                        status: inst.status?.toUpperCase() || 'UNKNOWN',
+                        branch: inst.studentCourse?.student?.branch?.name || 'N/A'
+                    }))}
+                    columns={[
+                        { header: 'Student Name', dataKey: 'student' },
+                        { header: 'Program', dataKey: 'course' },
+                        { header: 'Due Date', dataKey: 'dueDate' },
+                        { header: 'Expected (₹)', dataKey: 'amount' },
+                        { header: 'Received (₹)', dataKey: 'paid' },
+                        { header: 'Balance (₹)', dataKey: 'balance' },
+                        { header: 'Status', dataKey: 'status' },
+                        { header: 'Branch', dataKey: 'branch' },
+                    ]}
+                    fileName="EduManage_Fees_Ledger"
+                    title="Institutional Revenue & Installment Report"
+                    variant="outline"
+                />
+            </PageHeader>
 
             <StatsGrid stats={feeStats} columns={4} />
 
@@ -144,94 +244,152 @@ export default function FeesPage() {
                             <p className="text-xs text-muted-foreground font-bold uppercase tracking-tighter mt-0.5">Live transaction tracking</p>
                         </div>
                     </div>
-                    <Button variant="ghost" size="icon" className="rounded-xl text-gray-400">
-                        <History className="h-5 w-5" />
-                    </Button>
+                    <div className="flex items-center gap-3">
+                        <TableToolbar columns={availableColumns} visibleColumns={visibleColumns} onToggleColumn={toggleColumn} />
+                    </div>
                 </CardHeader>
                 <CardContent className="p-0">
                     <div className="overflow-x-auto">
-                        <table className="w-full text-sm text-left">
-                            <thead className="bg-gray-50/50 dark:bg-gray-800/50 border-y border-gray-50 dark:border-gray-800">
-                                <tr>
-                                    <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-gray-500">Student & Course</th>
-                                    <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-gray-500">Due Date</th>
-                                    <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-gray-500">Amount</th>
-                                    <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-gray-500">Paid</th>
-                                    <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-gray-500">Status</th>
-                                    <th className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-gray-500">Branch</th>
-                                    <th className="px-8 py-5 text-right font-black uppercase tracking-widest text-[10px] text-gray-500">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
+                        <Table>
+                            <TableHeader className="bg-gray-50/50 dark:bg-gray-800/50">
+                                <TableRow className="border-y border-gray-50 dark:border-gray-800 hover:bg-transparent">
+                                    <TableHead className="w-[50px] px-8 py-5">
+                                        <Checkbox
+                                            checked={isAllSelected || (isSomeSelected ? 'indeterminate' : false)}
+                                            onCheckedChange={selectAll}
+                                            aria-label="Select all"
+                                        />
+                                    </TableHead>
+                                    {isColumnVisible('student') && <TableHead className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-gray-500">Student &amp; Course</TableHead>}
+                                    {isColumnVisible('dueDate') && <TableHead className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-gray-500">Due Date</TableHead>}
+                                    {isColumnVisible('amount') && <TableHead className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-gray-500">Amount</TableHead>}
+                                    {isColumnVisible('paid') && <TableHead className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-gray-500">Paid</TableHead>}
+                                    {isColumnVisible('status') && <TableHead className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-gray-500">Status</TableHead>}
+                                    {isColumnVisible('branch') && <TableHead className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-gray-500">Branch</TableHead>}
+                                    <TableHead className="px-8 py-5 text-right font-black uppercase tracking-widest text-[10px] text-gray-500">Action</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody className="divide-y divide-gray-50 dark:divide-gray-800">
                                 {loading ? (
-                                    <tr>
-                                        <td colSpan={7} className="px-8 py-16 text-center text-gray-500">
+                                    <TableRow>
+                                        <TableCell colSpan={9} className="px-8 py-16 text-center text-gray-500">
                                             <div className="flex flex-col items-center gap-4">
                                                 <div className="h-10 w-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
                                                 <span className="font-bold uppercase tracking-widest text-xs">Fetching ledger data...</span>
                                             </div>
-                                        </td>
-                                    </tr>
+                                        </TableCell>
+                                    </TableRow>
                                 ) : installments.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={7} className="px-8 py-16 text-center text-gray-500">
+                                    <TableRow>
+                                        <TableCell colSpan={9} className="px-8 py-16 text-center text-gray-500">
                                             <div className="flex flex-col items-center gap-2 opacity-50">
                                                 <Wallet className="h-12 w-12 mb-2" />
                                                 <p className="font-bold uppercase tracking-widest text-xs">No records found matching your filters.</p>
                                             </div>
-                                        </td>
-                                    </tr>
+                                        </TableCell>
+                                    </TableRow>
                                 ) : installments.map((inst) => {
                                     const student = inst.studentCourse.student
                                     const course = inst.studentCourse.course
                                     const isOverdue = inst.status !== 'paid' && new Date(inst.dueDate) < new Date()
+                                    const isSelected = selectedIds.has(inst.id)
 
                                     return (
-                                        <tr key={inst.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-all group">
-                                            <td className="px-8 py-5">
+                                        <TableRow
+                                            key={inst.id}
+                                            className={cn(
+                                                'transition-all group',
+                                                isSelected
+                                                    ? 'bg-indigo-50/50 dark:bg-indigo-900/20 hover:bg-indigo-50/80 dark:hover:bg-indigo-900/30'
+                                                    : 'hover:bg-gray-50/50 dark:hover:bg-gray-800/30'
+                                            )}
+                                        >
+                                            <TableCell className="px-8 py-5" onClick={(e) => e.stopPropagation()}>
+                                                <Checkbox
+                                                    checked={isSelected}
+                                                    onCheckedChange={() => toggleSelection(inst.id)}
+                                                    aria-label={`Select installment`}
+                                                />
+                                            </TableCell>
+                                            {isColumnVisible('student') && (
+                                            <TableCell className="px-8 py-5">
                                                 <div className="flex flex-col">
                                                     <span className="font-black text-gray-900 dark:text-white group-hover:text-indigo-600 transition-colors">
                                                         {student.firstName} {student.lastName}
                                                     </span>
                                                     <span className="text-[10px] font-black uppercase tracking-tighter text-indigo-500/70 mt-0.5">{course.name}</span>
                                                 </div>
-                                            </td>
-                                            <td className="px-8 py-5">
+                                            </TableCell>
+                                            )}
+                                            {isColumnVisible('dueDate') && (
+                                            <TableCell className="px-8 py-5">
                                                 <div className="flex items-center gap-2">
-                                                    <Calendar className={cn("h-4 w-4", isOverdue ? "text-rose-500" : "text-gray-400")} />
+                                                    <Calendar className={cn('h-4 w-4', isOverdue ? 'text-rose-500' : 'text-gray-400')} />
                                                     <span className={cn(
-                                                        "text-[13px] font-bold",
+                                                        'text-[13px] font-bold',
                                                         isOverdue ? 'text-rose-600 underline decoration-rose-200 underline-offset-4' : 'text-gray-600 dark:text-gray-400'
                                                     )}>
                                                         {format(new Date(inst.dueDate), 'dd MMM yyyy')}
                                                     </span>
                                                 </div>
-                                            </td>
-                                            <td className="px-8 py-5 font-black text-gray-900 dark:text-white">₹{inst.amount.toLocaleString()}</td>
-                                            <td className="px-8 py-5 text-emerald-600 font-black">₹{inst.paidAmount.toLocaleString()}</td>
-                                            <td className="px-8 py-5">
+                                            </TableCell>
+                                            )}
+                                            {isColumnVisible('amount') && (
+                                            <TableCell className="px-8 py-5 font-black text-gray-900 dark:text-white">₹{inst.amount.toLocaleString()}</TableCell>
+                                            )}
+                                            {isColumnVisible('paid') && (
+                                            <TableCell className="px-8 py-5 text-emerald-600 font-black">₹{inst.paidAmount.toLocaleString()}</TableCell>
+                                            )}
+                                            {isColumnVisible('status') && (
+                                            <TableCell className="px-8 py-5">
                                                 <StatusBadge status={inst.status} />
-                                            </td>
-                                            <td className="px-8 py-5">
+                                            </TableCell>
+                                            )}
+                                            {isColumnVisible('branch') && (
+                                            <TableCell className="px-8 py-5">
                                                 <Badge variant="outline" className="font-black uppercase tracking-widest text-[9px] border-gray-100 dark:border-gray-800 py-1 bg-gray-50/50 dark:bg-gray-800/50">
                                                     {student.branch.name}
                                                 </Badge>
-                                            </td>
-                                            <td className="px-8 py-5 text-right">
-                                                <Button 
-                                                    className="h-10 px-5 rounded-xl bg-gray-50 dark:bg-gray-800 text-indigo-600 hover:bg-indigo-600 hover:text-white font-bold uppercase tracking-widest text-[10px] transition-all border-none"
-                                                >
-                                                    Collect
-                                                </Button>
-                                            </td>
-                                        </tr>
+                                            </TableCell>
+                                            )}
+                                            <TableCell className="px-8 py-5 text-right">
+                                                {inst.status !== 'paid' ? (
+                                                    <Button
+                                                        className="h-10 px-5 rounded-xl bg-gray-50 dark:bg-gray-800 text-indigo-600 hover:bg-indigo-600 hover:text-white font-bold uppercase tracking-widest text-[10px] transition-all border-none"
+                                                        onClick={() => handleCollect(inst)}
+                                                    >
+                                                        Collect
+                                                    </Button>
+                                                ) : (
+                                                    <div className="h-10 flex items-center justify-end px-5 text-emerald-600">
+                                                        <CheckCircle2 className="h-5 w-5" />
+                                                    </div>
+                                                )}
+                                            </TableCell>
+                                        </TableRow>
                                     )
                                 })}
-                            </tbody>
-                        </table>
+                            </TableBody>
+                        </Table>
                     </div>
                 </CardContent>
             </Card>
+
+            <BulkActionBar
+                selectedCount={selectedIds.size}
+                onClearSelection={clearSelection}
+                onExport={() => handleBulkExport(selectedArray)}
+                onDelete={() => toast.info('Fee records cannot be bulk deleted for audit integrity.')}
+                isExporting={isBulkExporting}
+            />
+
+            {/* Dialogs */}
+            <CollectFeeDialog 
+                open={isCollectOpen}
+                onOpenChange={setIsCollectOpen}
+                installment={selectedInstallment}
+                onSuccess={() => fetchFees()}
+            />
         </div>
     )
 }

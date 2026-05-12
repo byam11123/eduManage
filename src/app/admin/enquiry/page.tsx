@@ -41,9 +41,11 @@ import { cn } from '@/lib/utils'
 import { useEnquiries, useCourses } from '@/hooks'
 import { EditEnquiryDialog, DeleteEnquiryDialog, AddEnquiryDialog } from '@/components/admin/enquiry'
 import { PageHeader } from '@/components/shared/PageHeader'
+import { StatsGrid } from '@/components/shared/StatsGrid'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import type { Enquiry, EnquiryFormData } from '@/lib/types'
 import { Card, CardContent } from '@/components/ui/card'
+import { ExportButton } from '@/components/shared/ExportButton'
 
 export default function EnquiryListPage() {
     const router = useRouter()
@@ -66,7 +68,7 @@ export default function EnquiryListPage() {
         mobile: '',
         email: '',
         description: '',
-        courseId: '',
+        courseId: 'none',
         status: 'new',
         source: 'web'
     })
@@ -77,7 +79,7 @@ export default function EnquiryListPage() {
         mobile: '',
         email: '',
         description: '',
-        courseId: '',
+        courseId: 'none',
         status: 'new',
         source: 'web'
     })
@@ -122,6 +124,37 @@ export default function EnquiryListPage() {
         setIsEditOpen(true)
     }
 
+    const stats = [
+        {
+            title: 'Total Enquiries',
+            value: counts.all.toString(),
+            icon: ClipboardList,
+            color: 'indigo' as const,
+            trend: 'Total'
+        },
+        {
+            title: 'New Opportunities',
+            value: counts.new.toString(),
+            icon: Plus,
+            color: 'emerald' as const,
+            trend: 'Fresh'
+        },
+        {
+            title: 'Active Interest',
+            value: counts.active.toString(),
+            icon: Users,
+            color: 'amber' as const,
+            trend: 'Active'
+        },
+        {
+            title: 'Conversion Rate',
+            value: `${((counts.successful / (counts.all || 1)) * 100).toFixed(1)}%`,
+            icon: GraduationCap,
+            color: 'sky' as const,
+            trend: 'Converted'
+        }
+    ]
+
     const onAddSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         const dataToSubmit = {
@@ -138,7 +171,7 @@ export default function EnquiryListPage() {
                 mobile: '',
                 email: '',
                 description: '',
-                courseId: '',
+                courseId: 'none',
                 status: 'new',
                 source: 'web'
             })
@@ -176,12 +209,35 @@ export default function EnquiryListPage() {
         <div className="p-8 space-y-8 bg-gray-50/30 dark:bg-gray-950 min-h-screen">
             <PageHeader 
                 title="Enquiry Management"
-                description="Track and manage student enquiries, conversions, and follow-ups across multiple channels."
+                description="Track and manage student enquiries and follow-ups."
                 actions={[
-                    { label: 'Export Data', icon: Download, variant: 'outline' },
                     { label: 'Add New Enquiry', icon: Plus, variant: 'default', onClick: () => setIsAddOpen(true) }
                 ]}
-            />
+            >
+                <ExportButton 
+                    data={enquiries.map(e => ({
+                        name: `${e.firstName} ${e.lastName}`,
+                        mobile: e.mobile,
+                        email: e.email || 'N/A',
+                        course: e.course?.name || 'General',
+                        status: e.status.toUpperCase(),
+                        source: e.source || 'Direct'
+                    }))}
+                    columns={[
+                        { header: 'Student Name', dataKey: 'name' },
+                        { header: 'Mobile', dataKey: 'mobile' },
+                        { header: 'Email', dataKey: 'email' },
+                        { header: 'Target Course', dataKey: 'course' },
+                        { header: 'Status', dataKey: 'status' },
+                        { header: 'Source', dataKey: 'source' },
+                    ]}
+                    fileName="EduManage_Enquiries_Registry"
+                    title="Student Enquiry Ledger"
+                    variant="outline"
+                />
+            </PageHeader>
+
+            <StatsGrid stats={stats} columns={4} />
 
             {/* View Mode & Tabs Bar */}
             <div className="flex flex-col xl:flex-row gap-6 items-start xl:items-center justify-between">
@@ -191,7 +247,7 @@ export default function EnquiryListPage() {
                         { id: 'new', label: 'New', count: counts.new },
                         { id: 'active', label: 'Active', count: counts.active },
                         { id: 'inactive', label: 'Lost', count: counts.inactive },
-                        { id: 'successful', label: 'Converted', count: counts.successful },
+                        { id: 'successful', label: 'Admitted', count: counts.successful },
                     ].map((tab) => (
                         <button
                             key={tab.id}
@@ -261,8 +317,8 @@ export default function EnquiryListPage() {
                             <ClipboardList className="h-5 w-5" />
                         </div>
                         <div>
-                            <h3 className="text-xl font-black tracking-tight">Lead Pipeline</h3>
-                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-tighter mt-0.5">Real-time engagement tracking</p>
+                            <h3 className="text-xl font-black tracking-tight">Enquiry List</h3>
+                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-tighter mt-0.5">Recent enquiries and their status</p>
                         </div>
                     </div>
                 </div>
@@ -285,7 +341,7 @@ export default function EnquiryListPage() {
                                         <TableCell colSpan={6} className="text-center py-20">
                                             <div className="flex flex-col items-center gap-4">
                                                 <div className="h-10 w-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-                                                <span className="font-black uppercase tracking-widest text-[10px] text-gray-500">Syncing with pipeline...</span>
+                                                <span className="font-black uppercase tracking-widest text-[10px] text-gray-500">Loading enquiries...</span>
                                             </div>
                                         </TableCell>
                                     </TableRow>
@@ -294,7 +350,7 @@ export default function EnquiryListPage() {
                                         <TableCell colSpan={6} className="text-center py-20">
                                             <div className="flex flex-col items-center gap-2 opacity-50">
                                                 <Users className="h-12 w-12 mb-2" />
-                                                <p className="font-bold uppercase tracking-widest text-xs">No active leads found.</p>
+                                                <p className="font-bold uppercase tracking-widest text-xs">No active enquiries found.</p>
                                             </div>
                                         </TableCell>
                                     </TableRow>
@@ -310,7 +366,7 @@ export default function EnquiryListPage() {
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="start" className="w-56 p-2 rounded-2xl shadow-2xl border-gray-100 dark:border-gray-800">
                                                         <DropdownMenuItem onClick={() => handleEdit(enquiry)} className="rounded-xl py-3 cursor-pointer">
-                                                            Edit Lead Info
+                                                            Edit Enquiry Info
                                                         </DropdownMenuItem>
                                                         {enquiry.status !== 'admitted' && (
                                                             <DropdownMenuItem

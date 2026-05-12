@@ -17,6 +17,12 @@ interface UseBatchesReturn {
     // Loading States
     loading: boolean
     saving: boolean
+    stats: {
+        total: number
+        active: number
+        inactive: number
+        totalStudents: number
+    }
 
     // Actions
     fetchBatches: () => Promise<void>
@@ -160,6 +166,12 @@ export function useBatches(): UseBatchesReturn {
         updateBatch,
         deleteBatch,
         selectBatch,
-        getBatchesByCourse
+        getBatchesByCourse,
+        stats: {
+            total: batches.length,
+            active: batches.filter(b => b.status === 'active').length,
+            inactive: batches.filter(b => b.status === 'inactive').length,
+            totalStudents: batches.reduce((acc, curr) => acc + (curr._count?.students || 0), 0)
+        }
     }
 }

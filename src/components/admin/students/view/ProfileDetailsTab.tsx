@@ -1,10 +1,11 @@
 'use client'
 
-import { Pencil, User, MapPin, GraduationCap, Users, Info } from 'lucide-react'
+import { Pencil, User, MapPin, GraduationCap, Users, Info, ShieldCheck, HeartPulse, Building2, MapPinned } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import type { Student } from '@/lib/types'
 import { formatDate } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 
 interface ProfileDetailsTabProps {
     student: Student
@@ -13,248 +14,167 @@ interface ProfileDetailsTabProps {
 
 export function ProfileDetailsTab({ student, onEdit }: ProfileDetailsTabProps) {
 
-    // Helper to render field w/ standardized alignment
-    const RenderField = ({ label, value, isMono = false }: { label: string, value: string | undefined | null, isMono?: boolean }) => (
-        <div className="grid grid-cols-[140px_10px_1fr] gap-x-2 items-start text-sm">
-            <span className="text-gray-500 font-medium">{label}</span>
-            <span className="text-gray-400 select-none">:</span>
-            <span className={`text-gray-900 font-medium ${isMono ? 'font-mono' : ''}`}>
-                {value || '-'}
-            </span>
-        </div>
-    )
+    const labelClasses = "text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1 block"
+    const valueClasses = "text-sm font-black text-gray-900 dark:text-white"
+    const sectionHeaderClasses = "text-[13px] font-black uppercase tracking-[0.3em] text-gray-400 border-b border-gray-100 dark:border-gray-800 pb-4 mb-8 flex items-center gap-3"
 
-    const SectionHeader = ({ icon: Icon, title }: { icon: any, title: string }) => (
-        <div className="flex items-center gap-2 mb-4 pb-2 border-b border-gray-100">
-            <div className="bg-indigo-50 p-1.5 rounded-md">
-                <Icon className="h-4 w-4 text-indigo-600" />
+    const RenderField = ({ label, value, icon: Icon, isMono = false, colSpan = 1 }: { label: string, value: string | number | undefined | null, icon?: any, isMono?: boolean, colSpan?: number }) => (
+        <div className={cn("space-y-1", colSpan > 1 && `sm:col-span-${colSpan}`)}>
+            <span className={labelClasses}>{label}</span>
+            <div className="flex items-center gap-2">
+                {Icon && <Icon className="h-3.5 w-3.5 text-indigo-600 shrink-0" />}
+                <p className={cn(valueClasses, isMono && "font-mono tracking-tight")}>
+                    {value || '—'}
+                </p>
             </div>
-            <h3 className="text-base font-semibold text-gray-800">{title}</h3>
         </div>
     )
 
     return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            {/* Header / Actions */}
-            {/* <div className="flex justify-between items-center bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
-                <div>
-                    <h2 className="text-lg font-bold text-gray-900">Student Profile</h2>
-                    <p className="text-xs text-gray-500">Manage student personal and academic information</p>
-                </div>
-                <Button onClick={onEdit} size="sm" className="gap-2 bg-indigo-600 hover:bg-indigo-700 text-white">
-                    <Pencil className="h-3.5 w-3.5" />
-                    Edit Profile
-                </Button>
-            </div> */}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                {/* 1. Basic & Contact Details */}
-                <Card className="shadow-none border-gray-200 h-full">
-                    <CardContent className="pt-6">
-                        <SectionHeader icon={User} title="Basic & Contact Details" />
-                        <div className="space-y-3">
-                            <RenderField label="Full Name" value={`${student.firstName} ${student.lastName}`} />
-                            <RenderField label="Student ID" value={student.studentDisplayId || student.admissionDisplayId} isMono />
-                            <RenderField label="Gender" value={student.gender} />
-                            <RenderField label="Date of Birth" value={formatDate(student.dateOfBirth)} />
-                            <RenderField label="Mobile Number" value={student.phone} isMono />
-                            <RenderField label="Alternate Number" value={student.alternatePhone} isMono />
+        <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-10">
+            {/* 1. Profile Matrix: Basic & Family */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                {/* Basic Details */}
+                <Card className="border-none shadow-xl shadow-gray-50 dark:shadow-none bg-white dark:bg-gray-900 rounded-[3rem] overflow-hidden">
+                    <CardContent className="p-10">
+                        <h4 className={sectionHeaderClasses}>
+                            <span className="h-2 w-2 rounded-full bg-indigo-600" />
+                            Basic Info
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-8 gap-x-10">
+                            <RenderField label="First Name" value={student.firstName} icon={User} />
+                            <RenderField label="Last Name" value={student.lastName} />
+                            <RenderField label="Student ID" value={student.studentDisplayId} icon={ShieldCheck} isMono />
+                            <RenderField label="Admission ID" value={student.admissionDisplayId} isMono />
                             <RenderField label="Email Address" value={student.email} />
-                            <RenderField label="Aadhaar Number" value={student.aadhaarNumber} isMono />
+                            <RenderField label="Phone Number" value={student.phone} isMono />
+                            <RenderField label="Date of Birth" value={formatDate(student.dateOfBirth)} />
+                            <RenderField label="Gender" value={student.gender?.toUpperCase()} />
+                            <RenderField label="Aadhaar No." value={student.aadhaarNumber} isMono />
+                            <RenderField label="Alternate Phone" value={student.alternatePhone} isMono />
                         </div>
                     </CardContent>
                 </Card>
 
-                {/* 2. Family Details */}
-                <Card className="shadow-none border-gray-200 h-full">
-                    <CardContent className="pt-6">
-                        <SectionHeader icon={Users} title="Family Details" />
-                        <div className="space-y-3">
-                            <RenderField label="Father's Name" value={student.fathersName} />
+                {/* Family Details */}
+                <Card className="border-none shadow-xl shadow-gray-50 dark:shadow-none bg-white dark:bg-gray-900 rounded-[3rem] overflow-hidden">
+                    <CardContent className="p-10">
+                        <h4 className={sectionHeaderClasses}>
+                            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                            Family Details
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-8 gap-x-10">
+                            <RenderField label="Father's Name" value={student.fathersName} icon={Users} />
                             <RenderField label="Father's Phone" value={student.fathersPhone} isMono />
                             <RenderField label="Mother's Name" value={student.mothersName} />
-                            <RenderField label="Marital Status" value={student.maritalStatus} />
-                            <RenderField label="Category" value={student.category} />
+                            <RenderField label="Marital Status" value={student.maritalStatus?.toUpperCase()} icon={HeartPulse} />
+                            <RenderField label="Category" value={student.category?.toUpperCase()} />
+                            <RenderField label="Referred By" value={student.referredBy} />
                         </div>
                     </CardContent>
                 </Card>
             </div>
 
-            {/* 3. Educational Qualifications */}
-            <Card className="shadow-none border-gray-200">
-                <CardContent className="pt-6">
-                    <SectionHeader icon={GraduationCap} title="Educational Qualifications" />
+            {/* 2. Educational Portfolio */}
+            <Card className="border-none shadow-xl shadow-gray-50 dark:shadow-none bg-white dark:bg-gray-900 rounded-[3rem] overflow-hidden">
+                <CardContent className="p-10">
+                    <h4 className={sectionHeaderClasses}>
+                        <span className="h-2 w-2 rounded-full bg-amber-500" />
+                        Education
+                    </h4>
 
-                    <div className="grid grid-cols-1 gap-4">
-                        {/* High School (10th) */}
-                        <div className="bg-gray-50/50 rounded-lg p-4 border border-gray-100 relative group hover:border-indigo-100 transition-all">
-                            <div className="absolute top-4 right-4 text-xs font-bold text-gray-400 group-hover:text-indigo-500">
-                                10th Standard
+                    <div className="space-y-6">
+                        {/* High School */}
+                        <div className="p-8 bg-gray-50/50 dark:bg-gray-800/30 rounded-[2.5rem] border border-gray-100 dark:border-gray-800 relative group transition-all hover:bg-white dark:hover:bg-gray-800 shadow-sm hover:shadow-xl">
+                            <div className="inline-block mb-6 px-4 py-1.5 bg-indigo-600 rounded-xl text-[10px] font-black text-white uppercase tracking-widest shadow-lg shadow-indigo-100 dark:shadow-none">
+                                10th (Secondary)
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-2">
-                                <div>
-                                    <p className="text-xs text-gray-500 font-medium">School Name</p>
-                                    <p className="text-sm font-semibold text-gray-900 truncate" title={student.hsSchoolName || ''}>{student.hsSchoolName || '-'}</p>
-                                </div>
-                                <div>
-                                    <p className="text-xs text-gray-500 font-medium">Board</p>
-                                    <p className="text-sm font-semibold text-gray-900">{student.hsBoard || '-'}</p>
-                                </div>
-                                <div>
-                                    <p className="text-xs text-gray-500 font-medium">Passing Year</p>
-                                    <p className="text-sm font-semibold text-gray-900">{student.hsPassingYear || '-'}</p>
-                                </div>
-                                <div>
-                                    <p className="text-xs text-gray-500 font-medium">Percentage</p>
-                                    <p className="text-sm font-semibold text-gray-900">{student.hsPercentage ? `${student.hsPercentage}%` : '-'}</p>
-                                </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                                <RenderField label="School Name" value={student.hsSchoolName} icon={Building2} />
+                                <RenderField label="Board" value={student.hsBoard} />
+                                <RenderField label="Year" value={student.hsPassingYear} />
+                                <RenderField label="Percentage" value={student.hsPercentage ? `${student.hsPercentage}%` : null} />
                             </div>
                         </div>
 
-                        {/* Higher Secondary (12th) */}
-                        <div className="bg-gray-50/50 rounded-lg p-4 border border-gray-100 relative group hover:border-indigo-100 transition-all">
-                            <div className="absolute top-4 right-4 text-xs font-bold text-gray-400 group-hover:text-indigo-500">
-                                12th Standard
+                        {/* Higher Secondary */}
+                        <div className="p-8 bg-gray-50/50 dark:bg-gray-800/30 rounded-[2.5rem] border border-gray-100 dark:border-gray-800 relative group transition-all hover:bg-white dark:hover:bg-gray-800 shadow-sm hover:shadow-xl">
+                            <div className="inline-block mb-6 px-4 py-1.5 bg-indigo-600 rounded-xl text-[10px] font-black text-white uppercase tracking-widest shadow-lg shadow-indigo-100 dark:shadow-none">
+                                12th (Senior)
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-2">
-                                <div>
-                                    <p className="text-xs text-gray-500 font-medium">School/College</p>
-                                    <p className="text-sm font-semibold text-gray-900 truncate" title={student.hssSchoolName || ''}>{student.hssSchoolName || '-'}</p>
-                                </div>
-                                <div>
-                                    <p className="text-xs text-gray-500 font-medium">Board</p>
-                                    <p className="text-sm font-semibold text-gray-900">{student.hssBoard || '-'}</p>
-                                </div>
-                                <div>
-                                    <p className="text-xs text-gray-500 font-medium">Stream</p>
-                                    <p className="text-sm font-semibold text-gray-900">{student.hssStream || '-'}</p>
-                                </div>
-                                <div>
-                                    <p className="text-xs text-gray-500 font-medium">Passing Year / %</p>
-                                    <p className="text-sm font-semibold text-gray-900">
-                                        {student.hssPassingYear || '-'} {student.hssPercentage ? `(${student.hssPercentage}%)` : ''}
-                                    </p>
-                                </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
+                                <RenderField label="School Name" value={student.hssSchoolName} icon={Building2} />
+                                <RenderField label="Board" value={student.hssBoard} />
+                                <RenderField label="Stream" value={student.hssStream} />
+                                <RenderField label="Year" value={student.hssPassingYear} />
+                                <RenderField label="Percentage" value={student.hssPercentage ? `${student.hssPercentage}%` : null} />
                             </div>
                         </div>
 
-                        {/* Graduation (if present) */}
+                        {/* Graduation */}
                         {(student.gradCollegeName || student.gradDegree) && (
-                            <div className="bg-gray-50/50 rounded-lg p-4 border border-gray-100 relative group hover:border-indigo-100 transition-all">
-                                <div className="absolute top-4 right-4 text-xs font-bold text-gray-400 group-hover:text-indigo-500">
+                            <div className="p-8 bg-gray-50/50 dark:bg-gray-800/30 rounded-[2.5rem] border border-gray-100 dark:border-gray-800 relative group transition-all hover:bg-white dark:hover:bg-gray-800 shadow-sm hover:shadow-xl">
+                                <div className="inline-block mb-6 px-4 py-1.5 bg-indigo-600 rounded-xl text-[10px] font-black text-white uppercase tracking-widest shadow-lg shadow-indigo-100 dark:shadow-none">
                                     Graduation
                                 </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-2">
-                                    <div>
-                                        <p className="text-xs text-gray-500 font-medium">College Name</p>
-                                        <p className="text-sm font-semibold text-gray-900 truncate" title={student.gradCollegeName || ''}>{student.gradCollegeName || '-'}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs text-gray-500 font-medium">University</p>
-                                        <p className="text-sm font-semibold text-gray-900">{student.gradUniversity || '-'}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs text-gray-500 font-medium">Degree</p>
-                                        <p className="text-sm font-semibold text-gray-900">{student.gradDegree || '-'}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs text-gray-500 font-medium">Passing Year / %</p>
-                                        <p className="text-sm font-semibold text-gray-900">
-                                            {student.gradPassingYear || '-'} {student.gradPercentage ? `(${student.gradPercentage}%)` : ''}
-                                        </p>
-                                    </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
+                                    <RenderField label="Degree" value={student.gradDegree} icon={GraduationCap} />
+                                    <RenderField label="University" value={student.gradUniversity} icon={Building2} />
+                                    <RenderField label="College" value={student.gradCollegeName} />
+                                    <RenderField label="Year" value={student.gradPassingYear} />
+                                    <RenderField label="Score / CGPA" value={student.gradPercentage ? `${student.gradPercentage}` : null} />
                                 </div>
                             </div>
                         )}
 
-                        {/* Post Graduation (if present) */}
+                        {/* Post Graduation */}
                         {(student.pgCollegeName || student.pgDegree) && (
-                            <div className="bg-gray-50/50 rounded-lg p-4 border border-gray-100 relative group hover:border-indigo-100 transition-all">
-                                <div className="absolute top-4 right-4 text-xs font-bold text-gray-400 group-hover:text-indigo-500">
+                            <div className="p-8 bg-gray-50/50 dark:bg-gray-800/30 rounded-[2.5rem] border border-gray-100 dark:border-gray-800 relative group transition-all hover:bg-white dark:hover:bg-gray-800 shadow-sm hover:shadow-xl">
+                                <div className="inline-block mb-6 px-4 py-1.5 bg-indigo-600 rounded-xl text-[10px] font-black text-white uppercase tracking-widest shadow-lg shadow-indigo-100 dark:shadow-none">
                                     Post Graduation
                                 </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-2">
-                                    <div>
-                                        <p className="text-xs text-gray-500 font-medium">College Name</p>
-                                        <p className="text-sm font-semibold text-gray-900 truncate" title={student.pgCollegeName || ''}>{student.pgCollegeName || '-'}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs text-gray-500 font-medium">University</p>
-                                        <p className="text-sm font-semibold text-gray-900">{student.pgUniversity || '-'}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs text-gray-500 font-medium">Degree</p>
-                                        <p className="text-sm font-semibold text-gray-900">{student.pgDegree || '-'}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs text-gray-500 font-medium">Passing Year / %</p>
-                                        <p className="text-sm font-semibold text-gray-900">
-                                            {student.pgPassingYear || '-'} {student.pgPercentage ? `(${student.pgPercentage}%)` : ''}
-                                        </p>
-                                    </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
+                                    <RenderField label="Degree" value={student.pgDegree} icon={GraduationCap} />
+                                    <RenderField label="University" value={student.pgUniversity} icon={Building2} />
+                                    <RenderField label="College" value={student.pgCollegeName} />
+                                    <RenderField label="Year" value={student.pgPassingYear} />
+                                    <RenderField label="Score / CGPA" value={student.pgPercentage ? `${student.pgPercentage}` : null} />
                                 </div>
-                            </div>
-                        )}
-
-                        {/* Fallback if no education details */}
-                        {(!student.hsSchoolName && !student.hssSchoolName && !student.gradDegree && !student.pgDegree) && (
-                            <div className="text-center py-4 text-gray-500 text-sm italic">
-                                No educational qualifications added.
                             </div>
                         )}
                     </div>
                 </CardContent>
             </Card>
 
-            {/* 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
-                <Card className="shadow-none border-gray-200 h-full">
-                    <CardContent className="pt-6">
-                        <SectionHeader icon={MapPin} title="Address Details" />
-                        <div className="space-y-3">
-                            <RenderField label="Address Line 1" value={student.addressLine1} />
-                            <RenderField label="Address Line 2" value={student.addressLine2} />
-                            <RenderField label="City" value={student.city} />
-                            <RenderField label="District" value={student.district} />
-                            <RenderField label="State" value={student.state} />
-                            <RenderField label="PIN Code" value={student.zipCode} isMono />
-                            <RenderField label="Country" value={student.country} />
-                        </div>
-                    </CardContent>
-                </Card>
+            {/* 3. Address Matrix */}
+            <Card className="border-none shadow-xl shadow-gray-50 dark:shadow-none bg-white dark:bg-gray-900 rounded-[3rem] overflow-hidden">
+                <CardContent className="p-10">
+                    <h4 className={sectionHeaderClasses}>
+                        <span className="h-2 w-2 rounded-full bg-rose-500" />
+                        Address
+                    </h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-8 gap-x-10">
+                        <RenderField label="Address Line 1" value={student.addressLine1} icon={MapPinned} colSpan={2} />
+                        <RenderField label="Address Line 2" value={student.addressLine2} colSpan={2} />
+                        <RenderField label="City" value={student.city} />
+                        <RenderField label="District" value={student.district} />
+                        <RenderField label="State" value={student.state} />
+                        <RenderField label="Zip Code" value={student.zipCode} isMono />
+                    </div>
+                </CardContent>
+            </Card>
 
-                
-                <Card className="shadow-none border-gray-200 h-full">
-                    <CardContent className="pt-6">
-                        <SectionHeader icon={Info} title="Meta Information" />
-                        <div className="space-y-3">
-                            <RenderField label="Date of Admission" value={formatDate(student.enrollmentDate)} />
-                            <RenderField label="Last Updated" value={formatDate(student.updatedAt)} />
-                            <div className="grid grid-cols-[140px_10px_1fr] gap-x-2 items-start text-sm">
-                                <span className="text-gray-500 font-medium">Student Status</span>
-                                <span className="text-gray-400 select-none">:</span>
-                                <div>
-                                    <span className={`
-                                        px-2 py-0.5 rounded text-xs font-semibold uppercase tracking-wide
-                                        ${student.status === 'active' ? 'bg-green-100 text-green-700' : ''}
-                                        ${student.status === 'inactive' ? 'bg-gray-100 text-gray-700' : ''}
-                                        ${student.status === 'dropped' ? 'bg-red-100 text-red-700' : ''}
-                                        ${student.status === 'graduated' ? 'bg-indigo-100 text-indigo-700' : ''}
-                                    `}>
-                                        {student.status}
-                                    </span>
-                                </div>
-                            </div>
-                            {(student.receivedBy) && (
-                                <RenderField label="Admission By" value={student.receivedBy} />
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
-            </div> 
-            */}
+            {/* 4. System Footprint */}
+            <Card className="border-none shadow-xl shadow-gray-50 dark:shadow-none bg-white dark:bg-gray-900 rounded-[3rem] overflow-hidden">
+                <CardContent className="p-10">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-8 gap-x-10 opacity-60">
+                        <RenderField label="Created" value={formatDate(student.createdAt)} icon={Info} />
+                        <RenderField label="Updated" value={formatDate(student.updatedAt)} />
+                        <RenderField label="Staff Code" value={student.receivedBy} />
+                        <RenderField label="ID Code" value={student.instituteCode} />
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     )
 }
