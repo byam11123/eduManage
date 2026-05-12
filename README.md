@@ -1,123 +1,63 @@
-# 🚀 Welcome to EduManage
+# 🎓 EduManage ERP
+ 
+A premium, production-ready Educational Management System designed to handle every aspect of modern institution operations. Built with a high-end glassmorphic UI and robust full-stack architecture.
 
-A modern, production-ready web application scaffold powered by cutting-edge technologies, designed to accelerate your development with comprehensive educational management solutions.
+## 🚀 Core Modules
 
-## ✨ Technology Stack
+This system provides specialized workflows for:
 
-This scaffold provides a robust foundation built with:
+- **🎓 Student Management**: Full lifecycle management from Enquiry to Admission.
+- **💰 Fee Management**: Advanced multi-course fee structures with automated installment tracking.
+- **🪪 ID Card Generator**: Professional ID card production with custom templates and bulk printing.
+- **👥 Lead Management**: Kanban-style CRM for tracking enquiries and admissions.
+- **📅 Attendance System**: Real-time tracking for both students and staff.
+- **📚 Academic Modules**: Comprehensive management of Courses, Batches, and Timetables.
 
-### 🎯 Core Framework
-- **⚡ Next.js 16** - The React framework for production with App Router
-- **📘 TypeScript 5** - Type-safe JavaScript for better developer experience
-- **🎨 Tailwind CSS 4** - Utility-first CSS framework for rapid UI development
+## ✨ Premium Features
 
-### 🧩 UI Components & Styling
-- **🧩 shadcn/ui** - High-quality, accessible components built on Radix UI
-- **🎯 Lucide React** - Beautiful & consistent icon library
-- **🌈 Framer Motion** - Production-ready motion library for React
-- **🎨 Next Themes** - Perfect dark mode in 2 lines of code
+- **🪪 Advanced ID Card Engine**: 
+  - Multiple templates (Classic, Modern, Minimal, Futuristic Glass).
+  - Both **Landscape** and **Portrait** orientations.
+  - **Custom Design Support**: Upload your own background designs with direct data overlay.
+  - **Bulk Printing**: Generate and print hundreds of cards in seconds with A4/CR80 optimization.
+- **📊 Interactive Dashboard**: High-level metrics visualization for revenue, enquiries, and student growth.
+- **💎 Glassmorphic UI**: A state-of-the-art interface utilizing glassmorphism, glowing accents, and smooth Framer Motion transitions.
 
-### 📋 Forms & Validation
-- **🎣 React Hook Form** - Performant forms with easy validation
-- **✅ Zod** - TypeScript-first schema validation
+## 🛠️ Technology Stack
 
-### 🔄 State Management & Data Fetching
-- **🐻 Zustand** - Simple, scalable state management
-- **🔄 TanStack Query** - Powerful data synchronization for React
-- **🌐 Fetch** - Promise-based HTTP request
-
-### 🗄️ Database & Backend
-- **🗄️ Prisma** - Next-generation TypeScript ORM
-- **🔐 NextAuth.js** - Complete open-source authentication solution
-
-### 🎨 Advanced UI Features
-- **📊 TanStack Table** - Headless UI for building tables and datagrids
-- **🖱️ DND Kit** - Modern drag and drop toolkit for React
-- **📊 Recharts** - Redefined chart library built with React and D3
-- **🖼️ Sharp** - High performance image processing
-
-### 🌍 Internationalization & Utilities
-- **🌍 Next Intl** - Internationalization library for Next.js
-- **📅 Date-fns** - Modern JavaScript date utility library
-- **🪝 ReactUse** - Collection of essential React hooks for modern development
-
-## 🎯 Why This Scaffold?
-
-- **🏎️ Fast Development** - Pre-configured tooling and best practices
-- **🎨 Beautiful UI** - Complete shadcn/ui component library with advanced interactions
-- **🔒 Type Safety** - Full TypeScript configuration with Zod validation
-- **📱 Responsive** - Mobile-first design principles with smooth animations
-- **🗄️ Database Ready** - Prisma ORM configured for rapid backend development
-- **🔐 Auth Included** - NextAuth.js for secure authentication flows
-- **📊 Data Visualization** - Charts, tables, and drag-and-drop functionality
-- **🌍 i18n Ready** - Multi-language support with Next Intl
-- **🚀 Production Ready** - Optimized build and deployment settings
-- **🤖 AI-Friendly** - Structured codebase perfect for AI assistance
+- **⚡ Next.js 16 (App Router)** - Core framework.
+- **📘 TypeScript 5** - Full type safety.
+- **🎨 Tailwind CSS 4** - Modern styling.
+- **🗄️ Prisma & PostgreSQL** - Robust database layer.
+- **🔐 NextAuth.js** - Secure multi-tenant authentication.
+- **🐻 Zustand & TanStack Query** - Advanced state & data synchronization.
+- **🧩 shadcn/ui** - Premium component architecture.
 
 ## 🚀 Quick Start
 
 ```bash
 # Install dependencies
-bun install
+npm install
 
 # Start development server
-bun run dev
+npm run dev
 
 # Build for production
-bun run build
-
-# Start production server
-bun start
+npm run build
 ```
-
-Open [http://localhost:3000](http://localhost:3000) to see your application running.
-
 
 ## 📁 Project Structure
 
 ```
 src/
-├── app/                 # Next.js App Router pages
-├── components/          # Reusable React components
-│   └── ui/             # shadcn/ui components
-├── hooks/              # Custom React hooks
-└── lib/                # Utility functions and configurations
+├── app/                 # Next.js App Router (Routes & API)
+├── components/          # Reusable UI & Module components
+├── hooks/              # Custom React hooks for data fetching
+├── lib/                # Services, types, and utility functions
+└── prisma/             # Database schema and migrations
 ```
-
-## 🎨 Available Features & Components
-
-This scaffold includes a comprehensive set of modern web development tools:
-
-### 🧩 UI Components (shadcn/ui)
-- **Layout**: Card, Separator, Aspect Ratio, Resizable Panels
-- **Forms**: Input, Textarea, Select, Checkbox, Radio Group, Switch
-- **Feedback**: Alert, Toast (Sonner), Progress, Skeleton
-- **Navigation**: Breadcrumb, Menubar, Navigation Menu, Pagination
-- **Overlay**: Dialog, Sheet, Popover, Tooltip, Hover Card
-- **Data Display**: Badge, Avatar, Calendar
-
-### 📊 Advanced Data Features
-- **Tables**: Powerful data tables with sorting, filtering, pagination (TanStack Table)
-- **Charts**: Beautiful visualizations with Recharts
-- **Forms**: Type-safe forms with React Hook Form + Zod validation
-
-### 🎨 Interactive Features
-- **Animations**: Smooth micro-interactions with Framer Motion
-- **Drag & Drop**: Modern drag-and-drop functionality with DND Kit
-- **Theme Switching**: Built-in dark/light mode support
-
-### 🔐 Backend Integration
-- **Authentication**: Ready-to-use auth flows with NextAuth.js
-- **Database**: Type-safe database operations with Prisma
-- **API Client**: HTTP requests with Fetch + TanStack Query
-- **State Management**: Simple and scalable with Zustand
-
-### 🌍 Production Features
-- **Internationalization**: Multi-language support with Next Intl
-- **Image Optimization**: Automatic image processing with Sharp
-- **Type Safety**: End-to-end TypeScript with Zod validation
-- **Essential Hooks**: 100+ useful React hooks with ReactUse for common patterns
 
 ---
 
-Built with ❤️ for the developer community. 🚀
+Built with Antigravity. 🚀
+
