@@ -29,8 +29,10 @@ export async function GET(request: NextRequest) {
 
         const { searchParams } = new URL(request.url)
         const branchId = searchParams.get('branchId')
-        const status = searchParams.get('status')
-        const search = searchParams.get('search')
+        const status   = searchParams.get('status')
+        const search   = searchParams.get('search')
+        const cursor   = searchParams.get('cursor')       // id of the last item on the previous page
+        const limit    = Math.min(parseInt(searchParams.get('limit') || '25'), 100)
 
         // Build the where clause based on user organization
         if (!payload.organizationId) {
@@ -75,8 +77,10 @@ export async function GET(request: NextRequest) {
             ]
         }
 
-        const students = await db.student.findMany({
+        const rawStudents = await db.student.findMany({
             where: whereClause,
+            take: limit + 1,   // fetch one extra to detect next page
+            ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
             include: {
                 branch: {
                     select: {
@@ -99,14 +103,25 @@ export async function GET(request: NextRequest) {
             orderBy: { createdAt: 'desc' }
         })
 
-        console.log(`[API /students] User ${payload.email} (${payload.role}) fetched ${students.length} students`)
+        const hasMore    = rawStudents.length > limit
+        const students   = hasMore ? rawStudents.slice(0, limit) : rawStudents
+        const nextCursor = hasMore ? students[students.length - 1].id : null
+
+        // Total count (without pagination, for display e.g. "Showing 25 of 847")
+        const totalCount = await db.student.count({ where: whereClause })
+
+        console.log(`[API /students] User ${payload.email} (${payload.role}) fetched ${students.length} students (total: ${totalCount})`)
 
         return NextResponse.json({
             success: true,
             students,
             meta: {
-                total: students.length,
-                userRole: payload.role,
+                total:       totalCount,
+                count:       students.length,
+                hasMore,
+                nextCursor,
+                limit,
+                userRole:    payload.role,
                 userBranches: payload.branches
             }
         })

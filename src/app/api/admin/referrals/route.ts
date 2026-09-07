@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { verifyAuth } from '@/lib/auth-utils'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
     const auth = await verifyAuth(request)
     if (!auth.success || !auth.organizationId) {

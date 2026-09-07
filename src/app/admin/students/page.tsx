@@ -23,7 +23,12 @@ export default function StudentsPage() {
         deleteStudent,
         bulkCreate,
         saving,
-        stats
+        stats,
+        currentPage,
+        hasMore,
+        totalCount,
+        goToNextPage,
+        goToPrevPage
     } = useStudents()
 
     const { courses } = useCourses()
@@ -120,7 +125,7 @@ export default function StudentsPage() {
             pgDegree: s.pgDegree || '',
             pgPassingYear: s.pgPassingYear || '',
             pgPercentage: s.pgPercentage || '',
-            totalFee: s.totalFees || ''
+            totalFee: s.totalAmount || ''
         }))
     }
 
@@ -214,17 +219,39 @@ export default function StudentsPage() {
                     </div>
 
                     {/* Pagination */}
-                    <div className="p-8 border-t border-gray-50 dark:border-gray-800 flex items-center justify-between">
+                    <div className="p-6 border-t border-gray-50 dark:border-gray-800 flex items-center justify-between gap-4">
                         <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">
-                            Showing {filteredStudents.length} Students
+                            Showing {filteredStudents.length} of {totalCount} Students
                         </p>
-                        <div className="flex gap-2">
-                            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-gray-400" disabled>
-                                <ChevronLeft className="h-4 w-4" />
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-gray-400" disabled>
-                                <ChevronRight className="h-4 w-4" />
-                            </Button>
+
+                        <div className="flex items-center gap-3">
+                            {/* Page indicator chip */}
+                            <span className="px-3 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/30 text-[10px] font-black uppercase tracking-widest text-indigo-600">
+                                Page {currentPage}
+                            </span>
+
+                            <div className="flex gap-1">
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-10 w-10 rounded-xl text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 disabled:opacity-30 transition-all"
+                                    disabled={currentPage <= 1 || loading}
+                                    onClick={goToPrevPage}
+                                    title="Previous page"
+                                >
+                                    <ChevronLeft className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-10 w-10 rounded-xl text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 disabled:opacity-30 transition-all"
+                                    disabled={!hasMore || loading}
+                                    onClick={goToNextPage}
+                                    title="Next page"
+                                >
+                                    <ChevronRight className="h-4 w-4" />
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 </CardContent>

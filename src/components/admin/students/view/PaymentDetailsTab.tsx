@@ -14,8 +14,9 @@ import {
 } from "@/components/ui/table"
 import { Eye, CreditCard, AlertCircle, CheckCircle2, Clock, Landmark, IndianRupee, ReceiptText, ArrowUpRight } from 'lucide-react'
 import type { Student, Installment } from '@/lib/types'
-import { PayInstallmentDialog } from './PayInstallmentDialog'
+import { CollectFeeDialog } from '@/components/admin/fees/CollectFeeDialog'
 import { ViewPaymentDialog } from './ViewPaymentDialog'
+import { AssignFeeDialog } from './AssignFeeDialog'
 import { useRouter } from 'next/navigation'
 import { calculateCourseFinancials, calculateAggregatedFinancials } from '@/lib/utils'
 import { cn } from '@/lib/utils'
@@ -27,8 +28,9 @@ interface PaymentDetailsTabProps {
 
 export function PaymentDetailsTab({ student, onRefresh }: PaymentDetailsTabProps) {
     const router = useRouter()
-    const [selectedInstallment, setSelectedInstallment] = useState<Installment | null>(null)
-    const [viewInstallment, setViewInstallment] = useState<Installment | null>(null)
+    const [selectedInstallment, setSelectedInstallment] = useState<any>(null)
+    const [viewInstallment, setViewInstallment] = useState<any>(null)
+    const [isAssigningFee, setIsAssigningFee] = useState(false)
 
     // 1. Get Aggregated Stats
     const studentCourses = student.studentCourses || []
@@ -193,7 +195,13 @@ export function PaymentDetailsTab({ student, onRefresh }: PaymentDetailsTabProps
                                                                 <Button
                                                                     size="sm"
                                                                     className="h-10 bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase tracking-widest text-[9px] px-6 rounded-xl shadow-lg shadow-indigo-100 dark:shadow-none transition-all hover:scale-[1.05] active:scale-95"
-                                                                    onClick={() => setSelectedInstallment(inst as Installment)}
+                                                                    onClick={() => setSelectedInstallment({
+                                                                        ...inst,
+                                                                        studentCourse: {
+                                                                            student: student,
+                                                                            course: courseEnrollment.course
+                                                                        }
+                                                                    } as any)}
                                                                 >
                                                                     PAY
                                                                 </Button>
@@ -213,15 +221,130 @@ export function PaymentDetailsTab({ student, onRefresh }: PaymentDetailsTabProps
 
             {studentCourses.length === 0 && (
                 <div className="text-center py-20 bg-gray-50 dark:bg-gray-900 rounded-[3rem] border border-dashed border-gray-200 dark:border-gray-800 text-gray-400 text-xs font-black uppercase tracking-widest italic">
-                    No payments found.
+                    No course payments found.
                 </div>
             )}
 
+            {/* 3. Additional & Miscellaneous Fees */}
+            <div className="mt-12">
+                <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-100 dark:border-gray-800">
+                    <h3 className="text-[13px] font-black uppercase tracking-[0.3em] text-gray-400 flex items-center gap-3">
+                        <Landmark className="h-4 w-4" />
+                        Additional & Miscellaneous Fees
+                    </h3>
+                    <Button
+                        size="sm"
+                        onClick={() => setIsAssigningFee(true)}
+                        className="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-black uppercase tracking-widest text-[9px] rounded-xl"
+                    >
+                        + Assign Fee
+                    </Button>
+                </div>
+
+                {(!student.additionalFees || student.additionalFees.length === 0) ? (
+                    <div className="text-center py-12 bg-gray-50 dark:bg-gray-900 rounded-[3rem] border border-dashed border-gray-200 dark:border-gray-800 text-gray-400 text-xs font-black uppercase tracking-widest italic">
+                        No additional fees found.
+                    </div>
+                ) : (
+                    <div className="bg-white dark:bg-gray-900 rounded-[3rem] overflow-hidden shadow-xl shadow-gray-50 dark:shadow-none p-10">
+                        <Table>
+                            <TableHeader>
+                                <TableRow className="hover:bg-transparent border-gray-100 dark:border-gray-800">
+                                    <TableHead className="text-[9px] font-black uppercase tracking-widest text-gray-400">ID &amp; Title</TableHead>
+                                    <TableHead className="text-[9px] font-black uppercase tracking-widest text-gray-400">Type</TableHead>
+                                    <TableHead className="text-[9px] font-black uppercase tracking-widest text-gray-400">Due Date</TableHead>
+                                    <TableHead className="text-[9px] font-black uppercase tracking-widest text-gray-400">Amount</TableHead>
+                                    <TableHead className="text-[9px] font-black uppercase tracking-widest text-gray-400">Status</TableHead>
+                                    <TableHead className="text-[9px] font-black uppercase tracking-widest text-gray-400 text-right px-8">Action</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {student.additionalFees.map((fee: any) => {
+                                    const isPaid = fee.status === 'paid'
+                                    const overdue = !isPaid && isOverdue(fee.dueDate)
+
+                                    return (
+                                        <TableRow key={fee.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 border-gray-50 dark:border-gray-800/50 transition-colors">
+                                            <TableCell>
+                                                <div className="flex flex-col gap-1">
+                                                    {fee.feeDisplayId && (
+                                                        <span className="text-[9px] font-black font-mono text-indigo-500 tracking-widest">{fee.feeDisplayId}</span>
+                                                    )}
+                                                    <span className="font-bold text-sm text-gray-900 dark:text-white">
+                                                        {fee.title}
+                                                    </span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest rounded-xl">
+                                                    {fee.feeType.replace('_', ' ')}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell>
+                                                <span className="text-sm font-black text-gray-400">
+                                                    {fee.dueDate ? new Date(fee.dueDate).toLocaleDateString('en-GB') : 'N/A'}
+                                                </span>
+                                            </TableCell>
+                                            <TableCell>
+                                                <span className="text-sm font-black text-gray-900 dark:text-white">
+                                                    ₹ {Number(fee.amount).toLocaleString()}
+                                                </span>
+                                            </TableCell>
+                                            <TableCell>
+                                                {isPaid ? (
+                                                    <Badge className="bg-emerald-500 text-white rounded-xl px-4 py-1 text-[9px] font-black uppercase tracking-widest border-none">
+                                                        PAID
+                                                    </Badge>
+                                                ) : overdue ? (
+                                                    <Badge className="bg-rose-500 text-white rounded-xl px-4 py-1 text-[9px] font-black uppercase tracking-widest border-none">
+                                                        OVERDUE
+                                                    </Badge>
+                                                ) : (
+                                                    <Badge className="bg-amber-500 text-white rounded-xl px-4 py-1 text-[9px] font-black uppercase tracking-widest border-none">
+                                                        PENDING
+                                                    </Badge>
+                                                )}
+                                            </TableCell>
+                                            <TableCell className="px-8 text-right">
+                                                {isPaid ? (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-10 w-10 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-emerald-600 transition-all"
+                                                        onClick={() => setViewInstallment({ ...fee, student })}
+                                                        title="View payment details"
+                                                    >
+                                                        <Eye className="h-4 w-4" />
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        size="sm"
+                                                        className="h-10 bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase tracking-widest text-[9px] px-6 rounded-xl shadow-lg shadow-indigo-100 dark:shadow-none transition-all hover:scale-[1.05] active:scale-95"
+                                                        onClick={() => setSelectedInstallment({
+                                                            ...fee,
+                                                            student: student
+                                                        })}
+                                                    >
+                                                        PAY
+                                                    </Button>
+                                                )}
+                                            </TableCell>
+                                        </TableRow>
+                                    )
+                                })}
+                            </TableBody>
+                        </Table>
+                    </div>
+                )}
+            </div>
+
             {/* Pay Dialog */}
             {selectedInstallment && (
-                <PayInstallmentDialog
-                    isOpen={!!selectedInstallment}
-                    onClose={() => setSelectedInstallment(null)}
+                <CollectFeeDialog
+                    open={!!selectedInstallment}
+                    onOpenChange={(open) => {
+                        if (!open) setSelectedInstallment(null)
+                    }}
                     installment={selectedInstallment}
                     onSuccess={() => {
                         if (onRefresh) {
@@ -241,6 +364,17 @@ export function PaymentDetailsTab({ student, onRefresh }: PaymentDetailsTabProps
                     installment={viewInstallment}
                 />
             )}
+
+            {/* Assign Fee Dialog */}
+            <AssignFeeDialog
+                open={isAssigningFee}
+                onOpenChange={setIsAssigningFee}
+                studentId={student.id}
+                onSuccess={() => {
+                    if (onRefresh) onRefresh()
+                    else router.refresh()
+                }}
+            />
         </div>
     )
 }

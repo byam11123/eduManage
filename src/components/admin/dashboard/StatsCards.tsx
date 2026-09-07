@@ -26,7 +26,7 @@ export function StatsCards({ stats, loading }: StatsCardsProps) {
                     value={stats.totalStudents}
                     icon={Users}
                     description="Total Registered"
-                    trend={{ value: '12%', isUp: true }}
+                    trend={stats.trends?.enrollment}
                     color="indigo"
                     loading={loading}
                 />
@@ -35,7 +35,6 @@ export function StatsCards({ stats, loading }: StatsCardsProps) {
                     value={stats.activeStudents}
                     icon={UserCheck}
                     description="Currently Participating"
-                    trend={{ value: '5%', isUp: true }}
                     color="emerald"
                     loading={loading}
                 />
@@ -44,7 +43,7 @@ export function StatsCards({ stats, loading }: StatsCardsProps) {
                     value={`₹${stats.totalRevenue.toLocaleString()}`}
                     icon={TrendingUp}
                     description="Total Amount Collected"
-                    trend={{ value: '24%', isUp: true }}
+                    trend={stats.trends?.revenue}
                     color="violet"
                     loading={loading}
                 />
@@ -53,7 +52,6 @@ export function StatsCards({ stats, loading }: StatsCardsProps) {
                     value={`₹${stats.pendingFees.toLocaleString()}`}
                     icon={AlertCircle}
                     description="Total Due Amount"
-                    trend={{ value: '2%', isUp: false }}
                     color="rose"
                     loading={loading}
                 />
@@ -82,7 +80,7 @@ export function StatsCards({ stats, loading }: StatsCardsProps) {
                     value={stats.totalEnquiries}
                     icon={PhoneCall}
                     description="Total Enquiries"
-                    trend={{ value: '18%', isUp: true }}
+                    trend={stats.trends?.enquiries}
                     color="amber"
                     loading={loading}
                 />
@@ -91,7 +89,6 @@ export function StatsCards({ stats, loading }: StatsCardsProps) {
                     value={`${Math.round((stats.activeStudents / (stats.totalEnquiries || 1)) * 100)}%`}
                     icon={Target}
                     description="Lead Conversion"
-                    trend={{ value: '3%', isUp: true }}
                     color="indigo"
                     loading={loading}
                 />

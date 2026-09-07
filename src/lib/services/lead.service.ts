@@ -1,145 +1,89 @@
 // ============================================
 // LEAD SERVICE
-// API service for managing leads
+// Real API calls to /api/leads
 // ============================================
 
-import type { Lead, ApiResponse, LeadFormData, LeadSource, LeadStage } from '@/lib/types'
+import type { Lead, ApiResponse, LeadFormData } from '@/lib/types'
 
-// Mock data
-let MOCK_LEADS: Lead[] = [
-    {
-        id: '1',
-        firstName: 'Amit',
-        lastName: 'Sharma',
-        email: 'amit.sharma@example.com',
-        phone: '9876543210',
-        source: 'website',
-        stage: 'new',
-        company: 'Tech Solutions',
-        value: 15000,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-    },
-    {
-        id: '2',
-        firstName: 'Priya',
-        lastName: 'Verma',
-        email: 'priya.v@example.com',
-        phone: '9876543211',
-        source: 'referral',
-        stage: 'contacted',
-        value: 25000,
-        createdAt: new Date(Date.now() - 86400000).toISOString(),
-        updatedAt: new Date().toISOString()
-    },
-    {
-        id: '3',
-        firstName: 'Rahul',
-        lastName: 'Singh',
-        email: 'rahul.s@example.com',
-        phone: '9876543212',
-        source: 'social_media',
-        stage: 'qualified',
-        company: 'EduCorp',
-        value: 50000,
-        createdAt: new Date(Date.now() - 172800000).toISOString(),
-        updatedAt: new Date().toISOString()
-    },
-    {
-        id: '4',
-        firstName: 'Sneha',
-        lastName: 'Patel',
-        email: 'sneha.p@example.com',
-        phone: '9876543213',
-        source: 'campaign',
-        stage: 'proposal',
-        value: 75000,
-        createdAt: new Date(Date.now() - 259200000).toISOString(),
-        updatedAt: new Date().toISOString()
-    },
-    {
-        id: '5',
-        firstName: 'Vikram',
-        lastName: 'Malhotra',
-        email: 'vikram.m@example.com',
-        phone: '9876543214',
-        source: 'website',
-        stage: 'won',
-        company: 'Global Inc',
-        value: 120000,
-        createdAt: new Date(Date.now() - 345600000).toISOString(),
-        updatedAt: new Date().toISOString()
-    }
-]
+const BASE_URL = '/api/leads'
 
 export const leadService = {
-    // Get all leads
-    async getLeads(): Promise<ApiResponse<{ leads: Lead[] }>> {
-        await new Promise(resolve => setTimeout(resolve, 800))
-        return { success: true, data: { leads: [...MOCK_LEADS] } }
-    },
+    // Get all leads (with optional search/stage/branchId filter)
+    async getLeads(params?: { search?: string; stage?: string; branchId?: string }): Promise<ApiResponse<{ leads: Lead[] }>> {
+        try {
+            const searchParams = new URLSearchParams()
+            if (params?.search)   searchParams.set('search',   params.search)
+            if (params?.stage)    searchParams.set('stage',    params.stage)
+            if (params?.branchId) searchParams.set('branchId', params.branchId)
 
-    // Get single lead
-    async getLeadById(id: string): Promise<ApiResponse<{ lead: Lead }>> {
-        await new Promise(resolve => setTimeout(resolve, 500))
-        const lead = MOCK_LEADS.find(l => l.id === id)
-        if (!lead) throw new Error('Lead not found')
-        return { success: true, data: { lead } }
+            const url = searchParams.toString() ? `${BASE_URL}?${searchParams}` : BASE_URL
+            const res  = await fetch(url, { cache: 'no-store' })
+            const data = await res.json()
+            return {
+                success: data.success,
+                data:    data.success ? { leads: data.leads } : undefined,
+                error:   data.error
+            }
+        } catch (error) {
+            console.error('leadService.getLeads error:', error)
+            return { success: false, error: 'Failed to fetch leads' }
+        }
     },
 
     // Create lead
     async createLead(data: LeadFormData): Promise<ApiResponse<{ lead: Lead }>> {
-        await new Promise(resolve => setTimeout(resolve, 800))
-        const newLead: Lead = {
-            id: Math.random().toString(36).substr(2, 9),
-            ...data,
-            source: data.source as any,
-            stage: data.stage as any,
-            value: data.value ? parseFloat(data.value) : 0,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
+        try {
+            const res  = await fetch(BASE_URL, {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify(data)
+            })
+            const body = await res.json()
+            return {
+                success: body.success,
+                data:    body.success ? { lead: body.lead } : undefined,
+                error:   body.error
+            }
+        } catch (error) {
+            console.error('leadService.createLead error:', error)
+            return { success: false, error: 'Failed to create lead' }
         }
-        MOCK_LEADS.unshift(newLead)
-        return { success: true, data: { lead: newLead } }
     },
 
-    // Update lead
+    // Update lead (fields or stage)
     async updateLead(id: string, data: Partial<LeadFormData>): Promise<ApiResponse<{ lead: Lead }>> {
-        await new Promise(resolve => setTimeout(resolve, 800))
-        const index = MOCK_LEADS.findIndex(l => l.id === id)
-        if (index === -1) throw new Error('Lead not found')
-
-        const updatedLead: Lead = {
-            ...MOCK_LEADS[index],
-            ...data,
-            source: data.source ? data.source as LeadSource : MOCK_LEADS[index].source,
-            stage: data.stage ? data.stage as LeadStage : MOCK_LEADS[index].stage,
-            value: data.value ? parseFloat(data.value) : MOCK_LEADS[index].value,
-            updatedAt: new Date().toISOString()
+        try {
+            const res  = await fetch(`${BASE_URL}/${id}`, {
+                method:  'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify(data)
+            })
+            const body = await res.json()
+            return {
+                success: body.success,
+                data:    body.success ? { lead: body.lead } : undefined,
+                error:   body.error
+            }
+        } catch (error) {
+            console.error('leadService.updateLead error:', error)
+            return { success: false, error: 'Failed to update lead' }
         }
-        MOCK_LEADS[index] = updatedLead
-        return { success: true, data: { lead: updatedLead } }
     },
 
     // Delete lead
     async deleteLead(id: string): Promise<ApiResponse> {
-        await new Promise(resolve => setTimeout(resolve, 500))
-        MOCK_LEADS = MOCK_LEADS.filter(l => l.id !== id)
-        return { success: true, message: 'Lead deleted successfully' }
+        try {
+            const res  = await fetch(`${BASE_URL}/${id}`, { method: 'DELETE' })
+            const body = await res.json()
+            return { success: body.success, message: body.message, error: body.error }
+        } catch (error) {
+            console.error('leadService.deleteLead error:', error)
+            return { success: false, error: 'Failed to delete lead' }
+        }
     },
 
-    // Update lead stage (drag and drop)
+    // Update lead stage only (optimistic-UI use case)
     async updateLeadStage(id: string, stage: string): Promise<ApiResponse<{ lead: Lead }>> {
-        await new Promise(resolve => setTimeout(resolve, 300)) // Faster for drag and drop
-        const index = MOCK_LEADS.findIndex(l => l.id === id)
-        if (index === -1) throw new Error('Lead not found')
-
-        const updatedLead = {
-            ...MOCK_LEADS[index],
-            stage: stage as any,
-            updatedAt: new Date().toISOString()
-        }
-        MOCK_LEADS[index] = updatedLead
-        return { success: true, data: { lead: updatedLead } }
+        return leadService.updateLead(id, { stage })
     }
 }

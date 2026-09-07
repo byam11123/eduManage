@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -66,6 +67,7 @@ const COLORS = {
 const PIE_COLORS = ['#6366f1', '#22c55e', '#ef4444', '#f59e0b']
 
 export default function BranchDashboardPage() {
+  const router = useRouter()
   const [mounted, setMounted] = useState(false)
   const [user, setUser] = useState<User | null>(null)
   const [branches, setBranches] = useState<Branch[]>([])
@@ -73,17 +75,19 @@ export default function BranchDashboardPage() {
   const [selectedYear, setSelectedYear] = useState('2026')
   const [selectedMonth, setSelectedMonth] = useState('all')
   const [chartType, setChartType] = useState<'line' | 'bar' | 'area'>('area')
+  const [statsLoading, setStatsLoading] = useState(false)
+  const [monthlyRevenueData, setMonthlyRevenueData] = useState<Array<any>>([])
 
-  // Mock Stats - In future fetch based on currentBranchId
+  // Real stats from API
   const [stats, setStats] = useState({
-    totalRevenue: 85000,
-    receivedAmount: 62000,
-    dueAmount: 23000,
-    totalStudents: 42,
-    totalEmployees: 8,
-    collectionRate: 72.9,
-    upcomingAmount: 12000,
-    overdueAmount: 8500,
+    totalRevenue: 0,
+    receivedAmount: 0,
+    dueAmount: 0,
+    totalStudents: 0,
+    totalEmployees: 0,
+    collectionRate: 0,
+    upcomingAmount: 0,
+    overdueAmount: 0,
   })
 
   useEffect(() => {
@@ -98,7 +102,7 @@ export default function BranchDashboardPage() {
 
         if (data.success && data.user) {
           if (data.user.role === 'super_admin') {
-            window.location.href = '/admin'
+            router.replace('/admin')
             return
           }
 
@@ -116,75 +120,90 @@ export default function BranchDashboardPage() {
             setCurrentBranchId(defaultBranchId || '')
           }
         } else {
-          window.location.href = '/?view=login'
+          router.replace('/login')
         }
       } catch (error) {
-        console.error('Error fetching data:', error)
-        window.location.href = '/?view=login'
+        console.error('[Branch] Error fetching data:', error)
+        router.replace('/login')
       }
     }
 
     fetchUserData()
-  }, [])
+  }, [router])
 
-  // Update stats when branch changes (Mock logic)
+  // Fetch real stats whenever branch changes
   useEffect(() => {
-    if (currentBranchId) {
-      // Logic to fetch new stats for this branch
-      // setStats(...)
+    if (!currentBranchId) return
+    const fetchData = async () => {
+      setStatsLoading(true)
+      try {
+        // Fetch Stats
+        const res = await fetch(`/api/dashboard/stats?branchId=${currentBranchId}`)
+        const data = await res.json()
+        if (data.success && data.stats) {
+          const s = data.stats
+          const total = (s.totalRevenue ?? 0)
+          const received = (s.totalCollected ?? 0)
+          setStats({
+            totalRevenue: total,
+            receivedAmount: received,
+            dueAmount: total - received,
+            totalStudents: s.totalStudents ?? 0,
+            totalEmployees: s.totalStaff ?? 0,
+            collectionRate: total > 0 ? Math.round((received / total) * 100 * 10) / 10 : 0,
+            upcomingAmount: s.upcomingAmount ?? 0,
+            overdueAmount: s.overdueAmount ?? 0,
+          })
+        }
+
+        // Fetch Revenue for Charts
+        const revRes = await fetch(`/api/dashboard/revenue?branchId=${currentBranchId}`)
+        const revData = await revRes.json()
+        if (revData.success && revData.data) {
+          // The API currently returns { name: 'Jan', revenue: 1000 }
+          // Branch charts expect { month: 'Jan', received: 1000, overdue: 0, upcoming: 0 }
+          const formatted = revData.data.map((r: any) => ({
+             month: r.name,
+             received: r.revenue,
+             overdue: 0, // Mock for now as API doesn't return overdue/upcoming per month yet
+             upcoming: 0
+          }))
+          setMonthlyRevenueData(formatted)
+        }
+      } catch (err) {
+        console.error('[Branch] Fetch error:', err)
+      } finally {
+        setStatsLoading(false)
+      }
     }
+    fetchData()
   }, [currentBranchId])
+
 
   const handleBranchChange = (branchId: string) => {
     setCurrentBranchId(branchId)
   }
 
-  // --- Duplicate Chart Data for UI Consistency ---
-  const monthlyRevenueData = [
-    { month: 'Jan', received: 8000, overdue: 1500, upcoming: 3000 },
-    { month: 'Feb', received: 10000, overdue: 2000, upcoming: 2500 },
-    { month: 'Mar', received: 12000, overdue: 1800, upcoming: 4000 },
-    { month: 'Apr', received: 9000, overdue: 3000, upcoming: 3500 },
-    { month: 'May', received: 14000, overdue: 2500, upcoming: 3000 },
-    { month: 'Jun', received: 11000, overdue: 1500, upcoming: 2000 },
-    { month: 'Jul', received: 16000, overdue: 1200, upcoming: 2800 },
-    { month: 'Aug', received: 13000, overdue: 2000, upcoming: 3600 },
-    { month: 'Sep', received: 15000, overdue: 1600, upcoming: 3200 },
-    { month: 'Oct', received: 18000, overdue: 1400, upcoming: 2400 },
-    { month: 'Nov', received: 17000, overdue: 1800, upcoming: 2900 },
-    { month: 'Dec', received: 19000, overdue: 1500, upcoming: 3500 },
-  ]
-
+  // Chart data uses real stats for the summary view
+  // (Monthly detailed breakdown requires /api/dashboard/revenue which uses org-level data)
   const studentStatusData = [
-    { name: 'Active', value: 35, color: '#22c55e' },
-    { name: 'Inactive', value: 5, color: '#f59e0b' },
-    { name: 'Deleted', value: 1, color: '#ef4444' },
-    { name: 'Default', value: 1, color: '#6366f1' },
+    { name: 'Active', value: stats.totalStudents, color: '#6366f1' },
   ]
 
   const feeStatusData = [
-    { name: 'Upcoming', amount: 12000, percentage: 30, color: '#6366f1' },
-    { name: 'Overdue', amount: 8500, percentage: 21, color: '#ef4444' },
-    { name: 'Received', amount: 19500, percentage: 49, color: '#22c55e' },
+    { name: 'Received', amount: stats.receivedAmount, percentage: stats.totalRevenue > 0 ? Math.round((stats.receivedAmount / stats.totalRevenue) * 100) : 0, color: '#6366f1' },
+    { name: 'Overdue', amount: stats.overdueAmount, percentage: stats.totalRevenue > 0 ? Math.round((stats.overdueAmount / stats.totalRevenue) * 100) : 0, color: '#ef4444' },
+    { name: 'Upcoming', amount: stats.upcomingAmount, percentage: stats.totalRevenue > 0 ? Math.round((stats.upcomingAmount / stats.totalRevenue) * 100) : 0, color: '#f59e0b' },
   ]
 
   const studentAnalyticsData = [
-    { name: 'Active', count: 35, percentage: 83, color: '#22c55e' },
-    { name: 'Inactive', count: 5, percentage: 12, color: '#f59e0b' },
-    { name: 'Defaulter', count: 2, percentage: 5, color: '#ef4444' },
+    { name: 'Active', count: stats.totalStudents, percentage: 100, color: '#6366f1' },
   ]
 
-  const upcomingPayments = [
-    { enrollNo: 'STU001', name: 'Rahul Sharma', course: 'IIT-JEE', amount: 15000, dueDate: '2026-02-08' },
-    { enrollNo: 'STU002', name: 'Priya Patel', course: 'NEET', amount: 12000, dueDate: '2026-02-09' },
-    { enrollNo: 'STU003', name: 'Amit Kumar', course: 'IIT-JEE', amount: 18000, dueDate: '2026-02-10' },
-  ]
+  // NOTE: Upcoming payments and recent payments require dedicated endpoints
+  const upcomingPayments: Array<{ enrollNo: string; name: string; course: string; amount: number; dueDate: string }> = []
+  const recentPayments: Array<{ enrollNo: string; name: string; course: string; amount: number; date: string }> = []
 
-  const recentPayments = [
-    { enrollNo: 'STU004', name: 'Neha Singh', course: 'NEET', amount: 15000, date: '2026-02-02' },
-    { enrollNo: 'STU005', name: 'Vikram Roy', course: 'IIT-JEE', amount: 20000, date: '2026-02-01' },
-    { enrollNo: 'STU006', name: 'Anita Joshi', course: 'Foundation', amount: 8000, date: '2026-01-31' },
-  ]
 
   const currentBranchName = branches.find(b => b.id === currentBranchId)?.name || 'Branch Dashboard'
   const firstLetter = currentBranchName.charAt(0)
@@ -257,9 +276,9 @@ export default function BranchDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-gray-950 pb-12">
       {/* Header with Branch Switcher */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center text-white font-bold text-lg">
@@ -309,16 +328,16 @@ export default function BranchDashboardPage() {
         </div>
       </div>
 
-      <div className="p-6 space-y-6">
+      <div className="p-6 md:p-10 space-y-10 max-w-[1600px] mx-auto">
         {/* Page Title */}
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Branch Analytics</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Overview & Statistics</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white uppercase tracking-tight">Branch Analytics</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 uppercase tracking-widest mt-1">Overview & Statistics</p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          <Card className="bg-white dark:bg-gray-800 border-0 shadow-sm hover:shadow-md transition-shadow">
+          <Card className="border-none shadow-xl shadow-gray-100/50 dark:shadow-none bg-white dark:bg-gray-900 rounded-3xl overflow-hidden hover:shadow-2xl transition-shadow">
             <CardContent className="p-4">
               <div className="flex items-start justify-between">
                 <div>
@@ -334,7 +353,7 @@ export default function BranchDashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white dark:bg-gray-800 border-0 shadow-sm hover:shadow-md transition-shadow">
+          <Card className="border-none shadow-xl shadow-gray-100/50 dark:shadow-none bg-white dark:bg-gray-900 rounded-3xl overflow-hidden hover:shadow-2xl transition-shadow">
             <CardContent className="p-4">
               <div className="flex items-start justify-between">
                 <div>
@@ -350,7 +369,7 @@ export default function BranchDashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white dark:bg-gray-800 border-0 shadow-sm hover:shadow-md transition-shadow">
+          <Card className="border-none shadow-xl shadow-gray-100/50 dark:shadow-none bg-white dark:bg-gray-900 rounded-3xl overflow-hidden hover:shadow-2xl transition-shadow">
             <CardContent className="p-4">
               <div className="flex items-start justify-between">
                 <div>
@@ -366,7 +385,7 @@ export default function BranchDashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white dark:bg-gray-800 border-0 shadow-sm hover:shadow-md transition-shadow">
+          <Card className="border-none shadow-xl shadow-gray-100/50 dark:shadow-none bg-white dark:bg-gray-900 rounded-3xl overflow-hidden hover:shadow-2xl transition-shadow">
             <CardContent className="p-4">
               <div className="flex items-start justify-between">
                 <div>
@@ -380,7 +399,7 @@ export default function BranchDashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white dark:bg-gray-800 border-0 shadow-sm hover:shadow-md transition-shadow">
+          <Card className="border-none shadow-xl shadow-gray-100/50 dark:shadow-none bg-white dark:bg-gray-900 rounded-3xl overflow-hidden hover:shadow-2xl transition-shadow">
             <CardContent className="p-4">
               <div className="flex items-start justify-between">
                 <div>
@@ -394,7 +413,7 @@ export default function BranchDashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white dark:bg-gray-800 border-0 shadow-sm hover:shadow-md transition-shadow">
+          <Card className="border-none shadow-xl shadow-gray-100/50 dark:shadow-none bg-white dark:bg-gray-900 rounded-3xl overflow-hidden hover:shadow-2xl transition-shadow">
             <CardContent className="p-4">
               <div className="flex items-start justify-between">
                 <div>
@@ -427,7 +446,7 @@ export default function BranchDashboardPage() {
             {/* Chart Type Selector & Revenue Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Overdue Payment Status */}
-              <Card className="bg-white dark:bg-gray-800 border-0 shadow-sm">
+              <Card className="border-none shadow-xl shadow-gray-100/50 dark:shadow-none bg-white dark:bg-gray-900 rounded-3xl overflow-hidden">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-base font-semibold">Overdue Payment Status</CardTitle>
                   <div className="flex items-center gap-2">
@@ -469,7 +488,7 @@ export default function BranchDashboardPage() {
               </Card>
 
               {/* Received Payment */}
-              <Card className="bg-white dark:bg-gray-800 border-0 shadow-sm">
+              <Card className="border-none shadow-xl shadow-gray-100/50 dark:shadow-none bg-white dark:bg-gray-900 rounded-3xl overflow-hidden">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <div className="flex items-center gap-2">
                     <CardTitle className="text-base font-semibold">Received Payment</CardTitle>
@@ -500,7 +519,7 @@ export default function BranchDashboardPage() {
             {/* Payment Tables */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Upcoming Due Payments */}
-              <Card className="bg-white dark:bg-gray-800 border-0 shadow-sm">
+              <Card className="border-none shadow-xl shadow-gray-100/50 dark:shadow-none bg-white dark:bg-gray-900 rounded-3xl overflow-hidden">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <div>
                     <CardTitle className="text-base font-semibold">Next 5 Days Upcoming Due Payments</CardTitle>
@@ -542,7 +561,7 @@ export default function BranchDashboardPage() {
               </Card>
 
               {/* Last 5 Days Received */}
-              <Card className="bg-white dark:bg-gray-800 border-0 shadow-sm">
+              <Card className="border-none shadow-xl shadow-gray-100/50 dark:shadow-none bg-white dark:bg-gray-900 rounded-3xl overflow-hidden">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <div>
                     <CardTitle className="text-base font-semibold flex items-center gap-2">
@@ -590,7 +609,7 @@ export default function BranchDashboardPage() {
             {/* Student Status & Fee Distribution */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Student Status Pie Chart */}
-              <Card className="bg-white dark:bg-gray-800 border-0 shadow-sm">
+              <Card className="border-none shadow-xl shadow-gray-100/50 dark:shadow-none bg-white dark:bg-gray-900 rounded-3xl overflow-hidden">
                 <CardHeader>
                   <CardTitle className="text-base font-semibold">Student Status</CardTitle>
                   <p className="text-xs text-gray-500">Monthly student status report</p>
@@ -638,7 +657,7 @@ export default function BranchDashboardPage() {
               </Card>
 
               {/* Fee Status Distribution */}
-              <Card className="bg-white dark:bg-gray-800 border-0 shadow-sm">
+              <Card className="border-none shadow-xl shadow-gray-100/50 dark:shadow-none bg-white dark:bg-gray-900 rounded-3xl overflow-hidden">
                 <CardHeader>
                   <CardTitle className="text-base font-semibold">Fee Status Distribution</CardTitle>
                 </CardHeader>
@@ -669,7 +688,7 @@ export default function BranchDashboardPage() {
             {/* Student Analytics & Chart Type Selector */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Student Analytics */}
-              <Card className="bg-white dark:bg-gray-800 border-0 shadow-sm">
+              <Card className="border-none shadow-xl shadow-gray-100/50 dark:shadow-none bg-white dark:bg-gray-900 rounded-3xl overflow-hidden">
                 <CardHeader>
                   <CardTitle className="text-base font-semibold">Student Analytics</CardTitle>
                 </CardHeader>

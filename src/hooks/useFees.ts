@@ -18,6 +18,12 @@ export function useFees() {
             if (filters.status && filters.status !== 'all') queryParams.append('status', filters.status)
             if (filters.branchId && filters.branchId !== 'all') queryParams.append('branchId', filters.branchId)
             if (filters.search) queryParams.append('search', filters.search)
+            
+            // Default to 'current' if monthFilter is not explicitly 'all'
+            const monthFilter = filters.monthFilter || 'current'
+            if (monthFilter !== 'all') {
+                queryParams.append('monthFilter', monthFilter)
+            }
 
             const res = await fetch(`/api/fees?${queryParams.toString()}`)
             const data = await res.json()

@@ -17,7 +17,8 @@ import {
     ArrowUpRight,
     ArrowDownRight,
     IndianRupee,
-    History
+    History,
+    Printer
 } from 'lucide-react'
 import {
     Table,
@@ -34,11 +35,13 @@ import { StatsGrid } from '@/components/shared/StatsGrid'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { cn } from '@/lib/utils'
 import { CollectFeeDialog } from '@/components/admin/fees/CollectFeeDialog'
+import { ViewPaymentDialog } from '@/components/admin/students/view/ViewPaymentDialog'
 import { ExportButton } from '@/components/shared/ExportButton'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useTableFeatures, ColumnDef } from '@/hooks/useTableFeatures'
 import { TableToolbar } from '@/components/shared/table/TableToolbar'
 import { BulkActionBar } from '@/components/shared/table/BulkActionBar'
+import { Eye } from 'lucide-react'
 import { toast } from 'sonner'
 
 export default function FeesPage() {
@@ -47,10 +50,12 @@ export default function FeesPage() {
     const [searchTerm, setSearchTerm] = useState('')
     const [statusFilter, setStatusFilter] = useState('all')
     const [branchFilter, setBranchFilter] = useState('all')
+    const [monthFilter, setMonthFilter] = useState('current')
 
     // Collection State
     const [isCollectOpen, setIsCollectOpen] = useState(false)
     const [selectedInstallment, setSelectedInstallment] = useState<any>(null)
+    const [viewInstallment, setViewInstallment] = useState<any>(null)
     const [isBulkExporting, setIsBulkExporting] = useState(false)
 
     const feeColumns: ColumnDef[] = [
@@ -80,7 +85,8 @@ export default function FeesPage() {
         fetchFees({
             search: searchTerm,
             status: statusFilter,
-            branchId: branchFilter
+            branchId: branchFilter,
+            monthFilter: monthFilter
         })
     }
 
@@ -149,13 +155,14 @@ export default function FeesPage() {
 
     return (
         <div className="p-8 space-y-8 bg-gray-50/30 dark:bg-gray-950 min-h-screen">
-            <PageHeader 
-                title="Fees Management"
-                description="Monitor installments, track revenue, and manage student dues with automated collection tracking."
-                actions={[
-                    { label: 'Revenue Insights', icon: TrendingUp, variant: 'default' }
-                ]}
-            >
+            <div className="print:hidden">
+                <PageHeader 
+                    title="Fees Management"
+                    description="Monitor installments, track revenue, and manage student dues with automated collection tracking."
+                    actions={[
+                        { label: 'Revenue Insights', icon: TrendingUp, variant: 'default' }
+                    ]}
+                >
                 <ExportButton 
                     data={installments.map(inst => ({
                         student: inst.studentCourse?.student ? `${inst.studentCourse.student.firstName} ${inst.studentCourse.student.lastName}` : 'N/A',
@@ -182,11 +189,14 @@ export default function FeesPage() {
                     variant="outline"
                 />
             </PageHeader>
+            </div>
 
-            <StatsGrid stats={feeStats} columns={4} />
+            <div className="print:hidden">
+                <StatsGrid stats={feeStats} columns={4} />
+            </div>
 
             {/* Filters Bar */}
-            <Card className="border-none shadow-xl shadow-gray-200/50 dark:shadow-none bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
+            <Card className="print:hidden border-none shadow-xl shadow-gray-200/50 dark:shadow-none bg-white dark:bg-gray-900 rounded-2xl overflow-hidden">
                 <CardContent className="p-5 flex flex-col md:flex-row items-center gap-4">
                     <div className="relative flex-1 w-full group">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-hover:text-indigo-600 transition-colors" />
@@ -208,6 +218,7 @@ export default function FeesPage() {
                             <option value="paid">Paid</option>
                             <option value="partial">Partial</option>
                             <option value="pending">Pending</option>
+                            <option value="overdue">Overdue</option>
                         </select>
 
                         <select 
@@ -221,12 +232,30 @@ export default function FeesPage() {
                             ))}
                         </select>
 
+                        <select 
+                            className="h-12 px-4 rounded-xl border-none bg-gray-50/50 dark:bg-gray-800/50 text-sm font-bold text-gray-600 dark:text-gray-300 focus:ring-2 focus:ring-indigo-500/20 outline-none min-w-[140px]"
+                            value={monthFilter}
+                            onChange={(e) => setMonthFilter(e.target.value)}
+                        >
+                            <option value="current">Current Month</option>
+                            <option value="all">All Time</option>
+                        </select>
+
                         <Button 
                             className="h-12 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-indigo-100 dark:shadow-none"
                             onClick={handleFilter}
                         >
                             <Filter className="h-4 w-4 mr-2" />
                             Apply
+                        </Button>
+                        
+                        <Button
+                            variant="outline"
+                            className="h-12 px-4 rounded-xl border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold shadow-sm"
+                            onClick={() => window.print()}
+                        >
+                            <Printer className="h-4 w-4 mr-2" />
+                            Print
                         </Button>
                     </div>
                 </CardContent>
@@ -244,7 +273,7 @@ export default function FeesPage() {
                             <p className="text-xs text-muted-foreground font-bold uppercase tracking-tighter mt-0.5">Live transaction tracking</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 print:hidden">
                         <TableToolbar columns={availableColumns} visibleColumns={visibleColumns} onToggleColumn={toggleColumn} />
                     </div>
                 </CardHeader>
@@ -253,7 +282,7 @@ export default function FeesPage() {
                         <Table>
                             <TableHeader className="bg-gray-50/50 dark:bg-gray-800/50">
                                 <TableRow className="border-y border-gray-50 dark:border-gray-800 hover:bg-transparent">
-                                    <TableHead className="w-[50px] px-8 py-5">
+                                    <TableHead className="w-[50px] px-8 py-5 print:hidden">
                                         <Checkbox
                                             checked={isAllSelected || (isSomeSelected ? 'indeterminate' : false)}
                                             onCheckedChange={selectAll}
@@ -266,7 +295,7 @@ export default function FeesPage() {
                                     {isColumnVisible('paid') && <TableHead className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-gray-500">Paid</TableHead>}
                                     {isColumnVisible('status') && <TableHead className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-gray-500">Status</TableHead>}
                                     {isColumnVisible('branch') && <TableHead className="px-8 py-5 font-black uppercase tracking-widest text-[10px] text-gray-500">Branch</TableHead>}
-                                    <TableHead className="px-8 py-5 text-right font-black uppercase tracking-widest text-[10px] text-gray-500">Action</TableHead>
+                                    <TableHead className="px-8 py-5 text-right font-black uppercase tracking-widest text-[10px] text-gray-500 print:hidden">Action</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody className="divide-y divide-gray-50 dark:divide-gray-800">
@@ -304,7 +333,7 @@ export default function FeesPage() {
                                                     : 'hover:bg-gray-50/50 dark:hover:bg-gray-800/30'
                                             )}
                                         >
-                                            <TableCell className="px-8 py-5" onClick={(e) => e.stopPropagation()}>
+                                            <TableCell className="px-8 py-5 print:hidden" onClick={(e) => e.stopPropagation()}>
                                                 <Checkbox
                                                     checked={isSelected}
                                                     onCheckedChange={() => toggleSelection(inst.id)}
@@ -352,7 +381,7 @@ export default function FeesPage() {
                                                 </Badge>
                                             </TableCell>
                                             )}
-                                            <TableCell className="px-8 py-5 text-right">
+                                            <TableCell className="px-8 py-5 text-right print:hidden">
                                                 {inst.status !== 'paid' ? (
                                                     <Button
                                                         className="h-10 px-5 rounded-xl bg-gray-50 dark:bg-gray-800 text-indigo-600 hover:bg-indigo-600 hover:text-white font-bold uppercase tracking-widest text-[10px] transition-all border-none"
@@ -361,9 +390,15 @@ export default function FeesPage() {
                                                         Collect
                                                     </Button>
                                                 ) : (
-                                                    <div className="h-10 flex items-center justify-end px-5 text-emerald-600">
-                                                        <CheckCircle2 className="h-5 w-5" />
-                                                    </div>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-10 w-10 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-emerald-600 transition-all"
+                                                        onClick={() => setViewInstallment(inst)}
+                                                        title="View payment details"
+                                                    >
+                                                        <Eye className="h-4 w-4" />
+                                                    </Button>
                                                 )}
                                             </TableCell>
                                         </TableRow>
@@ -375,13 +410,15 @@ export default function FeesPage() {
                 </CardContent>
             </Card>
 
-            <BulkActionBar
-                selectedCount={selectedIds.size}
-                onClearSelection={clearSelection}
-                onExport={() => handleBulkExport(selectedArray)}
-                onDelete={() => toast.info('Fee records cannot be bulk deleted for audit integrity.')}
-                isExporting={isBulkExporting}
-            />
+            <div className="print:hidden">
+                <BulkActionBar
+                    selectedCount={selectedIds.size}
+                    onClearSelection={clearSelection}
+                    onExport={() => handleBulkExport(selectedArray)}
+                    onDelete={() => toast.info('Fee records cannot be bulk deleted for audit integrity.')}
+                    isExporting={isBulkExporting}
+                />
+            </div>
 
             {/* Dialogs */}
             <CollectFeeDialog 
@@ -389,6 +426,12 @@ export default function FeesPage() {
                 onOpenChange={setIsCollectOpen}
                 installment={selectedInstallment}
                 onSuccess={() => fetchFees()}
+            />
+
+            <ViewPaymentDialog
+                isOpen={!!viewInstallment}
+                onClose={() => setViewInstallment(null)}
+                installment={viewInstallment}
             />
         </div>
     )

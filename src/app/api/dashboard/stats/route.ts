@@ -17,16 +17,26 @@ export async function GET(request: NextRequest) {
         const orgId = payload.organizationId
         const isSuperAdmin = payload.role === 'super_admin'
 
-        // Base filter for anything with organizationId directly (Course, Enquiry, etc.)
-        const orgFilter = { organizationId: orgId }
+        // Branch-level scoping
+        const { searchParams } = new URL(request.url)
+        const requestedBranchId = searchParams.get('branchId')
 
+        let branchFilter: any = isSuperAdmin ? {} : { branchId: { in: payload.branches } }
+        let orgFilter: any = { organizationId: orgId }
+        
         // Filter for students (scoped by organization via branch)
         const studentOrgFilter = {
             branch: { organizationId: orgId }
         }
+        
+        if (requestedBranchId) {
+             if (!isSuperAdmin && !payload.branches.includes(requestedBranchId)) {
+                 return NextResponse.json({ success: false, error: 'Unauthorized branch access' }, { status: 403 })
+             }
+             branchFilter = { branchId: requestedBranchId }
+             orgFilter = { ...orgFilter, branchId: requestedBranchId }
+        }
 
-        // Branch-level scoping for non-super-admins
-        const branchFilter = isSuperAdmin ? {} : { branchId: { in: payload.branches } }
 
         // 1. Total Students
         const totalStudents = await db.student.count({
@@ -80,14 +90,62 @@ export async function GET(request: NextRequest) {
         })
 
         const now = new Date()
-        const thirtyDaysAgo = new Date(now.setDate(now.getDate() - 30))
-        const recentEnquiries = await db.enquiry.count({
+        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+        const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000)
+
+        const recentEnquiriesCount = await db.enquiry.count({
             where: {
                 createdAt: { gte: thirtyDaysAgo },
                 ...orgFilter,
                 ...branchFilter
             }
         })
+        const prevEnquiriesCount = await db.enquiry.count({
+            where: {
+                createdAt: { gte: sixtyDaysAgo, lt: thirtyDaysAgo },
+                ...orgFilter,
+                ...branchFilter
+            }
+        })
+
+        const recentStudents = await db.student.count({
+            where: {
+                enrollmentDate: { gte: thirtyDaysAgo },
+                ...studentOrgFilter,
+                ...branchFilter
+            }
+        })
+        const prevStudents = await db.student.count({
+            where: {
+                enrollmentDate: { gte: sixtyDaysAgo, lt: thirtyDaysAgo },
+                ...studentOrgFilter,
+                ...branchFilter
+            }
+        })
+
+        const recentInstallments = await db.installment.findMany({
+            where: {
+                paidDate: { gte: thirtyDaysAgo },
+                studentCourse: { student: { ...studentOrgFilter, ...branchFilter } }
+            },
+            select: { paidAmount: true }
+        })
+        const prevInstallments = await db.installment.findMany({
+            where: {
+                paidDate: { gte: sixtyDaysAgo, lt: thirtyDaysAgo },
+                studentCourse: { student: { ...studentOrgFilter, ...branchFilter } }
+            },
+            select: { paidAmount: true }
+        })
+        const recentRevenue = recentInstallments.reduce((sum, inst) => sum + inst.paidAmount, 0)
+        const prevRevenue = prevInstallments.reduce((sum, inst) => sum + inst.paidAmount, 0)
+
+        // Helper to calc percentage
+        const calcTrend = (current: number, prev: number) => {
+            if (prev === 0) return { value: current > 0 ? '100%' : '0%', isUp: current >= 0 }
+            const diff = ((current - prev) / prev) * 100
+            return { value: `${Math.abs(Math.round(diff))}%`, isUp: diff >= 0 }
+        }
 
         return NextResponse.json({
             success: true,
@@ -99,7 +157,12 @@ export async function GET(request: NextRequest) {
                 totalCourses,
                 totalBatches,
                 totalEnquiries,
-                recentEnquiries
+                recentEnquiries: recentEnquiriesCount,
+                trends: {
+                    enrollment: calcTrend(recentStudents, prevStudents),
+                    revenue: calcTrend(recentRevenue, prevRevenue),
+                    enquiries: calcTrend(recentEnquiriesCount, prevEnquiriesCount)
+                }
             }
         })
 

@@ -1,2 +1,3 @@
 export * from './EnquiryForm'
-export { EditEnquiryDialog, DeleteEnquiryDialog, AddEnquiryDialog } from './EnquiryDialogs'
+export * from './EnquiryDialogs'
+export * from './EnquiryKanban'

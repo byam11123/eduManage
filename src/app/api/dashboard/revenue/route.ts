@@ -10,6 +10,18 @@ export async function GET(request: NextRequest) {
         const payload = await verifyToken(token)
         if (!payload) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
 
+        const { searchParams } = new URL(request.url)
+        const requestedBranchId = searchParams.get('branchId')
+        
+        let branchFilter: any = payload.role !== 'super_admin' ? { branchId: { in: payload.branches } } : {}
+        
+        if (requestedBranchId) {
+             if (payload.role !== 'super_admin' && !payload.branches.includes(requestedBranchId)) {
+                 return NextResponse.json({ success: false, error: 'Unauthorized branch access' }, { status: 403 })
+             }
+             branchFilter = { branchId: requestedBranchId }
+        }
+
         // Get installments from the last 12 months
         const twelveMonthsAgo = subMonths(new Date(), 11)
         const installments = await db.installment.findMany({
@@ -18,7 +30,7 @@ export async function GET(request: NextRequest) {
                 studentCourse: {
                     student: {
                         branch: { organizationId: payload.organizationId },
-                        ...(payload.role !== 'super_admin' ? { branchId: { in: payload.branches } } : {})
+                        ...branchFilter
                     }
                 }
             },

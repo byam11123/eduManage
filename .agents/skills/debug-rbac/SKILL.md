@@ -5,7 +5,11 @@ description: Scaffolds a complete new EduManage module (like Examination, Expens
 
 # New Module Skill
 
-Use the Admissions module (`src/app/admin/admissions`) as the canonical reference implementation.
+Use the Admissions module (`src/app/admin/admissions`) as the canonical reference implementation in code.
+For detailed field-by-field patterns, display ID generation, payment integration, and testing checklists,
+refer to the **`student-module` skill** — it is the most complete module example in this codebase.
+
+**Before scaffolding a new module, read:** `.agents/skills/student-module/SKILL.md`
 
 ## Step 1 — Prisma Schema
 Add the new model to `prisma/schema.prisma`:

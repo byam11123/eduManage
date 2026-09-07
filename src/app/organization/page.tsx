@@ -188,19 +188,26 @@ export default function OrganizationPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
-        <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin text-emerald-600 mx-auto" />
-          <p className="mt-4 text-muted-foreground">Loading...</p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-gray-900 dark:to-gray-800">
+        <div className="w-full max-w-5xl mx-auto px-4 space-y-6">
+          <div className="h-10 bg-indigo-100 dark:bg-indigo-900/20 rounded-xl animate-pulse" />
+          <div className="bg-card rounded-2xl shadow-xl border border-border overflow-hidden">
+            <div className="h-20 bg-indigo-100 dark:bg-indigo-900/30 animate-pulse" />
+            <div className="p-8 space-y-4">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="h-10 bg-muted rounded-lg animate-pulse" />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-violet-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Header */}
-      <header className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white shadow-lg">
+      <header className="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <button
@@ -208,28 +215,52 @@ export default function OrganizationPage() {
               className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors backdrop-blur-sm"
             >
               <ArrowLeft className="h-4 w-4" />
-              <span className="font-medium">BACK</span>
+              <span className="font-medium">Back</span>
             </button>
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+              <div className="h-10 w-10 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center backdrop-blur-sm">
                 <GraduationCap className="h-6 w-6" />
               </div>
-              <span className="font-semibold text-lg hidden sm:inline">EduManage</span>
+              <span className="font-bold text-lg hidden sm:inline tracking-tight">EduManage</span>
             </div>
           </div>
         </div>
       </header>
 
+      {/* Onboarding progress bar */}
+      <div className="bg-white dark:bg-gray-900 border-b border-border">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <div className="flex items-center gap-3">
+            {[['✓', 'Account Created', true], ['2', 'Setup Institute', true], ['3', 'Launch', false]].map(([num, label, done], i) => (
+              <div key={label as string} className="flex items-center gap-2">
+                {i > 0 && <div className={`h-px w-8 sm:w-14 ${done ? 'bg-indigo-400' : 'bg-border'}`} />}
+                <div className={`flex items-center gap-1.5 text-xs font-medium ${
+                  i === 1 ? 'text-indigo-600 dark:text-indigo-400' :
+                  (done as boolean) ? 'text-emerald-600' : 'text-muted-foreground'
+                }`}>
+                  <div className={`h-5 w-5 rounded-full flex items-center justify-center text-xs border-2 ${
+                    i === 1 ? 'border-indigo-500 bg-indigo-500 text-white' :
+                    (done as boolean) ? 'border-emerald-500 bg-emerald-500 text-white' :
+                    'border-muted-foreground/30 text-muted-foreground'
+                  }`}>{num}</div>
+                  <span className="hidden sm:inline">{label as string}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* Main Form */}
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="bg-card rounded-2xl shadow-xl border border-border overflow-hidden">
           {/* Form Header */}
-          <div className="bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-5">
+          <div className="bg-gradient-to-r from-indigo-600 to-violet-600 px-6 py-5">
             <h1 className="text-2xl font-bold text-white flex items-center gap-3">
               <GraduationCap className="h-8 w-8" />
-              Create Your Coaching Institute
+              Setup Your Coaching Institute
             </h1>
-            <p className="text-emerald-100 mt-1">Set up your coaching center in just a few steps</p>
+            <p className="text-indigo-100 mt-1">Tell us about your institute — you can update this anytime</p>
           </div>
 
           <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
@@ -245,15 +276,15 @@ export default function OrganizationPage() {
               </Alert>
             )}
 
-            {/* Demo Data Button */}
-            {!organization.id && (
+            {/* Demo Data Button — dev only */}
+            {!organization.id && process.env.NODE_ENV !== 'production' && (
               <div className="flex justify-end">
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   onClick={fillDemoData}
-                  className="text-emerald-600 border-emerald-300 hover:bg-emerald-50"
+                  className="text-indigo-600 border-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
                 >
                   Fill Demo Data
                 </Button>
@@ -582,7 +613,7 @@ export default function OrganizationPage() {
 
       {/* Footer */}
       <footer className="mt-8 py-6 text-center text-sm text-muted-foreground">
-        © {new Date().getFullYear()} EduManage - Coaching Management System
+        © {new Date().getFullYear()} EduManage. All rights reserved.
       </footer>
     </div>
   )

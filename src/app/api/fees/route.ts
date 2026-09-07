@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { extractToken, verifyToken } from '@/lib/auth-utils'
+import { startOfMonth, endOfMonth } from 'date-fns'
 
 export async function GET(request: NextRequest) {
     try {
@@ -13,6 +14,7 @@ export async function GET(request: NextRequest) {
         const branchId = searchParams.get('branchId')
         const status = searchParams.get('status')
         const search = searchParams.get('search')
+        const monthFilter = searchParams.get('monthFilter') || 'current'
 
         // Build where clause
         if (!payload.organizationId) {
@@ -42,7 +44,10 @@ export async function GET(request: NextRequest) {
             }
         }
 
-        if (status) {
+        if (status === 'overdue') {
+            whereClause.status = { not: 'paid' }
+            whereClause.dueDate = { lt: new Date() }
+        } else if (status && status !== 'all') {
             whereClause.status = status
         }
 
@@ -58,6 +63,15 @@ export async function GET(request: NextRequest) {
                         { phone: { contains: search } }
                     ]
                 }
+            }
+        }
+
+        if (monthFilter === 'current') {
+            const now = new Date()
+            whereClause.dueDate = {
+                ...(whereClause.dueDate || {}),
+                gte: startOfMonth(now),
+                lte: endOfMonth(now)
             }
         }
 

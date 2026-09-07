@@ -99,6 +99,16 @@ export type Enquiry = $Result.DefaultSelection<Prisma.$EnquiryPayload>
  */
 export type Receipt = $Result.DefaultSelection<Prisma.$ReceiptPayload>
 /**
+ * Model AdditionalFee
+ * 
+ */
+export type AdditionalFee = $Result.DefaultSelection<Prisma.$AdditionalFeePayload>
+/**
+ * Model Lead
+ * 
+ */
+export type Lead = $Result.DefaultSelection<Prisma.$LeadPayload>
+/**
  * Model Post
  * 
  */
@@ -441,6 +451,26 @@ export class PrismaClient<
     * ```
     */
   get receipt(): Prisma.ReceiptDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.additionalFee`: Exposes CRUD operations for the **AdditionalFee** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AdditionalFees
+    * const additionalFees = await prisma.additionalFee.findMany()
+    * ```
+    */
+  get additionalFee(): Prisma.AdditionalFeeDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.lead`: Exposes CRUD operations for the **Lead** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Leads
+    * const leads = await prisma.lead.findMany()
+    * ```
+    */
+  get lead(): Prisma.LeadDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.post`: Exposes CRUD operations for the **Post** model.
@@ -1009,6 +1039,8 @@ export namespace Prisma {
     Subject: 'Subject',
     Enquiry: 'Enquiry',
     Receipt: 'Receipt',
+    AdditionalFee: 'AdditionalFee',
+    Lead: 'Lead',
     Post: 'Post',
     Counter: 'Counter',
     Attendance: 'Attendance',
@@ -1038,7 +1070,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "otp" | "passwordReset" | "organization" | "walletTransaction" | "organizationMember" | "branch" | "userBranch" | "student" | "studentCourse" | "studentCourseBatch" | "installment" | "course" | "batch" | "subject" | "enquiry" | "receipt" | "post" | "counter" | "attendance" | "modulePermission" | "referrer" | "referral" | "educationBoard" | "educationUniversity" | "educationCollege" | "educationSchool" | "educationDegree"
+      modelProps: "user" | "otp" | "passwordReset" | "organization" | "walletTransaction" | "organizationMember" | "branch" | "userBranch" | "student" | "studentCourse" | "studentCourseBatch" | "installment" | "course" | "batch" | "subject" | "enquiry" | "receipt" | "additionalFee" | "lead" | "post" | "counter" | "attendance" | "modulePermission" | "referrer" | "referral" | "educationBoard" | "educationUniversity" | "educationCollege" | "educationSchool" | "educationDegree"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2300,6 +2332,154 @@ export namespace Prisma {
           }
         }
       }
+      AdditionalFee: {
+        payload: Prisma.$AdditionalFeePayload<ExtArgs>
+        fields: Prisma.AdditionalFeeFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AdditionalFeeFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdditionalFeePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AdditionalFeeFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdditionalFeePayload>
+          }
+          findFirst: {
+            args: Prisma.AdditionalFeeFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdditionalFeePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AdditionalFeeFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdditionalFeePayload>
+          }
+          findMany: {
+            args: Prisma.AdditionalFeeFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdditionalFeePayload>[]
+          }
+          create: {
+            args: Prisma.AdditionalFeeCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdditionalFeePayload>
+          }
+          createMany: {
+            args: Prisma.AdditionalFeeCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AdditionalFeeCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdditionalFeePayload>[]
+          }
+          delete: {
+            args: Prisma.AdditionalFeeDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdditionalFeePayload>
+          }
+          update: {
+            args: Prisma.AdditionalFeeUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdditionalFeePayload>
+          }
+          deleteMany: {
+            args: Prisma.AdditionalFeeDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AdditionalFeeUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AdditionalFeeUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdditionalFeePayload>[]
+          }
+          upsert: {
+            args: Prisma.AdditionalFeeUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdditionalFeePayload>
+          }
+          aggregate: {
+            args: Prisma.AdditionalFeeAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAdditionalFee>
+          }
+          groupBy: {
+            args: Prisma.AdditionalFeeGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AdditionalFeeGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AdditionalFeeCountArgs<ExtArgs>
+            result: $Utils.Optional<AdditionalFeeCountAggregateOutputType> | number
+          }
+        }
+      }
+      Lead: {
+        payload: Prisma.$LeadPayload<ExtArgs>
+        fields: Prisma.LeadFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.LeadFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LeadPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.LeadFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LeadPayload>
+          }
+          findFirst: {
+            args: Prisma.LeadFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LeadPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.LeadFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LeadPayload>
+          }
+          findMany: {
+            args: Prisma.LeadFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LeadPayload>[]
+          }
+          create: {
+            args: Prisma.LeadCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LeadPayload>
+          }
+          createMany: {
+            args: Prisma.LeadCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.LeadCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LeadPayload>[]
+          }
+          delete: {
+            args: Prisma.LeadDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LeadPayload>
+          }
+          update: {
+            args: Prisma.LeadUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LeadPayload>
+          }
+          deleteMany: {
+            args: Prisma.LeadDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.LeadUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.LeadUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LeadPayload>[]
+          }
+          upsert: {
+            args: Prisma.LeadUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LeadPayload>
+          }
+          aggregate: {
+            args: Prisma.LeadAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateLead>
+          }
+          groupBy: {
+            args: Prisma.LeadGroupByArgs<ExtArgs>
+            result: $Utils.Optional<LeadGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.LeadCountArgs<ExtArgs>
+            result: $Utils.Optional<LeadCountAggregateOutputType> | number
+          }
+        }
+      }
       Post: {
         payload: Prisma.$PostPayload<ExtArgs>
         fields: Prisma.PostFieldRefs
@@ -3227,6 +3407,8 @@ export namespace Prisma {
     subject?: SubjectOmit
     enquiry?: EnquiryOmit
     receipt?: ReceiptOmit
+    additionalFee?: AdditionalFeeOmit
+    lead?: LeadOmit
     post?: PostOmit
     counter?: CounterOmit
     attendance?: AttendanceOmit
@@ -3398,6 +3580,7 @@ export namespace Prisma {
     branches: number
     courses: number
     enquiries: number
+    leads: number
     walletTransactions: number
     modulePermissions: number
     attendances: number
@@ -3410,6 +3593,7 @@ export namespace Prisma {
     branches?: boolean | OrganizationCountOutputTypeCountBranchesArgs
     courses?: boolean | OrganizationCountOutputTypeCountCoursesArgs
     enquiries?: boolean | OrganizationCountOutputTypeCountEnquiriesArgs
+    leads?: boolean | OrganizationCountOutputTypeCountLeadsArgs
     walletTransactions?: boolean | OrganizationCountOutputTypeCountWalletTransactionsArgs
     modulePermissions?: boolean | OrganizationCountOutputTypeCountModulePermissionsArgs
     attendances?: boolean | OrganizationCountOutputTypeCountAttendancesArgs
@@ -3459,6 +3643,13 @@ export namespace Prisma {
   /**
    * OrganizationCountOutputType without action
    */
+  export type OrganizationCountOutputTypeCountLeadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LeadWhereInput
+  }
+
+  /**
+   * OrganizationCountOutputType without action
+   */
   export type OrganizationCountOutputTypeCountWalletTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: WalletTransactionWhereInput
   }
@@ -3500,6 +3691,7 @@ export namespace Prisma {
     userBranches: number
     students: number
     enquiries: number
+    leads: number
     attendances: number
     referrers: number
   }
@@ -3508,6 +3700,7 @@ export namespace Prisma {
     userBranches?: boolean | BranchCountOutputTypeCountUserBranchesArgs
     students?: boolean | BranchCountOutputTypeCountStudentsArgs
     enquiries?: boolean | BranchCountOutputTypeCountEnquiriesArgs
+    leads?: boolean | BranchCountOutputTypeCountLeadsArgs
     attendances?: boolean | BranchCountOutputTypeCountAttendancesArgs
     referrers?: boolean | BranchCountOutputTypeCountReferrersArgs
   }
@@ -3547,6 +3740,13 @@ export namespace Prisma {
   /**
    * BranchCountOutputType without action
    */
+  export type BranchCountOutputTypeCountLeadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LeadWhereInput
+  }
+
+  /**
+   * BranchCountOutputType without action
+   */
   export type BranchCountOutputTypeCountAttendancesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AttendanceWhereInput
   }
@@ -3566,12 +3766,14 @@ export namespace Prisma {
   export type StudentCountOutputType = {
     studentCourses: number
     receipts: number
+    additionalFees: number
     attendances: number
   }
 
   export type StudentCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     studentCourses?: boolean | StudentCountOutputTypeCountStudentCoursesArgs
     receipts?: boolean | StudentCountOutputTypeCountReceiptsArgs
+    additionalFees?: boolean | StudentCountOutputTypeCountAdditionalFeesArgs
     attendances?: boolean | StudentCountOutputTypeCountAttendancesArgs
   }
 
@@ -3598,6 +3800,13 @@ export namespace Prisma {
    */
   export type StudentCountOutputTypeCountReceiptsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ReceiptWhereInput
+  }
+
+  /**
+   * StudentCountOutputType without action
+   */
+  export type StudentCountOutputTypeCountAdditionalFeesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AdditionalFeeWhereInput
   }
 
   /**
@@ -8207,6 +8416,7 @@ export namespace Prisma {
     branches?: boolean | Organization$branchesArgs<ExtArgs>
     courses?: boolean | Organization$coursesArgs<ExtArgs>
     enquiries?: boolean | Organization$enquiriesArgs<ExtArgs>
+    leads?: boolean | Organization$leadsArgs<ExtArgs>
     walletTransactions?: boolean | Organization$walletTransactionsArgs<ExtArgs>
     modulePermissions?: boolean | Organization$modulePermissionsArgs<ExtArgs>
     attendances?: boolean | Organization$attendancesArgs<ExtArgs>
@@ -8314,6 +8524,7 @@ export namespace Prisma {
     branches?: boolean | Organization$branchesArgs<ExtArgs>
     courses?: boolean | Organization$coursesArgs<ExtArgs>
     enquiries?: boolean | Organization$enquiriesArgs<ExtArgs>
+    leads?: boolean | Organization$leadsArgs<ExtArgs>
     walletTransactions?: boolean | Organization$walletTransactionsArgs<ExtArgs>
     modulePermissions?: boolean | Organization$modulePermissionsArgs<ExtArgs>
     attendances?: boolean | Organization$attendancesArgs<ExtArgs>
@@ -8336,6 +8547,7 @@ export namespace Prisma {
       branches: Prisma.$BranchPayload<ExtArgs>[]
       courses: Prisma.$CoursePayload<ExtArgs>[]
       enquiries: Prisma.$EnquiryPayload<ExtArgs>[]
+      leads: Prisma.$LeadPayload<ExtArgs>[]
       walletTransactions: Prisma.$WalletTransactionPayload<ExtArgs>[]
       modulePermissions: Prisma.$ModulePermissionPayload<ExtArgs>[]
       attendances: Prisma.$AttendancePayload<ExtArgs>[]
@@ -8769,6 +8981,7 @@ export namespace Prisma {
     branches<T extends Organization$branchesArgs<ExtArgs> = {}>(args?: Subset<T, Organization$branchesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     courses<T extends Organization$coursesArgs<ExtArgs> = {}>(args?: Subset<T, Organization$coursesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CoursePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     enquiries<T extends Organization$enquiriesArgs<ExtArgs> = {}>(args?: Subset<T, Organization$enquiriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnquiryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    leads<T extends Organization$leadsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$leadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     walletTransactions<T extends Organization$walletTransactionsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$walletTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WalletTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     modulePermissions<T extends Organization$modulePermissionsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$modulePermissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ModulePermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     attendances<T extends Organization$attendancesArgs<ExtArgs> = {}>(args?: Subset<T, Organization$attendancesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -9317,6 +9530,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: EnquiryScalarFieldEnum | EnquiryScalarFieldEnum[]
+  }
+
+  /**
+   * Organization.leads
+   */
+  export type Organization$leadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Lead
+     */
+    select?: LeadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Lead
+     */
+    omit?: LeadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LeadInclude<ExtArgs> | null
+    where?: LeadWhereInput
+    orderBy?: LeadOrderByWithRelationInput | LeadOrderByWithRelationInput[]
+    cursor?: LeadWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LeadScalarFieldEnum | LeadScalarFieldEnum[]
   }
 
   /**
@@ -11917,6 +12154,7 @@ export namespace Prisma {
     userBranches?: boolean | Branch$userBranchesArgs<ExtArgs>
     students?: boolean | Branch$studentsArgs<ExtArgs>
     enquiries?: boolean | Branch$enquiriesArgs<ExtArgs>
+    leads?: boolean | Branch$leadsArgs<ExtArgs>
     attendances?: boolean | Branch$attendancesArgs<ExtArgs>
     referrers?: boolean | Branch$referrersArgs<ExtArgs>
     _count?: boolean | BranchCountOutputTypeDefaultArgs<ExtArgs>
@@ -11981,6 +12219,7 @@ export namespace Prisma {
     userBranches?: boolean | Branch$userBranchesArgs<ExtArgs>
     students?: boolean | Branch$studentsArgs<ExtArgs>
     enquiries?: boolean | Branch$enquiriesArgs<ExtArgs>
+    leads?: boolean | Branch$leadsArgs<ExtArgs>
     attendances?: boolean | Branch$attendancesArgs<ExtArgs>
     referrers?: boolean | Branch$referrersArgs<ExtArgs>
     _count?: boolean | BranchCountOutputTypeDefaultArgs<ExtArgs>
@@ -11999,6 +12238,7 @@ export namespace Prisma {
       userBranches: Prisma.$UserBranchPayload<ExtArgs>[]
       students: Prisma.$StudentPayload<ExtArgs>[]
       enquiries: Prisma.$EnquiryPayload<ExtArgs>[]
+      leads: Prisma.$LeadPayload<ExtArgs>[]
       attendances: Prisma.$AttendancePayload<ExtArgs>[]
       referrers: Prisma.$ReferrerPayload<ExtArgs>[]
     }
@@ -12415,6 +12655,7 @@ export namespace Prisma {
     userBranches<T extends Branch$userBranchesArgs<ExtArgs> = {}>(args?: Subset<T, Branch$userBranchesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserBranchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     students<T extends Branch$studentsArgs<ExtArgs> = {}>(args?: Subset<T, Branch$studentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     enquiries<T extends Branch$enquiriesArgs<ExtArgs> = {}>(args?: Subset<T, Branch$enquiriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EnquiryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    leads<T extends Branch$leadsArgs<ExtArgs> = {}>(args?: Subset<T, Branch$leadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     attendances<T extends Branch$attendancesArgs<ExtArgs> = {}>(args?: Subset<T, Branch$attendancesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     referrers<T extends Branch$referrersArgs<ExtArgs> = {}>(args?: Subset<T, Branch$referrersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReferrerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
@@ -12923,6 +13164,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: EnquiryScalarFieldEnum | EnquiryScalarFieldEnum[]
+  }
+
+  /**
+   * Branch.leads
+   */
+  export type Branch$leadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Lead
+     */
+    select?: LeadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Lead
+     */
+    omit?: LeadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LeadInclude<ExtArgs> | null
+    where?: LeadWhereInput
+    orderBy?: LeadOrderByWithRelationInput | LeadOrderByWithRelationInput[]
+    cursor?: LeadWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LeadScalarFieldEnum | LeadScalarFieldEnum[]
   }
 
   /**
@@ -15002,6 +15267,7 @@ export namespace Prisma {
     batch?: boolean | Student$batchArgs<ExtArgs>
     studentCourses?: boolean | Student$studentCoursesArgs<ExtArgs>
     receipts?: boolean | Student$receiptsArgs<ExtArgs>
+    additionalFees?: boolean | Student$additionalFeesArgs<ExtArgs>
     attendances?: boolean | Student$attendancesArgs<ExtArgs>
     referral?: boolean | Student$referralArgs<ExtArgs>
     _count?: boolean | StudentCountOutputTypeDefaultArgs<ExtArgs>
@@ -15257,6 +15523,7 @@ export namespace Prisma {
     batch?: boolean | Student$batchArgs<ExtArgs>
     studentCourses?: boolean | Student$studentCoursesArgs<ExtArgs>
     receipts?: boolean | Student$receiptsArgs<ExtArgs>
+    additionalFees?: boolean | Student$additionalFeesArgs<ExtArgs>
     attendances?: boolean | Student$attendancesArgs<ExtArgs>
     referral?: boolean | Student$referralArgs<ExtArgs>
     _count?: boolean | StudentCountOutputTypeDefaultArgs<ExtArgs>
@@ -15280,6 +15547,7 @@ export namespace Prisma {
       batch: Prisma.$BatchPayload<ExtArgs> | null
       studentCourses: Prisma.$StudentCoursePayload<ExtArgs>[]
       receipts: Prisma.$ReceiptPayload<ExtArgs>[]
+      additionalFees: Prisma.$AdditionalFeePayload<ExtArgs>[]
       attendances: Prisma.$AttendancePayload<ExtArgs>[]
       referral: Prisma.$ReferralPayload<ExtArgs> | null
     }
@@ -15759,6 +16027,7 @@ export namespace Prisma {
     batch<T extends Student$batchArgs<ExtArgs> = {}>(args?: Subset<T, Student$batchArgs<ExtArgs>>): Prisma__BatchClient<$Result.GetResult<Prisma.$BatchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     studentCourses<T extends Student$studentCoursesArgs<ExtArgs> = {}>(args?: Subset<T, Student$studentCoursesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StudentCoursePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     receipts<T extends Student$receiptsArgs<ExtArgs> = {}>(args?: Subset<T, Student$receiptsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReceiptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    additionalFees<T extends Student$additionalFeesArgs<ExtArgs> = {}>(args?: Subset<T, Student$additionalFeesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdditionalFeePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     attendances<T extends Student$attendancesArgs<ExtArgs> = {}>(args?: Subset<T, Student$attendancesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     referral<T extends Student$referralArgs<ExtArgs> = {}>(args?: Subset<T, Student$referralArgs<ExtArgs>>): Prisma__ReferralClient<$Result.GetResult<Prisma.$ReferralPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
@@ -16343,6 +16612,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ReceiptScalarFieldEnum | ReceiptScalarFieldEnum[]
+  }
+
+  /**
+   * Student.additionalFees
+   */
+  export type Student$additionalFeesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdditionalFee
+     */
+    select?: AdditionalFeeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdditionalFee
+     */
+    omit?: AdditionalFeeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdditionalFeeInclude<ExtArgs> | null
+    where?: AdditionalFeeWhereInput
+    orderBy?: AdditionalFeeOrderByWithRelationInput | AdditionalFeeOrderByWithRelationInput[]
+    cursor?: AdditionalFeeWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AdditionalFeeScalarFieldEnum | AdditionalFeeScalarFieldEnum[]
   }
 
   /**
@@ -18698,6 +18991,7 @@ export namespace Prisma {
     receiptNo: string | null
     transactionId: string | null
     remarks: string | null
+    proofUrl: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -18715,6 +19009,7 @@ export namespace Prisma {
     receiptNo: string | null
     transactionId: string | null
     remarks: string | null
+    proofUrl: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -18732,6 +19027,7 @@ export namespace Prisma {
     receiptNo: number
     transactionId: number
     remarks: number
+    proofUrl: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -18763,6 +19059,7 @@ export namespace Prisma {
     receiptNo?: true
     transactionId?: true
     remarks?: true
+    proofUrl?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -18780,6 +19077,7 @@ export namespace Prisma {
     receiptNo?: true
     transactionId?: true
     remarks?: true
+    proofUrl?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -18797,6 +19095,7 @@ export namespace Prisma {
     receiptNo?: true
     transactionId?: true
     remarks?: true
+    proofUrl?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -18901,6 +19200,7 @@ export namespace Prisma {
     receiptNo: string | null
     transactionId: string | null
     remarks: string | null
+    proofUrl: string | null
     createdAt: Date
     updatedAt: Date
     _count: InstallmentCountAggregateOutputType | null
@@ -18937,6 +19237,7 @@ export namespace Prisma {
     receiptNo?: boolean
     transactionId?: boolean
     remarks?: boolean
+    proofUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     studentCourse?: boolean | StudentCourseDefaultArgs<ExtArgs>
@@ -18955,6 +19256,7 @@ export namespace Prisma {
     receiptNo?: boolean
     transactionId?: boolean
     remarks?: boolean
+    proofUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     studentCourse?: boolean | StudentCourseDefaultArgs<ExtArgs>
@@ -18973,6 +19275,7 @@ export namespace Prisma {
     receiptNo?: boolean
     transactionId?: boolean
     remarks?: boolean
+    proofUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     studentCourse?: boolean | StudentCourseDefaultArgs<ExtArgs>
@@ -18991,11 +19294,12 @@ export namespace Prisma {
     receiptNo?: boolean
     transactionId?: boolean
     remarks?: boolean
+    proofUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type InstallmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "studentCourseId" | "installmentNo" | "dueDate" | "amount" | "paidDate" | "paidAmount" | "status" | "mode" | "receiptNo" | "transactionId" | "remarks" | "createdAt" | "updatedAt", ExtArgs["result"]["installment"]>
+  export type InstallmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "studentCourseId" | "installmentNo" | "dueDate" | "amount" | "paidDate" | "paidAmount" | "status" | "mode" | "receiptNo" | "transactionId" | "remarks" | "proofUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["installment"]>
   export type InstallmentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     studentCourse?: boolean | StudentCourseDefaultArgs<ExtArgs>
   }
@@ -19024,6 +19328,7 @@ export namespace Prisma {
       receiptNo: string | null
       transactionId: string | null
       remarks: string | null
+      proofUrl: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["installment"]>
@@ -19462,6 +19767,7 @@ export namespace Prisma {
     readonly receiptNo: FieldRef<"Installment", 'String'>
     readonly transactionId: FieldRef<"Installment", 'String'>
     readonly remarks: FieldRef<"Installment", 'String'>
+    readonly proofUrl: FieldRef<"Installment", 'String'>
     readonly createdAt: FieldRef<"Installment", 'DateTime'>
     readonly updatedAt: FieldRef<"Installment", 'DateTime'>
   }
@@ -23646,6 +23952,7 @@ export namespace Prisma {
     description: string | null
     status: string | null
     source: string | null
+    followUpDate: Date | null
     createdAt: Date | null
     updatedAt: Date | null
     organizationId: string | null
@@ -23665,6 +23972,7 @@ export namespace Prisma {
     description: string | null
     status: string | null
     source: string | null
+    followUpDate: Date | null
     createdAt: Date | null
     updatedAt: Date | null
     organizationId: string | null
@@ -23684,6 +23992,7 @@ export namespace Prisma {
     description: number
     status: number
     source: number
+    followUpDate: number
     createdAt: number
     updatedAt: number
     organizationId: number
@@ -23715,6 +24024,7 @@ export namespace Prisma {
     description?: true
     status?: true
     source?: true
+    followUpDate?: true
     createdAt?: true
     updatedAt?: true
     organizationId?: true
@@ -23734,6 +24044,7 @@ export namespace Prisma {
     description?: true
     status?: true
     source?: true
+    followUpDate?: true
     createdAt?: true
     updatedAt?: true
     organizationId?: true
@@ -23753,6 +24064,7 @@ export namespace Prisma {
     description?: true
     status?: true
     source?: true
+    followUpDate?: true
     createdAt?: true
     updatedAt?: true
     organizationId?: true
@@ -23859,6 +24171,7 @@ export namespace Prisma {
     description: string | null
     status: string
     source: string | null
+    followUpDate: Date | null
     createdAt: Date
     updatedAt: Date
     organizationId: string
@@ -23897,6 +24210,7 @@ export namespace Prisma {
     description?: boolean
     status?: boolean
     source?: boolean
+    followUpDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     organizationId?: boolean
@@ -23919,6 +24233,7 @@ export namespace Prisma {
     description?: boolean
     status?: boolean
     source?: boolean
+    followUpDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     organizationId?: boolean
@@ -23941,6 +24256,7 @@ export namespace Prisma {
     description?: boolean
     status?: boolean
     source?: boolean
+    followUpDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     organizationId?: boolean
@@ -23963,6 +24279,7 @@ export namespace Prisma {
     description?: boolean
     status?: boolean
     source?: boolean
+    followUpDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     organizationId?: boolean
@@ -23970,7 +24287,7 @@ export namespace Prisma {
     courseId?: boolean
   }
 
-  export type EnquiryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "enquiryId" | "enquiryYear" | "enquirySequence" | "firstName" | "lastName" | "mobile" | "email" | "description" | "status" | "source" | "createdAt" | "updatedAt" | "organizationId" | "branchId" | "courseId", ExtArgs["result"]["enquiry"]>
+  export type EnquiryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "enquiryId" | "enquiryYear" | "enquirySequence" | "firstName" | "lastName" | "mobile" | "email" | "description" | "status" | "source" | "followUpDate" | "createdAt" | "updatedAt" | "organizationId" | "branchId" | "courseId", ExtArgs["result"]["enquiry"]>
   export type EnquiryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     branch?: boolean | BranchDefaultArgs<ExtArgs>
@@ -24006,6 +24323,7 @@ export namespace Prisma {
       description: string | null
       status: string
       source: string | null
+      followUpDate: Date | null
       createdAt: Date
       updatedAt: Date
       organizationId: string
@@ -24448,6 +24766,7 @@ export namespace Prisma {
     readonly description: FieldRef<"Enquiry", 'String'>
     readonly status: FieldRef<"Enquiry", 'String'>
     readonly source: FieldRef<"Enquiry", 'String'>
+    readonly followUpDate: FieldRef<"Enquiry", 'DateTime'>
     readonly createdAt: FieldRef<"Enquiry", 'DateTime'>
     readonly updatedAt: FieldRef<"Enquiry", 'DateTime'>
     readonly organizationId: FieldRef<"Enquiry", 'String'>
@@ -24919,6 +25238,7 @@ export namespace Prisma {
     transactionId: string | null
     remark: string | null
     studentId: string | null
+    proofUrl: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -24934,6 +25254,7 @@ export namespace Prisma {
     transactionId: string | null
     remark: string | null
     studentId: string | null
+    proofUrl: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -24949,6 +25270,7 @@ export namespace Prisma {
     transactionId: number
     remark: number
     studentId: number
+    proofUrl: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -24978,6 +25300,7 @@ export namespace Prisma {
     transactionId?: true
     remark?: true
     studentId?: true
+    proofUrl?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -24993,6 +25316,7 @@ export namespace Prisma {
     transactionId?: true
     remark?: true
     studentId?: true
+    proofUrl?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -25008,6 +25332,7 @@ export namespace Prisma {
     transactionId?: true
     remark?: true
     studentId?: true
+    proofUrl?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -25110,6 +25435,7 @@ export namespace Prisma {
     transactionId: string | null
     remark: string | null
     studentId: string
+    proofUrl: string | null
     createdAt: Date
     updatedAt: Date
     _count: ReceiptCountAggregateOutputType | null
@@ -25144,6 +25470,7 @@ export namespace Prisma {
     transactionId?: boolean
     remark?: boolean
     studentId?: boolean
+    proofUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     student?: boolean | StudentDefaultArgs<ExtArgs>
@@ -25160,6 +25487,7 @@ export namespace Prisma {
     transactionId?: boolean
     remark?: boolean
     studentId?: boolean
+    proofUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     student?: boolean | StudentDefaultArgs<ExtArgs>
@@ -25176,6 +25504,7 @@ export namespace Prisma {
     transactionId?: boolean
     remark?: boolean
     studentId?: boolean
+    proofUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     student?: boolean | StudentDefaultArgs<ExtArgs>
@@ -25192,11 +25521,12 @@ export namespace Prisma {
     transactionId?: boolean
     remark?: boolean
     studentId?: boolean
+    proofUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ReceiptOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "receiptNo" | "receiptYear" | "receiptSequence" | "amount" | "date" | "mode" | "transactionId" | "remark" | "studentId" | "createdAt" | "updatedAt", ExtArgs["result"]["receipt"]>
+  export type ReceiptOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "receiptNo" | "receiptYear" | "receiptSequence" | "amount" | "date" | "mode" | "transactionId" | "remark" | "studentId" | "proofUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["receipt"]>
   export type ReceiptInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     student?: boolean | StudentDefaultArgs<ExtArgs>
   }
@@ -25223,6 +25553,7 @@ export namespace Prisma {
       transactionId: string | null
       remark: string | null
       studentId: string
+      proofUrl: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["receipt"]>
@@ -25659,6 +25990,7 @@ export namespace Prisma {
     readonly transactionId: FieldRef<"Receipt", 'String'>
     readonly remark: FieldRef<"Receipt", 'String'>
     readonly studentId: FieldRef<"Receipt", 'String'>
+    readonly proofUrl: FieldRef<"Receipt", 'String'>
     readonly createdAt: FieldRef<"Receipt", 'DateTime'>
     readonly updatedAt: FieldRef<"Receipt", 'DateTime'>
   }
@@ -26070,6 +26402,2507 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: ReceiptInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AdditionalFee
+   */
+
+  export type AggregateAdditionalFee = {
+    _count: AdditionalFeeCountAggregateOutputType | null
+    _avg: AdditionalFeeAvgAggregateOutputType | null
+    _sum: AdditionalFeeSumAggregateOutputType | null
+    _min: AdditionalFeeMinAggregateOutputType | null
+    _max: AdditionalFeeMaxAggregateOutputType | null
+  }
+
+  export type AdditionalFeeAvgAggregateOutputType = {
+    feeYear: number | null
+    feeSequence: number | null
+    amount: number | null
+  }
+
+  export type AdditionalFeeSumAggregateOutputType = {
+    feeYear: number | null
+    feeSequence: number | null
+    amount: number | null
+  }
+
+  export type AdditionalFeeMinAggregateOutputType = {
+    id: string | null
+    studentId: string | null
+    feeDisplayId: string | null
+    feeYear: number | null
+    feeSequence: number | null
+    title: string | null
+    feeType: string | null
+    amount: number | null
+    status: string | null
+    dueDate: Date | null
+    paidDate: Date | null
+    receiptNo: string | null
+    transactionId: string | null
+    proofUrl: string | null
+    remarks: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AdditionalFeeMaxAggregateOutputType = {
+    id: string | null
+    studentId: string | null
+    feeDisplayId: string | null
+    feeYear: number | null
+    feeSequence: number | null
+    title: string | null
+    feeType: string | null
+    amount: number | null
+    status: string | null
+    dueDate: Date | null
+    paidDate: Date | null
+    receiptNo: string | null
+    transactionId: string | null
+    proofUrl: string | null
+    remarks: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type AdditionalFeeCountAggregateOutputType = {
+    id: number
+    studentId: number
+    feeDisplayId: number
+    feeYear: number
+    feeSequence: number
+    title: number
+    feeType: number
+    amount: number
+    status: number
+    dueDate: number
+    paidDate: number
+    receiptNo: number
+    transactionId: number
+    proofUrl: number
+    remarks: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type AdditionalFeeAvgAggregateInputType = {
+    feeYear?: true
+    feeSequence?: true
+    amount?: true
+  }
+
+  export type AdditionalFeeSumAggregateInputType = {
+    feeYear?: true
+    feeSequence?: true
+    amount?: true
+  }
+
+  export type AdditionalFeeMinAggregateInputType = {
+    id?: true
+    studentId?: true
+    feeDisplayId?: true
+    feeYear?: true
+    feeSequence?: true
+    title?: true
+    feeType?: true
+    amount?: true
+    status?: true
+    dueDate?: true
+    paidDate?: true
+    receiptNo?: true
+    transactionId?: true
+    proofUrl?: true
+    remarks?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AdditionalFeeMaxAggregateInputType = {
+    id?: true
+    studentId?: true
+    feeDisplayId?: true
+    feeYear?: true
+    feeSequence?: true
+    title?: true
+    feeType?: true
+    amount?: true
+    status?: true
+    dueDate?: true
+    paidDate?: true
+    receiptNo?: true
+    transactionId?: true
+    proofUrl?: true
+    remarks?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type AdditionalFeeCountAggregateInputType = {
+    id?: true
+    studentId?: true
+    feeDisplayId?: true
+    feeYear?: true
+    feeSequence?: true
+    title?: true
+    feeType?: true
+    amount?: true
+    status?: true
+    dueDate?: true
+    paidDate?: true
+    receiptNo?: true
+    transactionId?: true
+    proofUrl?: true
+    remarks?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type AdditionalFeeAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AdditionalFee to aggregate.
+     */
+    where?: AdditionalFeeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AdditionalFees to fetch.
+     */
+    orderBy?: AdditionalFeeOrderByWithRelationInput | AdditionalFeeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AdditionalFeeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AdditionalFees from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AdditionalFees.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AdditionalFees
+    **/
+    _count?: true | AdditionalFeeCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AdditionalFeeAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AdditionalFeeSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AdditionalFeeMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AdditionalFeeMaxAggregateInputType
+  }
+
+  export type GetAdditionalFeeAggregateType<T extends AdditionalFeeAggregateArgs> = {
+        [P in keyof T & keyof AggregateAdditionalFee]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAdditionalFee[P]>
+      : GetScalarType<T[P], AggregateAdditionalFee[P]>
+  }
+
+
+
+
+  export type AdditionalFeeGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AdditionalFeeWhereInput
+    orderBy?: AdditionalFeeOrderByWithAggregationInput | AdditionalFeeOrderByWithAggregationInput[]
+    by: AdditionalFeeScalarFieldEnum[] | AdditionalFeeScalarFieldEnum
+    having?: AdditionalFeeScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AdditionalFeeCountAggregateInputType | true
+    _avg?: AdditionalFeeAvgAggregateInputType
+    _sum?: AdditionalFeeSumAggregateInputType
+    _min?: AdditionalFeeMinAggregateInputType
+    _max?: AdditionalFeeMaxAggregateInputType
+  }
+
+  export type AdditionalFeeGroupByOutputType = {
+    id: string
+    studentId: string
+    feeDisplayId: string | null
+    feeYear: number | null
+    feeSequence: number | null
+    title: string
+    feeType: string
+    amount: number
+    status: string
+    dueDate: Date | null
+    paidDate: Date | null
+    receiptNo: string | null
+    transactionId: string | null
+    proofUrl: string | null
+    remarks: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: AdditionalFeeCountAggregateOutputType | null
+    _avg: AdditionalFeeAvgAggregateOutputType | null
+    _sum: AdditionalFeeSumAggregateOutputType | null
+    _min: AdditionalFeeMinAggregateOutputType | null
+    _max: AdditionalFeeMaxAggregateOutputType | null
+  }
+
+  type GetAdditionalFeeGroupByPayload<T extends AdditionalFeeGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AdditionalFeeGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AdditionalFeeGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AdditionalFeeGroupByOutputType[P]>
+            : GetScalarType<T[P], AdditionalFeeGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AdditionalFeeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    studentId?: boolean
+    feeDisplayId?: boolean
+    feeYear?: boolean
+    feeSequence?: boolean
+    title?: boolean
+    feeType?: boolean
+    amount?: boolean
+    status?: boolean
+    dueDate?: boolean
+    paidDate?: boolean
+    receiptNo?: boolean
+    transactionId?: boolean
+    proofUrl?: boolean
+    remarks?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["additionalFee"]>
+
+  export type AdditionalFeeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    studentId?: boolean
+    feeDisplayId?: boolean
+    feeYear?: boolean
+    feeSequence?: boolean
+    title?: boolean
+    feeType?: boolean
+    amount?: boolean
+    status?: boolean
+    dueDate?: boolean
+    paidDate?: boolean
+    receiptNo?: boolean
+    transactionId?: boolean
+    proofUrl?: boolean
+    remarks?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["additionalFee"]>
+
+  export type AdditionalFeeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    studentId?: boolean
+    feeDisplayId?: boolean
+    feeYear?: boolean
+    feeSequence?: boolean
+    title?: boolean
+    feeType?: boolean
+    amount?: boolean
+    status?: boolean
+    dueDate?: boolean
+    paidDate?: boolean
+    receiptNo?: boolean
+    transactionId?: boolean
+    proofUrl?: boolean
+    remarks?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["additionalFee"]>
+
+  export type AdditionalFeeSelectScalar = {
+    id?: boolean
+    studentId?: boolean
+    feeDisplayId?: boolean
+    feeYear?: boolean
+    feeSequence?: boolean
+    title?: boolean
+    feeType?: boolean
+    amount?: boolean
+    status?: boolean
+    dueDate?: boolean
+    paidDate?: boolean
+    receiptNo?: boolean
+    transactionId?: boolean
+    proofUrl?: boolean
+    remarks?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type AdditionalFeeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "studentId" | "feeDisplayId" | "feeYear" | "feeSequence" | "title" | "feeType" | "amount" | "status" | "dueDate" | "paidDate" | "receiptNo" | "transactionId" | "proofUrl" | "remarks" | "createdAt" | "updatedAt", ExtArgs["result"]["additionalFee"]>
+  export type AdditionalFeeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+  }
+  export type AdditionalFeeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+  }
+  export type AdditionalFeeIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+  }
+
+  export type $AdditionalFeePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AdditionalFee"
+    objects: {
+      student: Prisma.$StudentPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      studentId: string
+      feeDisplayId: string | null
+      feeYear: number | null
+      feeSequence: number | null
+      title: string
+      feeType: string
+      amount: number
+      status: string
+      dueDate: Date | null
+      paidDate: Date | null
+      receiptNo: string | null
+      transactionId: string | null
+      proofUrl: string | null
+      remarks: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["additionalFee"]>
+    composites: {}
+  }
+
+  type AdditionalFeeGetPayload<S extends boolean | null | undefined | AdditionalFeeDefaultArgs> = $Result.GetResult<Prisma.$AdditionalFeePayload, S>
+
+  type AdditionalFeeCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AdditionalFeeFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AdditionalFeeCountAggregateInputType | true
+    }
+
+  export interface AdditionalFeeDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AdditionalFee'], meta: { name: 'AdditionalFee' } }
+    /**
+     * Find zero or one AdditionalFee that matches the filter.
+     * @param {AdditionalFeeFindUniqueArgs} args - Arguments to find a AdditionalFee
+     * @example
+     * // Get one AdditionalFee
+     * const additionalFee = await prisma.additionalFee.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AdditionalFeeFindUniqueArgs>(args: SelectSubset<T, AdditionalFeeFindUniqueArgs<ExtArgs>>): Prisma__AdditionalFeeClient<$Result.GetResult<Prisma.$AdditionalFeePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AdditionalFee that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AdditionalFeeFindUniqueOrThrowArgs} args - Arguments to find a AdditionalFee
+     * @example
+     * // Get one AdditionalFee
+     * const additionalFee = await prisma.additionalFee.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AdditionalFeeFindUniqueOrThrowArgs>(args: SelectSubset<T, AdditionalFeeFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AdditionalFeeClient<$Result.GetResult<Prisma.$AdditionalFeePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AdditionalFee that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdditionalFeeFindFirstArgs} args - Arguments to find a AdditionalFee
+     * @example
+     * // Get one AdditionalFee
+     * const additionalFee = await prisma.additionalFee.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AdditionalFeeFindFirstArgs>(args?: SelectSubset<T, AdditionalFeeFindFirstArgs<ExtArgs>>): Prisma__AdditionalFeeClient<$Result.GetResult<Prisma.$AdditionalFeePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AdditionalFee that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdditionalFeeFindFirstOrThrowArgs} args - Arguments to find a AdditionalFee
+     * @example
+     * // Get one AdditionalFee
+     * const additionalFee = await prisma.additionalFee.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AdditionalFeeFindFirstOrThrowArgs>(args?: SelectSubset<T, AdditionalFeeFindFirstOrThrowArgs<ExtArgs>>): Prisma__AdditionalFeeClient<$Result.GetResult<Prisma.$AdditionalFeePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AdditionalFees that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdditionalFeeFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AdditionalFees
+     * const additionalFees = await prisma.additionalFee.findMany()
+     * 
+     * // Get first 10 AdditionalFees
+     * const additionalFees = await prisma.additionalFee.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const additionalFeeWithIdOnly = await prisma.additionalFee.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AdditionalFeeFindManyArgs>(args?: SelectSubset<T, AdditionalFeeFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdditionalFeePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AdditionalFee.
+     * @param {AdditionalFeeCreateArgs} args - Arguments to create a AdditionalFee.
+     * @example
+     * // Create one AdditionalFee
+     * const AdditionalFee = await prisma.additionalFee.create({
+     *   data: {
+     *     // ... data to create a AdditionalFee
+     *   }
+     * })
+     * 
+     */
+    create<T extends AdditionalFeeCreateArgs>(args: SelectSubset<T, AdditionalFeeCreateArgs<ExtArgs>>): Prisma__AdditionalFeeClient<$Result.GetResult<Prisma.$AdditionalFeePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AdditionalFees.
+     * @param {AdditionalFeeCreateManyArgs} args - Arguments to create many AdditionalFees.
+     * @example
+     * // Create many AdditionalFees
+     * const additionalFee = await prisma.additionalFee.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AdditionalFeeCreateManyArgs>(args?: SelectSubset<T, AdditionalFeeCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AdditionalFees and returns the data saved in the database.
+     * @param {AdditionalFeeCreateManyAndReturnArgs} args - Arguments to create many AdditionalFees.
+     * @example
+     * // Create many AdditionalFees
+     * const additionalFee = await prisma.additionalFee.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AdditionalFees and only return the `id`
+     * const additionalFeeWithIdOnly = await prisma.additionalFee.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AdditionalFeeCreateManyAndReturnArgs>(args?: SelectSubset<T, AdditionalFeeCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdditionalFeePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a AdditionalFee.
+     * @param {AdditionalFeeDeleteArgs} args - Arguments to delete one AdditionalFee.
+     * @example
+     * // Delete one AdditionalFee
+     * const AdditionalFee = await prisma.additionalFee.delete({
+     *   where: {
+     *     // ... filter to delete one AdditionalFee
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AdditionalFeeDeleteArgs>(args: SelectSubset<T, AdditionalFeeDeleteArgs<ExtArgs>>): Prisma__AdditionalFeeClient<$Result.GetResult<Prisma.$AdditionalFeePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AdditionalFee.
+     * @param {AdditionalFeeUpdateArgs} args - Arguments to update one AdditionalFee.
+     * @example
+     * // Update one AdditionalFee
+     * const additionalFee = await prisma.additionalFee.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AdditionalFeeUpdateArgs>(args: SelectSubset<T, AdditionalFeeUpdateArgs<ExtArgs>>): Prisma__AdditionalFeeClient<$Result.GetResult<Prisma.$AdditionalFeePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AdditionalFees.
+     * @param {AdditionalFeeDeleteManyArgs} args - Arguments to filter AdditionalFees to delete.
+     * @example
+     * // Delete a few AdditionalFees
+     * const { count } = await prisma.additionalFee.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AdditionalFeeDeleteManyArgs>(args?: SelectSubset<T, AdditionalFeeDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AdditionalFees.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdditionalFeeUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AdditionalFees
+     * const additionalFee = await prisma.additionalFee.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AdditionalFeeUpdateManyArgs>(args: SelectSubset<T, AdditionalFeeUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AdditionalFees and returns the data updated in the database.
+     * @param {AdditionalFeeUpdateManyAndReturnArgs} args - Arguments to update many AdditionalFees.
+     * @example
+     * // Update many AdditionalFees
+     * const additionalFee = await prisma.additionalFee.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more AdditionalFees and only return the `id`
+     * const additionalFeeWithIdOnly = await prisma.additionalFee.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AdditionalFeeUpdateManyAndReturnArgs>(args: SelectSubset<T, AdditionalFeeUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdditionalFeePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one AdditionalFee.
+     * @param {AdditionalFeeUpsertArgs} args - Arguments to update or create a AdditionalFee.
+     * @example
+     * // Update or create a AdditionalFee
+     * const additionalFee = await prisma.additionalFee.upsert({
+     *   create: {
+     *     // ... data to create a AdditionalFee
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AdditionalFee we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AdditionalFeeUpsertArgs>(args: SelectSubset<T, AdditionalFeeUpsertArgs<ExtArgs>>): Prisma__AdditionalFeeClient<$Result.GetResult<Prisma.$AdditionalFeePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of AdditionalFees.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdditionalFeeCountArgs} args - Arguments to filter AdditionalFees to count.
+     * @example
+     * // Count the number of AdditionalFees
+     * const count = await prisma.additionalFee.count({
+     *   where: {
+     *     // ... the filter for the AdditionalFees we want to count
+     *   }
+     * })
+    **/
+    count<T extends AdditionalFeeCountArgs>(
+      args?: Subset<T, AdditionalFeeCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AdditionalFeeCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AdditionalFee.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdditionalFeeAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AdditionalFeeAggregateArgs>(args: Subset<T, AdditionalFeeAggregateArgs>): Prisma.PrismaPromise<GetAdditionalFeeAggregateType<T>>
+
+    /**
+     * Group by AdditionalFee.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdditionalFeeGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AdditionalFeeGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AdditionalFeeGroupByArgs['orderBy'] }
+        : { orderBy?: AdditionalFeeGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AdditionalFeeGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAdditionalFeeGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AdditionalFee model
+   */
+  readonly fields: AdditionalFeeFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AdditionalFee.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AdditionalFeeClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    student<T extends StudentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StudentDefaultArgs<ExtArgs>>): Prisma__StudentClient<$Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AdditionalFee model
+   */
+  interface AdditionalFeeFieldRefs {
+    readonly id: FieldRef<"AdditionalFee", 'String'>
+    readonly studentId: FieldRef<"AdditionalFee", 'String'>
+    readonly feeDisplayId: FieldRef<"AdditionalFee", 'String'>
+    readonly feeYear: FieldRef<"AdditionalFee", 'Int'>
+    readonly feeSequence: FieldRef<"AdditionalFee", 'Int'>
+    readonly title: FieldRef<"AdditionalFee", 'String'>
+    readonly feeType: FieldRef<"AdditionalFee", 'String'>
+    readonly amount: FieldRef<"AdditionalFee", 'Float'>
+    readonly status: FieldRef<"AdditionalFee", 'String'>
+    readonly dueDate: FieldRef<"AdditionalFee", 'DateTime'>
+    readonly paidDate: FieldRef<"AdditionalFee", 'DateTime'>
+    readonly receiptNo: FieldRef<"AdditionalFee", 'String'>
+    readonly transactionId: FieldRef<"AdditionalFee", 'String'>
+    readonly proofUrl: FieldRef<"AdditionalFee", 'String'>
+    readonly remarks: FieldRef<"AdditionalFee", 'String'>
+    readonly createdAt: FieldRef<"AdditionalFee", 'DateTime'>
+    readonly updatedAt: FieldRef<"AdditionalFee", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AdditionalFee findUnique
+   */
+  export type AdditionalFeeFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdditionalFee
+     */
+    select?: AdditionalFeeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdditionalFee
+     */
+    omit?: AdditionalFeeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdditionalFeeInclude<ExtArgs> | null
+    /**
+     * Filter, which AdditionalFee to fetch.
+     */
+    where: AdditionalFeeWhereUniqueInput
+  }
+
+  /**
+   * AdditionalFee findUniqueOrThrow
+   */
+  export type AdditionalFeeFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdditionalFee
+     */
+    select?: AdditionalFeeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdditionalFee
+     */
+    omit?: AdditionalFeeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdditionalFeeInclude<ExtArgs> | null
+    /**
+     * Filter, which AdditionalFee to fetch.
+     */
+    where: AdditionalFeeWhereUniqueInput
+  }
+
+  /**
+   * AdditionalFee findFirst
+   */
+  export type AdditionalFeeFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdditionalFee
+     */
+    select?: AdditionalFeeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdditionalFee
+     */
+    omit?: AdditionalFeeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdditionalFeeInclude<ExtArgs> | null
+    /**
+     * Filter, which AdditionalFee to fetch.
+     */
+    where?: AdditionalFeeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AdditionalFees to fetch.
+     */
+    orderBy?: AdditionalFeeOrderByWithRelationInput | AdditionalFeeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AdditionalFees.
+     */
+    cursor?: AdditionalFeeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AdditionalFees from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AdditionalFees.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AdditionalFees.
+     */
+    distinct?: AdditionalFeeScalarFieldEnum | AdditionalFeeScalarFieldEnum[]
+  }
+
+  /**
+   * AdditionalFee findFirstOrThrow
+   */
+  export type AdditionalFeeFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdditionalFee
+     */
+    select?: AdditionalFeeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdditionalFee
+     */
+    omit?: AdditionalFeeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdditionalFeeInclude<ExtArgs> | null
+    /**
+     * Filter, which AdditionalFee to fetch.
+     */
+    where?: AdditionalFeeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AdditionalFees to fetch.
+     */
+    orderBy?: AdditionalFeeOrderByWithRelationInput | AdditionalFeeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AdditionalFees.
+     */
+    cursor?: AdditionalFeeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AdditionalFees from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AdditionalFees.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AdditionalFees.
+     */
+    distinct?: AdditionalFeeScalarFieldEnum | AdditionalFeeScalarFieldEnum[]
+  }
+
+  /**
+   * AdditionalFee findMany
+   */
+  export type AdditionalFeeFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdditionalFee
+     */
+    select?: AdditionalFeeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdditionalFee
+     */
+    omit?: AdditionalFeeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdditionalFeeInclude<ExtArgs> | null
+    /**
+     * Filter, which AdditionalFees to fetch.
+     */
+    where?: AdditionalFeeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AdditionalFees to fetch.
+     */
+    orderBy?: AdditionalFeeOrderByWithRelationInput | AdditionalFeeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AdditionalFees.
+     */
+    cursor?: AdditionalFeeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AdditionalFees from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AdditionalFees.
+     */
+    skip?: number
+    distinct?: AdditionalFeeScalarFieldEnum | AdditionalFeeScalarFieldEnum[]
+  }
+
+  /**
+   * AdditionalFee create
+   */
+  export type AdditionalFeeCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdditionalFee
+     */
+    select?: AdditionalFeeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdditionalFee
+     */
+    omit?: AdditionalFeeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdditionalFeeInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AdditionalFee.
+     */
+    data: XOR<AdditionalFeeCreateInput, AdditionalFeeUncheckedCreateInput>
+  }
+
+  /**
+   * AdditionalFee createMany
+   */
+  export type AdditionalFeeCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AdditionalFees.
+     */
+    data: AdditionalFeeCreateManyInput | AdditionalFeeCreateManyInput[]
+  }
+
+  /**
+   * AdditionalFee createManyAndReturn
+   */
+  export type AdditionalFeeCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdditionalFee
+     */
+    select?: AdditionalFeeSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdditionalFee
+     */
+    omit?: AdditionalFeeOmit<ExtArgs> | null
+    /**
+     * The data used to create many AdditionalFees.
+     */
+    data: AdditionalFeeCreateManyInput | AdditionalFeeCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdditionalFeeIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AdditionalFee update
+   */
+  export type AdditionalFeeUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdditionalFee
+     */
+    select?: AdditionalFeeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdditionalFee
+     */
+    omit?: AdditionalFeeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdditionalFeeInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AdditionalFee.
+     */
+    data: XOR<AdditionalFeeUpdateInput, AdditionalFeeUncheckedUpdateInput>
+    /**
+     * Choose, which AdditionalFee to update.
+     */
+    where: AdditionalFeeWhereUniqueInput
+  }
+
+  /**
+   * AdditionalFee updateMany
+   */
+  export type AdditionalFeeUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AdditionalFees.
+     */
+    data: XOR<AdditionalFeeUpdateManyMutationInput, AdditionalFeeUncheckedUpdateManyInput>
+    /**
+     * Filter which AdditionalFees to update
+     */
+    where?: AdditionalFeeWhereInput
+    /**
+     * Limit how many AdditionalFees to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AdditionalFee updateManyAndReturn
+   */
+  export type AdditionalFeeUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdditionalFee
+     */
+    select?: AdditionalFeeSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdditionalFee
+     */
+    omit?: AdditionalFeeOmit<ExtArgs> | null
+    /**
+     * The data used to update AdditionalFees.
+     */
+    data: XOR<AdditionalFeeUpdateManyMutationInput, AdditionalFeeUncheckedUpdateManyInput>
+    /**
+     * Filter which AdditionalFees to update
+     */
+    where?: AdditionalFeeWhereInput
+    /**
+     * Limit how many AdditionalFees to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdditionalFeeIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AdditionalFee upsert
+   */
+  export type AdditionalFeeUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdditionalFee
+     */
+    select?: AdditionalFeeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdditionalFee
+     */
+    omit?: AdditionalFeeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdditionalFeeInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AdditionalFee to update in case it exists.
+     */
+    where: AdditionalFeeWhereUniqueInput
+    /**
+     * In case the AdditionalFee found by the `where` argument doesn't exist, create a new AdditionalFee with this data.
+     */
+    create: XOR<AdditionalFeeCreateInput, AdditionalFeeUncheckedCreateInput>
+    /**
+     * In case the AdditionalFee was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AdditionalFeeUpdateInput, AdditionalFeeUncheckedUpdateInput>
+  }
+
+  /**
+   * AdditionalFee delete
+   */
+  export type AdditionalFeeDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdditionalFee
+     */
+    select?: AdditionalFeeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdditionalFee
+     */
+    omit?: AdditionalFeeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdditionalFeeInclude<ExtArgs> | null
+    /**
+     * Filter which AdditionalFee to delete.
+     */
+    where: AdditionalFeeWhereUniqueInput
+  }
+
+  /**
+   * AdditionalFee deleteMany
+   */
+  export type AdditionalFeeDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AdditionalFees to delete
+     */
+    where?: AdditionalFeeWhereInput
+    /**
+     * Limit how many AdditionalFees to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AdditionalFee without action
+   */
+  export type AdditionalFeeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdditionalFee
+     */
+    select?: AdditionalFeeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdditionalFee
+     */
+    omit?: AdditionalFeeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AdditionalFeeInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Lead
+   */
+
+  export type AggregateLead = {
+    _count: LeadCountAggregateOutputType | null
+    _avg: LeadAvgAggregateOutputType | null
+    _sum: LeadSumAggregateOutputType | null
+    _min: LeadMinAggregateOutputType | null
+    _max: LeadMaxAggregateOutputType | null
+  }
+
+  export type LeadAvgAggregateOutputType = {
+    value: number | null
+  }
+
+  export type LeadSumAggregateOutputType = {
+    value: number | null
+  }
+
+  export type LeadMinAggregateOutputType = {
+    id: string | null
+    firstName: string | null
+    lastName: string | null
+    email: string | null
+    phone: string | null
+    source: string | null
+    stage: string | null
+    company: string | null
+    value: number | null
+    notes: string | null
+    assignedTo: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    organizationId: string | null
+    branchId: string | null
+  }
+
+  export type LeadMaxAggregateOutputType = {
+    id: string | null
+    firstName: string | null
+    lastName: string | null
+    email: string | null
+    phone: string | null
+    source: string | null
+    stage: string | null
+    company: string | null
+    value: number | null
+    notes: string | null
+    assignedTo: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    organizationId: string | null
+    branchId: string | null
+  }
+
+  export type LeadCountAggregateOutputType = {
+    id: number
+    firstName: number
+    lastName: number
+    email: number
+    phone: number
+    source: number
+    stage: number
+    company: number
+    value: number
+    notes: number
+    assignedTo: number
+    createdAt: number
+    updatedAt: number
+    organizationId: number
+    branchId: number
+    _all: number
+  }
+
+
+  export type LeadAvgAggregateInputType = {
+    value?: true
+  }
+
+  export type LeadSumAggregateInputType = {
+    value?: true
+  }
+
+  export type LeadMinAggregateInputType = {
+    id?: true
+    firstName?: true
+    lastName?: true
+    email?: true
+    phone?: true
+    source?: true
+    stage?: true
+    company?: true
+    value?: true
+    notes?: true
+    assignedTo?: true
+    createdAt?: true
+    updatedAt?: true
+    organizationId?: true
+    branchId?: true
+  }
+
+  export type LeadMaxAggregateInputType = {
+    id?: true
+    firstName?: true
+    lastName?: true
+    email?: true
+    phone?: true
+    source?: true
+    stage?: true
+    company?: true
+    value?: true
+    notes?: true
+    assignedTo?: true
+    createdAt?: true
+    updatedAt?: true
+    organizationId?: true
+    branchId?: true
+  }
+
+  export type LeadCountAggregateInputType = {
+    id?: true
+    firstName?: true
+    lastName?: true
+    email?: true
+    phone?: true
+    source?: true
+    stage?: true
+    company?: true
+    value?: true
+    notes?: true
+    assignedTo?: true
+    createdAt?: true
+    updatedAt?: true
+    organizationId?: true
+    branchId?: true
+    _all?: true
+  }
+
+  export type LeadAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Lead to aggregate.
+     */
+    where?: LeadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Leads to fetch.
+     */
+    orderBy?: LeadOrderByWithRelationInput | LeadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: LeadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Leads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Leads.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Leads
+    **/
+    _count?: true | LeadCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: LeadAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: LeadSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: LeadMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: LeadMaxAggregateInputType
+  }
+
+  export type GetLeadAggregateType<T extends LeadAggregateArgs> = {
+        [P in keyof T & keyof AggregateLead]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateLead[P]>
+      : GetScalarType<T[P], AggregateLead[P]>
+  }
+
+
+
+
+  export type LeadGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LeadWhereInput
+    orderBy?: LeadOrderByWithAggregationInput | LeadOrderByWithAggregationInput[]
+    by: LeadScalarFieldEnum[] | LeadScalarFieldEnum
+    having?: LeadScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: LeadCountAggregateInputType | true
+    _avg?: LeadAvgAggregateInputType
+    _sum?: LeadSumAggregateInputType
+    _min?: LeadMinAggregateInputType
+    _max?: LeadMaxAggregateInputType
+  }
+
+  export type LeadGroupByOutputType = {
+    id: string
+    firstName: string
+    lastName: string
+    email: string | null
+    phone: string | null
+    source: string
+    stage: string
+    company: string | null
+    value: number
+    notes: string | null
+    assignedTo: string | null
+    createdAt: Date
+    updatedAt: Date
+    organizationId: string
+    branchId: string | null
+    _count: LeadCountAggregateOutputType | null
+    _avg: LeadAvgAggregateOutputType | null
+    _sum: LeadSumAggregateOutputType | null
+    _min: LeadMinAggregateOutputType | null
+    _max: LeadMaxAggregateOutputType | null
+  }
+
+  type GetLeadGroupByPayload<T extends LeadGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<LeadGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof LeadGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], LeadGroupByOutputType[P]>
+            : GetScalarType<T[P], LeadGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type LeadSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    firstName?: boolean
+    lastName?: boolean
+    email?: boolean
+    phone?: boolean
+    source?: boolean
+    stage?: boolean
+    company?: boolean
+    value?: boolean
+    notes?: boolean
+    assignedTo?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organizationId?: boolean
+    branchId?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    branch?: boolean | Lead$branchArgs<ExtArgs>
+  }, ExtArgs["result"]["lead"]>
+
+  export type LeadSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    firstName?: boolean
+    lastName?: boolean
+    email?: boolean
+    phone?: boolean
+    source?: boolean
+    stage?: boolean
+    company?: boolean
+    value?: boolean
+    notes?: boolean
+    assignedTo?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organizationId?: boolean
+    branchId?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    branch?: boolean | Lead$branchArgs<ExtArgs>
+  }, ExtArgs["result"]["lead"]>
+
+  export type LeadSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    firstName?: boolean
+    lastName?: boolean
+    email?: boolean
+    phone?: boolean
+    source?: boolean
+    stage?: boolean
+    company?: boolean
+    value?: boolean
+    notes?: boolean
+    assignedTo?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organizationId?: boolean
+    branchId?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    branch?: boolean | Lead$branchArgs<ExtArgs>
+  }, ExtArgs["result"]["lead"]>
+
+  export type LeadSelectScalar = {
+    id?: boolean
+    firstName?: boolean
+    lastName?: boolean
+    email?: boolean
+    phone?: boolean
+    source?: boolean
+    stage?: boolean
+    company?: boolean
+    value?: boolean
+    notes?: boolean
+    assignedTo?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    organizationId?: boolean
+    branchId?: boolean
+  }
+
+  export type LeadOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "phone" | "source" | "stage" | "company" | "value" | "notes" | "assignedTo" | "createdAt" | "updatedAt" | "organizationId" | "branchId", ExtArgs["result"]["lead"]>
+  export type LeadInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    branch?: boolean | Lead$branchArgs<ExtArgs>
+  }
+  export type LeadIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    branch?: boolean | Lead$branchArgs<ExtArgs>
+  }
+  export type LeadIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    branch?: boolean | Lead$branchArgs<ExtArgs>
+  }
+
+  export type $LeadPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Lead"
+    objects: {
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+      branch: Prisma.$BranchPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      firstName: string
+      lastName: string
+      email: string | null
+      phone: string | null
+      source: string
+      stage: string
+      company: string | null
+      value: number
+      notes: string | null
+      assignedTo: string | null
+      createdAt: Date
+      updatedAt: Date
+      organizationId: string
+      branchId: string | null
+    }, ExtArgs["result"]["lead"]>
+    composites: {}
+  }
+
+  type LeadGetPayload<S extends boolean | null | undefined | LeadDefaultArgs> = $Result.GetResult<Prisma.$LeadPayload, S>
+
+  type LeadCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<LeadFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: LeadCountAggregateInputType | true
+    }
+
+  export interface LeadDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Lead'], meta: { name: 'Lead' } }
+    /**
+     * Find zero or one Lead that matches the filter.
+     * @param {LeadFindUniqueArgs} args - Arguments to find a Lead
+     * @example
+     * // Get one Lead
+     * const lead = await prisma.lead.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends LeadFindUniqueArgs>(args: SelectSubset<T, LeadFindUniqueArgs<ExtArgs>>): Prisma__LeadClient<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Lead that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {LeadFindUniqueOrThrowArgs} args - Arguments to find a Lead
+     * @example
+     * // Get one Lead
+     * const lead = await prisma.lead.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends LeadFindUniqueOrThrowArgs>(args: SelectSubset<T, LeadFindUniqueOrThrowArgs<ExtArgs>>): Prisma__LeadClient<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Lead that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LeadFindFirstArgs} args - Arguments to find a Lead
+     * @example
+     * // Get one Lead
+     * const lead = await prisma.lead.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends LeadFindFirstArgs>(args?: SelectSubset<T, LeadFindFirstArgs<ExtArgs>>): Prisma__LeadClient<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Lead that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LeadFindFirstOrThrowArgs} args - Arguments to find a Lead
+     * @example
+     * // Get one Lead
+     * const lead = await prisma.lead.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends LeadFindFirstOrThrowArgs>(args?: SelectSubset<T, LeadFindFirstOrThrowArgs<ExtArgs>>): Prisma__LeadClient<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Leads that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LeadFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Leads
+     * const leads = await prisma.lead.findMany()
+     * 
+     * // Get first 10 Leads
+     * const leads = await prisma.lead.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const leadWithIdOnly = await prisma.lead.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends LeadFindManyArgs>(args?: SelectSubset<T, LeadFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Lead.
+     * @param {LeadCreateArgs} args - Arguments to create a Lead.
+     * @example
+     * // Create one Lead
+     * const Lead = await prisma.lead.create({
+     *   data: {
+     *     // ... data to create a Lead
+     *   }
+     * })
+     * 
+     */
+    create<T extends LeadCreateArgs>(args: SelectSubset<T, LeadCreateArgs<ExtArgs>>): Prisma__LeadClient<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Leads.
+     * @param {LeadCreateManyArgs} args - Arguments to create many Leads.
+     * @example
+     * // Create many Leads
+     * const lead = await prisma.lead.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends LeadCreateManyArgs>(args?: SelectSubset<T, LeadCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Leads and returns the data saved in the database.
+     * @param {LeadCreateManyAndReturnArgs} args - Arguments to create many Leads.
+     * @example
+     * // Create many Leads
+     * const lead = await prisma.lead.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Leads and only return the `id`
+     * const leadWithIdOnly = await prisma.lead.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends LeadCreateManyAndReturnArgs>(args?: SelectSubset<T, LeadCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Lead.
+     * @param {LeadDeleteArgs} args - Arguments to delete one Lead.
+     * @example
+     * // Delete one Lead
+     * const Lead = await prisma.lead.delete({
+     *   where: {
+     *     // ... filter to delete one Lead
+     *   }
+     * })
+     * 
+     */
+    delete<T extends LeadDeleteArgs>(args: SelectSubset<T, LeadDeleteArgs<ExtArgs>>): Prisma__LeadClient<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Lead.
+     * @param {LeadUpdateArgs} args - Arguments to update one Lead.
+     * @example
+     * // Update one Lead
+     * const lead = await prisma.lead.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends LeadUpdateArgs>(args: SelectSubset<T, LeadUpdateArgs<ExtArgs>>): Prisma__LeadClient<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Leads.
+     * @param {LeadDeleteManyArgs} args - Arguments to filter Leads to delete.
+     * @example
+     * // Delete a few Leads
+     * const { count } = await prisma.lead.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends LeadDeleteManyArgs>(args?: SelectSubset<T, LeadDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Leads.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LeadUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Leads
+     * const lead = await prisma.lead.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends LeadUpdateManyArgs>(args: SelectSubset<T, LeadUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Leads and returns the data updated in the database.
+     * @param {LeadUpdateManyAndReturnArgs} args - Arguments to update many Leads.
+     * @example
+     * // Update many Leads
+     * const lead = await prisma.lead.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Leads and only return the `id`
+     * const leadWithIdOnly = await prisma.lead.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends LeadUpdateManyAndReturnArgs>(args: SelectSubset<T, LeadUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Lead.
+     * @param {LeadUpsertArgs} args - Arguments to update or create a Lead.
+     * @example
+     * // Update or create a Lead
+     * const lead = await prisma.lead.upsert({
+     *   create: {
+     *     // ... data to create a Lead
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Lead we want to update
+     *   }
+     * })
+     */
+    upsert<T extends LeadUpsertArgs>(args: SelectSubset<T, LeadUpsertArgs<ExtArgs>>): Prisma__LeadClient<$Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Leads.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LeadCountArgs} args - Arguments to filter Leads to count.
+     * @example
+     * // Count the number of Leads
+     * const count = await prisma.lead.count({
+     *   where: {
+     *     // ... the filter for the Leads we want to count
+     *   }
+     * })
+    **/
+    count<T extends LeadCountArgs>(
+      args?: Subset<T, LeadCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], LeadCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Lead.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LeadAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends LeadAggregateArgs>(args: Subset<T, LeadAggregateArgs>): Prisma.PrismaPromise<GetLeadAggregateType<T>>
+
+    /**
+     * Group by Lead.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LeadGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends LeadGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: LeadGroupByArgs['orderBy'] }
+        : { orderBy?: LeadGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, LeadGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetLeadGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Lead model
+   */
+  readonly fields: LeadFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Lead.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__LeadClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    branch<T extends Lead$branchArgs<ExtArgs> = {}>(args?: Subset<T, Lead$branchArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Lead model
+   */
+  interface LeadFieldRefs {
+    readonly id: FieldRef<"Lead", 'String'>
+    readonly firstName: FieldRef<"Lead", 'String'>
+    readonly lastName: FieldRef<"Lead", 'String'>
+    readonly email: FieldRef<"Lead", 'String'>
+    readonly phone: FieldRef<"Lead", 'String'>
+    readonly source: FieldRef<"Lead", 'String'>
+    readonly stage: FieldRef<"Lead", 'String'>
+    readonly company: FieldRef<"Lead", 'String'>
+    readonly value: FieldRef<"Lead", 'Float'>
+    readonly notes: FieldRef<"Lead", 'String'>
+    readonly assignedTo: FieldRef<"Lead", 'String'>
+    readonly createdAt: FieldRef<"Lead", 'DateTime'>
+    readonly updatedAt: FieldRef<"Lead", 'DateTime'>
+    readonly organizationId: FieldRef<"Lead", 'String'>
+    readonly branchId: FieldRef<"Lead", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Lead findUnique
+   */
+  export type LeadFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Lead
+     */
+    select?: LeadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Lead
+     */
+    omit?: LeadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LeadInclude<ExtArgs> | null
+    /**
+     * Filter, which Lead to fetch.
+     */
+    where: LeadWhereUniqueInput
+  }
+
+  /**
+   * Lead findUniqueOrThrow
+   */
+  export type LeadFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Lead
+     */
+    select?: LeadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Lead
+     */
+    omit?: LeadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LeadInclude<ExtArgs> | null
+    /**
+     * Filter, which Lead to fetch.
+     */
+    where: LeadWhereUniqueInput
+  }
+
+  /**
+   * Lead findFirst
+   */
+  export type LeadFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Lead
+     */
+    select?: LeadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Lead
+     */
+    omit?: LeadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LeadInclude<ExtArgs> | null
+    /**
+     * Filter, which Lead to fetch.
+     */
+    where?: LeadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Leads to fetch.
+     */
+    orderBy?: LeadOrderByWithRelationInput | LeadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Leads.
+     */
+    cursor?: LeadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Leads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Leads.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Leads.
+     */
+    distinct?: LeadScalarFieldEnum | LeadScalarFieldEnum[]
+  }
+
+  /**
+   * Lead findFirstOrThrow
+   */
+  export type LeadFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Lead
+     */
+    select?: LeadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Lead
+     */
+    omit?: LeadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LeadInclude<ExtArgs> | null
+    /**
+     * Filter, which Lead to fetch.
+     */
+    where?: LeadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Leads to fetch.
+     */
+    orderBy?: LeadOrderByWithRelationInput | LeadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Leads.
+     */
+    cursor?: LeadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Leads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Leads.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Leads.
+     */
+    distinct?: LeadScalarFieldEnum | LeadScalarFieldEnum[]
+  }
+
+  /**
+   * Lead findMany
+   */
+  export type LeadFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Lead
+     */
+    select?: LeadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Lead
+     */
+    omit?: LeadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LeadInclude<ExtArgs> | null
+    /**
+     * Filter, which Leads to fetch.
+     */
+    where?: LeadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Leads to fetch.
+     */
+    orderBy?: LeadOrderByWithRelationInput | LeadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Leads.
+     */
+    cursor?: LeadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Leads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Leads.
+     */
+    skip?: number
+    distinct?: LeadScalarFieldEnum | LeadScalarFieldEnum[]
+  }
+
+  /**
+   * Lead create
+   */
+  export type LeadCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Lead
+     */
+    select?: LeadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Lead
+     */
+    omit?: LeadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LeadInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Lead.
+     */
+    data: XOR<LeadCreateInput, LeadUncheckedCreateInput>
+  }
+
+  /**
+   * Lead createMany
+   */
+  export type LeadCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Leads.
+     */
+    data: LeadCreateManyInput | LeadCreateManyInput[]
+  }
+
+  /**
+   * Lead createManyAndReturn
+   */
+  export type LeadCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Lead
+     */
+    select?: LeadSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Lead
+     */
+    omit?: LeadOmit<ExtArgs> | null
+    /**
+     * The data used to create many Leads.
+     */
+    data: LeadCreateManyInput | LeadCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LeadIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Lead update
+   */
+  export type LeadUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Lead
+     */
+    select?: LeadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Lead
+     */
+    omit?: LeadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LeadInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Lead.
+     */
+    data: XOR<LeadUpdateInput, LeadUncheckedUpdateInput>
+    /**
+     * Choose, which Lead to update.
+     */
+    where: LeadWhereUniqueInput
+  }
+
+  /**
+   * Lead updateMany
+   */
+  export type LeadUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Leads.
+     */
+    data: XOR<LeadUpdateManyMutationInput, LeadUncheckedUpdateManyInput>
+    /**
+     * Filter which Leads to update
+     */
+    where?: LeadWhereInput
+    /**
+     * Limit how many Leads to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Lead updateManyAndReturn
+   */
+  export type LeadUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Lead
+     */
+    select?: LeadSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Lead
+     */
+    omit?: LeadOmit<ExtArgs> | null
+    /**
+     * The data used to update Leads.
+     */
+    data: XOR<LeadUpdateManyMutationInput, LeadUncheckedUpdateManyInput>
+    /**
+     * Filter which Leads to update
+     */
+    where?: LeadWhereInput
+    /**
+     * Limit how many Leads to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LeadIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Lead upsert
+   */
+  export type LeadUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Lead
+     */
+    select?: LeadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Lead
+     */
+    omit?: LeadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LeadInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Lead to update in case it exists.
+     */
+    where: LeadWhereUniqueInput
+    /**
+     * In case the Lead found by the `where` argument doesn't exist, create a new Lead with this data.
+     */
+    create: XOR<LeadCreateInput, LeadUncheckedCreateInput>
+    /**
+     * In case the Lead was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<LeadUpdateInput, LeadUncheckedUpdateInput>
+  }
+
+  /**
+   * Lead delete
+   */
+  export type LeadDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Lead
+     */
+    select?: LeadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Lead
+     */
+    omit?: LeadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LeadInclude<ExtArgs> | null
+    /**
+     * Filter which Lead to delete.
+     */
+    where: LeadWhereUniqueInput
+  }
+
+  /**
+   * Lead deleteMany
+   */
+  export type LeadDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Leads to delete
+     */
+    where?: LeadWhereInput
+    /**
+     * Limit how many Leads to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Lead.branch
+   */
+  export type Lead$branchArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Branch
+     */
+    select?: BranchSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Branch
+     */
+    omit?: BranchOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchInclude<ExtArgs> | null
+    where?: BranchWhereInput
+  }
+
+  /**
+   * Lead without action
+   */
+  export type LeadDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Lead
+     */
+    select?: LeadSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Lead
+     */
+    omit?: LeadOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LeadInclude<ExtArgs> | null
   }
 
 
@@ -37959,6 +40792,7 @@ export namespace Prisma {
     receiptNo: 'receiptNo',
     transactionId: 'transactionId',
     remarks: 'remarks',
+    proofUrl: 'proofUrl',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -38033,6 +40867,7 @@ export namespace Prisma {
     description: 'description',
     status: 'status',
     source: 'source',
+    followUpDate: 'followUpDate',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     organizationId: 'organizationId',
@@ -38054,11 +40889,56 @@ export namespace Prisma {
     transactionId: 'transactionId',
     remark: 'remark',
     studentId: 'studentId',
+    proofUrl: 'proofUrl',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
 
   export type ReceiptScalarFieldEnum = (typeof ReceiptScalarFieldEnum)[keyof typeof ReceiptScalarFieldEnum]
+
+
+  export const AdditionalFeeScalarFieldEnum: {
+    id: 'id',
+    studentId: 'studentId',
+    feeDisplayId: 'feeDisplayId',
+    feeYear: 'feeYear',
+    feeSequence: 'feeSequence',
+    title: 'title',
+    feeType: 'feeType',
+    amount: 'amount',
+    status: 'status',
+    dueDate: 'dueDate',
+    paidDate: 'paidDate',
+    receiptNo: 'receiptNo',
+    transactionId: 'transactionId',
+    proofUrl: 'proofUrl',
+    remarks: 'remarks',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type AdditionalFeeScalarFieldEnum = (typeof AdditionalFeeScalarFieldEnum)[keyof typeof AdditionalFeeScalarFieldEnum]
+
+
+  export const LeadScalarFieldEnum: {
+    id: 'id',
+    firstName: 'firstName',
+    lastName: 'lastName',
+    email: 'email',
+    phone: 'phone',
+    source: 'source',
+    stage: 'stage',
+    company: 'company',
+    value: 'value',
+    notes: 'notes',
+    assignedTo: 'assignedTo',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    organizationId: 'organizationId',
+    branchId: 'branchId'
+  };
+
+  export type LeadScalarFieldEnum = (typeof LeadScalarFieldEnum)[keyof typeof LeadScalarFieldEnum]
 
 
   export const PostScalarFieldEnum: {
@@ -38702,6 +41582,7 @@ export namespace Prisma {
     branches?: BranchListRelationFilter
     courses?: CourseListRelationFilter
     enquiries?: EnquiryListRelationFilter
+    leads?: LeadListRelationFilter
     walletTransactions?: WalletTransactionListRelationFilter
     modulePermissions?: ModulePermissionListRelationFilter
     attendances?: AttendanceListRelationFilter
@@ -38742,6 +41623,7 @@ export namespace Prisma {
     branches?: BranchOrderByRelationAggregateInput
     courses?: CourseOrderByRelationAggregateInput
     enquiries?: EnquiryOrderByRelationAggregateInput
+    leads?: LeadOrderByRelationAggregateInput
     walletTransactions?: WalletTransactionOrderByRelationAggregateInput
     modulePermissions?: ModulePermissionOrderByRelationAggregateInput
     attendances?: AttendanceOrderByRelationAggregateInput
@@ -38785,6 +41667,7 @@ export namespace Prisma {
     branches?: BranchListRelationFilter
     courses?: CourseListRelationFilter
     enquiries?: EnquiryListRelationFilter
+    leads?: LeadListRelationFilter
     walletTransactions?: WalletTransactionListRelationFilter
     modulePermissions?: ModulePermissionListRelationFilter
     attendances?: AttendanceListRelationFilter
@@ -39023,6 +41906,7 @@ export namespace Prisma {
     userBranches?: UserBranchListRelationFilter
     students?: StudentListRelationFilter
     enquiries?: EnquiryListRelationFilter
+    leads?: LeadListRelationFilter
     attendances?: AttendanceListRelationFilter
     referrers?: ReferrerListRelationFilter
   }
@@ -39046,6 +41930,7 @@ export namespace Prisma {
     userBranches?: UserBranchOrderByRelationAggregateInput
     students?: StudentOrderByRelationAggregateInput
     enquiries?: EnquiryOrderByRelationAggregateInput
+    leads?: LeadOrderByRelationAggregateInput
     attendances?: AttendanceOrderByRelationAggregateInput
     referrers?: ReferrerOrderByRelationAggregateInput
   }
@@ -39072,6 +41957,7 @@ export namespace Prisma {
     userBranches?: UserBranchListRelationFilter
     students?: StudentListRelationFilter
     enquiries?: EnquiryListRelationFilter
+    leads?: LeadListRelationFilter
     attendances?: AttendanceListRelationFilter
     referrers?: ReferrerListRelationFilter
   }, "id">
@@ -39307,6 +42193,7 @@ export namespace Prisma {
     batch?: XOR<BatchNullableScalarRelationFilter, BatchWhereInput> | null
     studentCourses?: StudentCourseListRelationFilter
     receipts?: ReceiptListRelationFilter
+    additionalFees?: AdditionalFeeListRelationFilter
     attendances?: AttendanceListRelationFilter
     referral?: XOR<ReferralNullableScalarRelationFilter, ReferralWhereInput> | null
   }
@@ -39393,6 +42280,7 @@ export namespace Prisma {
     batch?: BatchOrderByWithRelationInput
     studentCourses?: StudentCourseOrderByRelationAggregateInput
     receipts?: ReceiptOrderByRelationAggregateInput
+    additionalFees?: AdditionalFeeOrderByRelationAggregateInput
     attendances?: AttendanceOrderByRelationAggregateInput
     referral?: ReferralOrderByWithRelationInput
   }
@@ -39484,6 +42372,7 @@ export namespace Prisma {
     batch?: XOR<BatchNullableScalarRelationFilter, BatchWhereInput> | null
     studentCourses?: StudentCourseListRelationFilter
     receipts?: ReceiptListRelationFilter
+    additionalFees?: AdditionalFeeListRelationFilter
     attendances?: AttendanceListRelationFilter
     referral?: XOR<ReferralNullableScalarRelationFilter, ReferralWhereInput> | null
   }, "id" | "studentDisplayId" | "admissionDisplayId" | "enrollmentNo" | "instituteCode_studentYear_studentSequence" | "admissionYear_admissionSequence">
@@ -39806,6 +42695,7 @@ export namespace Prisma {
     receiptNo?: StringNullableFilter<"Installment"> | string | null
     transactionId?: StringNullableFilter<"Installment"> | string | null
     remarks?: StringNullableFilter<"Installment"> | string | null
+    proofUrl?: StringNullableFilter<"Installment"> | string | null
     createdAt?: DateTimeFilter<"Installment"> | Date | string
     updatedAt?: DateTimeFilter<"Installment"> | Date | string
     studentCourse?: XOR<StudentCourseScalarRelationFilter, StudentCourseWhereInput>
@@ -39824,6 +42714,7 @@ export namespace Prisma {
     receiptNo?: SortOrderInput | SortOrder
     transactionId?: SortOrderInput | SortOrder
     remarks?: SortOrderInput | SortOrder
+    proofUrl?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     studentCourse?: StudentCourseOrderByWithRelationInput
@@ -39845,6 +42736,7 @@ export namespace Prisma {
     receiptNo?: StringNullableFilter<"Installment"> | string | null
     transactionId?: StringNullableFilter<"Installment"> | string | null
     remarks?: StringNullableFilter<"Installment"> | string | null
+    proofUrl?: StringNullableFilter<"Installment"> | string | null
     createdAt?: DateTimeFilter<"Installment"> | Date | string
     updatedAt?: DateTimeFilter<"Installment"> | Date | string
     studentCourse?: XOR<StudentCourseScalarRelationFilter, StudentCourseWhereInput>
@@ -39863,6 +42755,7 @@ export namespace Prisma {
     receiptNo?: SortOrderInput | SortOrder
     transactionId?: SortOrderInput | SortOrder
     remarks?: SortOrderInput | SortOrder
+    proofUrl?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: InstallmentCountOrderByAggregateInput
@@ -39888,6 +42781,7 @@ export namespace Prisma {
     receiptNo?: StringNullableWithAggregatesFilter<"Installment"> | string | null
     transactionId?: StringNullableWithAggregatesFilter<"Installment"> | string | null
     remarks?: StringNullableWithAggregatesFilter<"Installment"> | string | null
+    proofUrl?: StringNullableWithAggregatesFilter<"Installment"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Installment"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Installment"> | Date | string
   }
@@ -40208,6 +43102,7 @@ export namespace Prisma {
     description?: StringNullableFilter<"Enquiry"> | string | null
     status?: StringFilter<"Enquiry"> | string
     source?: StringNullableFilter<"Enquiry"> | string | null
+    followUpDate?: DateTimeNullableFilter<"Enquiry"> | Date | string | null
     createdAt?: DateTimeFilter<"Enquiry"> | Date | string
     updatedAt?: DateTimeFilter<"Enquiry"> | Date | string
     organizationId?: StringFilter<"Enquiry"> | string
@@ -40230,6 +43125,7 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     status?: SortOrder
     source?: SortOrderInput | SortOrder
+    followUpDate?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     organizationId?: SortOrder
@@ -40256,6 +43152,7 @@ export namespace Prisma {
     description?: StringNullableFilter<"Enquiry"> | string | null
     status?: StringFilter<"Enquiry"> | string
     source?: StringNullableFilter<"Enquiry"> | string | null
+    followUpDate?: DateTimeNullableFilter<"Enquiry"> | Date | string | null
     createdAt?: DateTimeFilter<"Enquiry"> | Date | string
     updatedAt?: DateTimeFilter<"Enquiry"> | Date | string
     organizationId?: StringFilter<"Enquiry"> | string
@@ -40278,6 +43175,7 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     status?: SortOrder
     source?: SortOrderInput | SortOrder
+    followUpDate?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     organizationId?: SortOrder
@@ -40305,6 +43203,7 @@ export namespace Prisma {
     description?: StringNullableWithAggregatesFilter<"Enquiry"> | string | null
     status?: StringWithAggregatesFilter<"Enquiry"> | string
     source?: StringNullableWithAggregatesFilter<"Enquiry"> | string | null
+    followUpDate?: DateTimeNullableWithAggregatesFilter<"Enquiry"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Enquiry"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Enquiry"> | Date | string
     organizationId?: StringWithAggregatesFilter<"Enquiry"> | string
@@ -40326,6 +43225,7 @@ export namespace Prisma {
     transactionId?: StringNullableFilter<"Receipt"> | string | null
     remark?: StringNullableFilter<"Receipt"> | string | null
     studentId?: StringFilter<"Receipt"> | string
+    proofUrl?: StringNullableFilter<"Receipt"> | string | null
     createdAt?: DateTimeFilter<"Receipt"> | Date | string
     updatedAt?: DateTimeFilter<"Receipt"> | Date | string
     student?: XOR<StudentScalarRelationFilter, StudentWhereInput>
@@ -40342,6 +43242,7 @@ export namespace Prisma {
     transactionId?: SortOrderInput | SortOrder
     remark?: SortOrderInput | SortOrder
     studentId?: SortOrder
+    proofUrl?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     student?: StudentOrderByWithRelationInput
@@ -40362,6 +43263,7 @@ export namespace Prisma {
     transactionId?: StringNullableFilter<"Receipt"> | string | null
     remark?: StringNullableFilter<"Receipt"> | string | null
     studentId?: StringFilter<"Receipt"> | string
+    proofUrl?: StringNullableFilter<"Receipt"> | string | null
     createdAt?: DateTimeFilter<"Receipt"> | Date | string
     updatedAt?: DateTimeFilter<"Receipt"> | Date | string
     student?: XOR<StudentScalarRelationFilter, StudentWhereInput>
@@ -40378,6 +43280,7 @@ export namespace Prisma {
     transactionId?: SortOrderInput | SortOrder
     remark?: SortOrderInput | SortOrder
     studentId?: SortOrder
+    proofUrl?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ReceiptCountOrderByAggregateInput
@@ -40401,8 +43304,237 @@ export namespace Prisma {
     transactionId?: StringNullableWithAggregatesFilter<"Receipt"> | string | null
     remark?: StringNullableWithAggregatesFilter<"Receipt"> | string | null
     studentId?: StringWithAggregatesFilter<"Receipt"> | string
+    proofUrl?: StringNullableWithAggregatesFilter<"Receipt"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Receipt"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Receipt"> | Date | string
+  }
+
+  export type AdditionalFeeWhereInput = {
+    AND?: AdditionalFeeWhereInput | AdditionalFeeWhereInput[]
+    OR?: AdditionalFeeWhereInput[]
+    NOT?: AdditionalFeeWhereInput | AdditionalFeeWhereInput[]
+    id?: StringFilter<"AdditionalFee"> | string
+    studentId?: StringFilter<"AdditionalFee"> | string
+    feeDisplayId?: StringNullableFilter<"AdditionalFee"> | string | null
+    feeYear?: IntNullableFilter<"AdditionalFee"> | number | null
+    feeSequence?: IntNullableFilter<"AdditionalFee"> | number | null
+    title?: StringFilter<"AdditionalFee"> | string
+    feeType?: StringFilter<"AdditionalFee"> | string
+    amount?: FloatFilter<"AdditionalFee"> | number
+    status?: StringFilter<"AdditionalFee"> | string
+    dueDate?: DateTimeNullableFilter<"AdditionalFee"> | Date | string | null
+    paidDate?: DateTimeNullableFilter<"AdditionalFee"> | Date | string | null
+    receiptNo?: StringNullableFilter<"AdditionalFee"> | string | null
+    transactionId?: StringNullableFilter<"AdditionalFee"> | string | null
+    proofUrl?: StringNullableFilter<"AdditionalFee"> | string | null
+    remarks?: StringNullableFilter<"AdditionalFee"> | string | null
+    createdAt?: DateTimeFilter<"AdditionalFee"> | Date | string
+    updatedAt?: DateTimeFilter<"AdditionalFee"> | Date | string
+    student?: XOR<StudentScalarRelationFilter, StudentWhereInput>
+  }
+
+  export type AdditionalFeeOrderByWithRelationInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    feeDisplayId?: SortOrderInput | SortOrder
+    feeYear?: SortOrderInput | SortOrder
+    feeSequence?: SortOrderInput | SortOrder
+    title?: SortOrder
+    feeType?: SortOrder
+    amount?: SortOrder
+    status?: SortOrder
+    dueDate?: SortOrderInput | SortOrder
+    paidDate?: SortOrderInput | SortOrder
+    receiptNo?: SortOrderInput | SortOrder
+    transactionId?: SortOrderInput | SortOrder
+    proofUrl?: SortOrderInput | SortOrder
+    remarks?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    student?: StudentOrderByWithRelationInput
+  }
+
+  export type AdditionalFeeWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    feeDisplayId?: string
+    feeYear_feeSequence?: AdditionalFeeFeeYearFeeSequenceCompoundUniqueInput
+    AND?: AdditionalFeeWhereInput | AdditionalFeeWhereInput[]
+    OR?: AdditionalFeeWhereInput[]
+    NOT?: AdditionalFeeWhereInput | AdditionalFeeWhereInput[]
+    studentId?: StringFilter<"AdditionalFee"> | string
+    feeYear?: IntNullableFilter<"AdditionalFee"> | number | null
+    feeSequence?: IntNullableFilter<"AdditionalFee"> | number | null
+    title?: StringFilter<"AdditionalFee"> | string
+    feeType?: StringFilter<"AdditionalFee"> | string
+    amount?: FloatFilter<"AdditionalFee"> | number
+    status?: StringFilter<"AdditionalFee"> | string
+    dueDate?: DateTimeNullableFilter<"AdditionalFee"> | Date | string | null
+    paidDate?: DateTimeNullableFilter<"AdditionalFee"> | Date | string | null
+    receiptNo?: StringNullableFilter<"AdditionalFee"> | string | null
+    transactionId?: StringNullableFilter<"AdditionalFee"> | string | null
+    proofUrl?: StringNullableFilter<"AdditionalFee"> | string | null
+    remarks?: StringNullableFilter<"AdditionalFee"> | string | null
+    createdAt?: DateTimeFilter<"AdditionalFee"> | Date | string
+    updatedAt?: DateTimeFilter<"AdditionalFee"> | Date | string
+    student?: XOR<StudentScalarRelationFilter, StudentWhereInput>
+  }, "id" | "feeDisplayId" | "feeYear_feeSequence">
+
+  export type AdditionalFeeOrderByWithAggregationInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    feeDisplayId?: SortOrderInput | SortOrder
+    feeYear?: SortOrderInput | SortOrder
+    feeSequence?: SortOrderInput | SortOrder
+    title?: SortOrder
+    feeType?: SortOrder
+    amount?: SortOrder
+    status?: SortOrder
+    dueDate?: SortOrderInput | SortOrder
+    paidDate?: SortOrderInput | SortOrder
+    receiptNo?: SortOrderInput | SortOrder
+    transactionId?: SortOrderInput | SortOrder
+    proofUrl?: SortOrderInput | SortOrder
+    remarks?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: AdditionalFeeCountOrderByAggregateInput
+    _avg?: AdditionalFeeAvgOrderByAggregateInput
+    _max?: AdditionalFeeMaxOrderByAggregateInput
+    _min?: AdditionalFeeMinOrderByAggregateInput
+    _sum?: AdditionalFeeSumOrderByAggregateInput
+  }
+
+  export type AdditionalFeeScalarWhereWithAggregatesInput = {
+    AND?: AdditionalFeeScalarWhereWithAggregatesInput | AdditionalFeeScalarWhereWithAggregatesInput[]
+    OR?: AdditionalFeeScalarWhereWithAggregatesInput[]
+    NOT?: AdditionalFeeScalarWhereWithAggregatesInput | AdditionalFeeScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AdditionalFee"> | string
+    studentId?: StringWithAggregatesFilter<"AdditionalFee"> | string
+    feeDisplayId?: StringNullableWithAggregatesFilter<"AdditionalFee"> | string | null
+    feeYear?: IntNullableWithAggregatesFilter<"AdditionalFee"> | number | null
+    feeSequence?: IntNullableWithAggregatesFilter<"AdditionalFee"> | number | null
+    title?: StringWithAggregatesFilter<"AdditionalFee"> | string
+    feeType?: StringWithAggregatesFilter<"AdditionalFee"> | string
+    amount?: FloatWithAggregatesFilter<"AdditionalFee"> | number
+    status?: StringWithAggregatesFilter<"AdditionalFee"> | string
+    dueDate?: DateTimeNullableWithAggregatesFilter<"AdditionalFee"> | Date | string | null
+    paidDate?: DateTimeNullableWithAggregatesFilter<"AdditionalFee"> | Date | string | null
+    receiptNo?: StringNullableWithAggregatesFilter<"AdditionalFee"> | string | null
+    transactionId?: StringNullableWithAggregatesFilter<"AdditionalFee"> | string | null
+    proofUrl?: StringNullableWithAggregatesFilter<"AdditionalFee"> | string | null
+    remarks?: StringNullableWithAggregatesFilter<"AdditionalFee"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"AdditionalFee"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"AdditionalFee"> | Date | string
+  }
+
+  export type LeadWhereInput = {
+    AND?: LeadWhereInput | LeadWhereInput[]
+    OR?: LeadWhereInput[]
+    NOT?: LeadWhereInput | LeadWhereInput[]
+    id?: StringFilter<"Lead"> | string
+    firstName?: StringFilter<"Lead"> | string
+    lastName?: StringFilter<"Lead"> | string
+    email?: StringNullableFilter<"Lead"> | string | null
+    phone?: StringNullableFilter<"Lead"> | string | null
+    source?: StringFilter<"Lead"> | string
+    stage?: StringFilter<"Lead"> | string
+    company?: StringNullableFilter<"Lead"> | string | null
+    value?: FloatFilter<"Lead"> | number
+    notes?: StringNullableFilter<"Lead"> | string | null
+    assignedTo?: StringNullableFilter<"Lead"> | string | null
+    createdAt?: DateTimeFilter<"Lead"> | Date | string
+    updatedAt?: DateTimeFilter<"Lead"> | Date | string
+    organizationId?: StringFilter<"Lead"> | string
+    branchId?: StringNullableFilter<"Lead"> | string | null
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    branch?: XOR<BranchNullableScalarRelationFilter, BranchWhereInput> | null
+  }
+
+  export type LeadOrderByWithRelationInput = {
+    id?: SortOrder
+    firstName?: SortOrder
+    lastName?: SortOrder
+    email?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
+    source?: SortOrder
+    stage?: SortOrder
+    company?: SortOrderInput | SortOrder
+    value?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    assignedTo?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    organizationId?: SortOrder
+    branchId?: SortOrderInput | SortOrder
+    organization?: OrganizationOrderByWithRelationInput
+    branch?: BranchOrderByWithRelationInput
+  }
+
+  export type LeadWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: LeadWhereInput | LeadWhereInput[]
+    OR?: LeadWhereInput[]
+    NOT?: LeadWhereInput | LeadWhereInput[]
+    firstName?: StringFilter<"Lead"> | string
+    lastName?: StringFilter<"Lead"> | string
+    email?: StringNullableFilter<"Lead"> | string | null
+    phone?: StringNullableFilter<"Lead"> | string | null
+    source?: StringFilter<"Lead"> | string
+    stage?: StringFilter<"Lead"> | string
+    company?: StringNullableFilter<"Lead"> | string | null
+    value?: FloatFilter<"Lead"> | number
+    notes?: StringNullableFilter<"Lead"> | string | null
+    assignedTo?: StringNullableFilter<"Lead"> | string | null
+    createdAt?: DateTimeFilter<"Lead"> | Date | string
+    updatedAt?: DateTimeFilter<"Lead"> | Date | string
+    organizationId?: StringFilter<"Lead"> | string
+    branchId?: StringNullableFilter<"Lead"> | string | null
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    branch?: XOR<BranchNullableScalarRelationFilter, BranchWhereInput> | null
+  }, "id">
+
+  export type LeadOrderByWithAggregationInput = {
+    id?: SortOrder
+    firstName?: SortOrder
+    lastName?: SortOrder
+    email?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
+    source?: SortOrder
+    stage?: SortOrder
+    company?: SortOrderInput | SortOrder
+    value?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    assignedTo?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    organizationId?: SortOrder
+    branchId?: SortOrderInput | SortOrder
+    _count?: LeadCountOrderByAggregateInput
+    _avg?: LeadAvgOrderByAggregateInput
+    _max?: LeadMaxOrderByAggregateInput
+    _min?: LeadMinOrderByAggregateInput
+    _sum?: LeadSumOrderByAggregateInput
+  }
+
+  export type LeadScalarWhereWithAggregatesInput = {
+    AND?: LeadScalarWhereWithAggregatesInput | LeadScalarWhereWithAggregatesInput[]
+    OR?: LeadScalarWhereWithAggregatesInput[]
+    NOT?: LeadScalarWhereWithAggregatesInput | LeadScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Lead"> | string
+    firstName?: StringWithAggregatesFilter<"Lead"> | string
+    lastName?: StringWithAggregatesFilter<"Lead"> | string
+    email?: StringNullableWithAggregatesFilter<"Lead"> | string | null
+    phone?: StringNullableWithAggregatesFilter<"Lead"> | string | null
+    source?: StringWithAggregatesFilter<"Lead"> | string
+    stage?: StringWithAggregatesFilter<"Lead"> | string
+    company?: StringNullableWithAggregatesFilter<"Lead"> | string | null
+    value?: FloatWithAggregatesFilter<"Lead"> | number
+    notes?: StringNullableWithAggregatesFilter<"Lead"> | string | null
+    assignedTo?: StringNullableWithAggregatesFilter<"Lead"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Lead"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Lead"> | Date | string
+    organizationId?: StringWithAggregatesFilter<"Lead"> | string
+    branchId?: StringNullableWithAggregatesFilter<"Lead"> | string | null
   }
 
   export type PostWhereInput = {
@@ -41623,6 +44755,7 @@ export namespace Prisma {
     branches?: BranchCreateNestedManyWithoutOrganizationInput
     courses?: CourseCreateNestedManyWithoutOrganizationInput
     enquiries?: EnquiryCreateNestedManyWithoutOrganizationInput
+    leads?: LeadCreateNestedManyWithoutOrganizationInput
     walletTransactions?: WalletTransactionCreateNestedManyWithoutOrganizationInput
     modulePermissions?: ModulePermissionCreateNestedManyWithoutOrganizationInput
     attendances?: AttendanceCreateNestedManyWithoutOrganizationInput
@@ -41662,6 +44795,7 @@ export namespace Prisma {
     branches?: BranchUncheckedCreateNestedManyWithoutOrganizationInput
     courses?: CourseUncheckedCreateNestedManyWithoutOrganizationInput
     enquiries?: EnquiryUncheckedCreateNestedManyWithoutOrganizationInput
+    leads?: LeadUncheckedCreateNestedManyWithoutOrganizationInput
     walletTransactions?: WalletTransactionUncheckedCreateNestedManyWithoutOrganizationInput
     modulePermissions?: ModulePermissionUncheckedCreateNestedManyWithoutOrganizationInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
@@ -41701,6 +44835,7 @@ export namespace Prisma {
     branches?: BranchUpdateManyWithoutOrganizationNestedInput
     courses?: CourseUpdateManyWithoutOrganizationNestedInput
     enquiries?: EnquiryUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUpdateManyWithoutOrganizationNestedInput
     walletTransactions?: WalletTransactionUpdateManyWithoutOrganizationNestedInput
     modulePermissions?: ModulePermissionUpdateManyWithoutOrganizationNestedInput
     attendances?: AttendanceUpdateManyWithoutOrganizationNestedInput
@@ -41740,6 +44875,7 @@ export namespace Prisma {
     branches?: BranchUncheckedUpdateManyWithoutOrganizationNestedInput
     courses?: CourseUncheckedUpdateManyWithoutOrganizationNestedInput
     enquiries?: EnquiryUncheckedUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutOrganizationNestedInput
     walletTransactions?: WalletTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
     modulePermissions?: ModulePermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -41998,6 +45134,7 @@ export namespace Prisma {
     userBranches?: UserBranchCreateNestedManyWithoutBranchInput
     students?: StudentCreateNestedManyWithoutBranchInput
     enquiries?: EnquiryCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
     attendances?: AttendanceCreateNestedManyWithoutBranchInput
     referrers?: ReferrerCreateNestedManyWithoutBranchInput
   }
@@ -42020,6 +45157,7 @@ export namespace Prisma {
     userBranches?: UserBranchUncheckedCreateNestedManyWithoutBranchInput
     students?: StudentUncheckedCreateNestedManyWithoutBranchInput
     enquiries?: EnquiryUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutBranchInput
     referrers?: ReferrerUncheckedCreateNestedManyWithoutBranchInput
   }
@@ -42042,6 +45180,7 @@ export namespace Prisma {
     userBranches?: UserBranchUpdateManyWithoutBranchNestedInput
     students?: StudentUpdateManyWithoutBranchNestedInput
     enquiries?: EnquiryUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUpdateManyWithoutBranchNestedInput
     referrers?: ReferrerUpdateManyWithoutBranchNestedInput
   }
@@ -42064,6 +45203,7 @@ export namespace Prisma {
     userBranches?: UserBranchUncheckedUpdateManyWithoutBranchNestedInput
     students?: StudentUncheckedUpdateManyWithoutBranchNestedInput
     enquiries?: EnquiryUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutBranchNestedInput
     referrers?: ReferrerUncheckedUpdateManyWithoutBranchNestedInput
   }
@@ -42314,6 +45454,7 @@ export namespace Prisma {
     batch?: BatchCreateNestedOneWithoutStudentsInput
     studentCourses?: StudentCourseCreateNestedManyWithoutStudentInput
     receipts?: ReceiptCreateNestedManyWithoutStudentInput
+    additionalFees?: AdditionalFeeCreateNestedManyWithoutStudentInput
     attendances?: AttendanceCreateNestedManyWithoutStudentInput
     referral?: ReferralCreateNestedOneWithoutStudentInput
   }
@@ -42397,6 +45538,7 @@ export namespace Prisma {
     batchId?: string | null
     studentCourses?: StudentCourseUncheckedCreateNestedManyWithoutStudentInput
     receipts?: ReceiptUncheckedCreateNestedManyWithoutStudentInput
+    additionalFees?: AdditionalFeeUncheckedCreateNestedManyWithoutStudentInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutStudentInput
     referral?: ReferralUncheckedCreateNestedOneWithoutStudentInput
   }
@@ -42480,6 +45622,7 @@ export namespace Prisma {
     batch?: BatchUpdateOneWithoutStudentsNestedInput
     studentCourses?: StudentCourseUpdateManyWithoutStudentNestedInput
     receipts?: ReceiptUpdateManyWithoutStudentNestedInput
+    additionalFees?: AdditionalFeeUpdateManyWithoutStudentNestedInput
     attendances?: AttendanceUpdateManyWithoutStudentNestedInput
     referral?: ReferralUpdateOneWithoutStudentNestedInput
   }
@@ -42563,6 +45706,7 @@ export namespace Prisma {
     batchId?: NullableStringFieldUpdateOperationsInput | string | null
     studentCourses?: StudentCourseUncheckedUpdateManyWithoutStudentNestedInput
     receipts?: ReceiptUncheckedUpdateManyWithoutStudentNestedInput
+    additionalFees?: AdditionalFeeUncheckedUpdateManyWithoutStudentNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutStudentNestedInput
     referral?: ReferralUncheckedUpdateOneWithoutStudentNestedInput
   }
@@ -42943,6 +46087,7 @@ export namespace Prisma {
     receiptNo?: string | null
     transactionId?: string | null
     remarks?: string | null
+    proofUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     studentCourse: StudentCourseCreateNestedOneWithoutInstallmentsInput
@@ -42961,6 +46106,7 @@ export namespace Prisma {
     receiptNo?: string | null
     transactionId?: string | null
     remarks?: string | null
+    proofUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -42977,6 +46123,7 @@ export namespace Prisma {
     receiptNo?: NullableStringFieldUpdateOperationsInput | string | null
     transactionId?: NullableStringFieldUpdateOperationsInput | string | null
     remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    proofUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     studentCourse?: StudentCourseUpdateOneRequiredWithoutInstallmentsNestedInput
@@ -42995,6 +46142,7 @@ export namespace Prisma {
     receiptNo?: NullableStringFieldUpdateOperationsInput | string | null
     transactionId?: NullableStringFieldUpdateOperationsInput | string | null
     remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    proofUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -43012,6 +46160,7 @@ export namespace Prisma {
     receiptNo?: string | null
     transactionId?: string | null
     remarks?: string | null
+    proofUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -43028,6 +46177,7 @@ export namespace Prisma {
     receiptNo?: NullableStringFieldUpdateOperationsInput | string | null
     transactionId?: NullableStringFieldUpdateOperationsInput | string | null
     remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    proofUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -43045,6 +46195,7 @@ export namespace Prisma {
     receiptNo?: NullableStringFieldUpdateOperationsInput | string | null
     transactionId?: NullableStringFieldUpdateOperationsInput | string | null
     remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    proofUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -43412,6 +46563,7 @@ export namespace Prisma {
     description?: string | null
     status?: string
     source?: string | null
+    followUpDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     organization: OrganizationCreateNestedOneWithoutEnquiriesInput
@@ -43431,6 +46583,7 @@ export namespace Prisma {
     description?: string | null
     status?: string
     source?: string | null
+    followUpDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     organizationId: string
@@ -43450,6 +46603,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     source?: NullableStringFieldUpdateOperationsInput | string | null
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutEnquiriesNestedInput
@@ -43469,6 +46623,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     source?: NullableStringFieldUpdateOperationsInput | string | null
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organizationId?: StringFieldUpdateOperationsInput | string
@@ -43488,6 +46643,7 @@ export namespace Prisma {
     description?: string | null
     status?: string
     source?: string | null
+    followUpDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     organizationId: string
@@ -43507,6 +46663,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     source?: NullableStringFieldUpdateOperationsInput | string | null
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -43523,6 +46680,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     source?: NullableStringFieldUpdateOperationsInput | string | null
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organizationId?: StringFieldUpdateOperationsInput | string
@@ -43540,6 +46698,7 @@ export namespace Prisma {
     mode: string
     transactionId?: string | null
     remark?: string | null
+    proofUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     student: StudentCreateNestedOneWithoutReceiptsInput
@@ -43556,6 +46715,7 @@ export namespace Prisma {
     transactionId?: string | null
     remark?: string | null
     studentId: string
+    proofUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -43570,6 +46730,7 @@ export namespace Prisma {
     mode?: StringFieldUpdateOperationsInput | string
     transactionId?: NullableStringFieldUpdateOperationsInput | string | null
     remark?: NullableStringFieldUpdateOperationsInput | string | null
+    proofUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     student?: StudentUpdateOneRequiredWithoutReceiptsNestedInput
@@ -43586,6 +46747,7 @@ export namespace Prisma {
     transactionId?: NullableStringFieldUpdateOperationsInput | string | null
     remark?: NullableStringFieldUpdateOperationsInput | string | null
     studentId?: StringFieldUpdateOperationsInput | string
+    proofUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -43601,6 +46763,7 @@ export namespace Prisma {
     transactionId?: string | null
     remark?: string | null
     studentId: string
+    proofUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -43615,6 +46778,7 @@ export namespace Prisma {
     mode?: StringFieldUpdateOperationsInput | string
     transactionId?: NullableStringFieldUpdateOperationsInput | string | null
     remark?: NullableStringFieldUpdateOperationsInput | string | null
+    proofUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -43630,8 +46794,272 @@ export namespace Prisma {
     transactionId?: NullableStringFieldUpdateOperationsInput | string | null
     remark?: NullableStringFieldUpdateOperationsInput | string | null
     studentId?: StringFieldUpdateOperationsInput | string
+    proofUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdditionalFeeCreateInput = {
+    id?: string
+    feeDisplayId?: string | null
+    feeYear?: number | null
+    feeSequence?: number | null
+    title: string
+    feeType: string
+    amount: number
+    status?: string
+    dueDate?: Date | string | null
+    paidDate?: Date | string | null
+    receiptNo?: string | null
+    transactionId?: string | null
+    proofUrl?: string | null
+    remarks?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    student: StudentCreateNestedOneWithoutAdditionalFeesInput
+  }
+
+  export type AdditionalFeeUncheckedCreateInput = {
+    id?: string
+    studentId: string
+    feeDisplayId?: string | null
+    feeYear?: number | null
+    feeSequence?: number | null
+    title: string
+    feeType: string
+    amount: number
+    status?: string
+    dueDate?: Date | string | null
+    paidDate?: Date | string | null
+    receiptNo?: string | null
+    transactionId?: string | null
+    proofUrl?: string | null
+    remarks?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AdditionalFeeUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    feeDisplayId?: NullableStringFieldUpdateOperationsInput | string | null
+    feeYear?: NullableIntFieldUpdateOperationsInput | number | null
+    feeSequence?: NullableIntFieldUpdateOperationsInput | number | null
+    title?: StringFieldUpdateOperationsInput | string
+    feeType?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    receiptNo?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    proofUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    student?: StudentUpdateOneRequiredWithoutAdditionalFeesNestedInput
+  }
+
+  export type AdditionalFeeUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    feeDisplayId?: NullableStringFieldUpdateOperationsInput | string | null
+    feeYear?: NullableIntFieldUpdateOperationsInput | number | null
+    feeSequence?: NullableIntFieldUpdateOperationsInput | number | null
+    title?: StringFieldUpdateOperationsInput | string
+    feeType?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    receiptNo?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    proofUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdditionalFeeCreateManyInput = {
+    id?: string
+    studentId: string
+    feeDisplayId?: string | null
+    feeYear?: number | null
+    feeSequence?: number | null
+    title: string
+    feeType: string
+    amount: number
+    status?: string
+    dueDate?: Date | string | null
+    paidDate?: Date | string | null
+    receiptNo?: string | null
+    transactionId?: string | null
+    proofUrl?: string | null
+    remarks?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AdditionalFeeUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    feeDisplayId?: NullableStringFieldUpdateOperationsInput | string | null
+    feeYear?: NullableIntFieldUpdateOperationsInput | number | null
+    feeSequence?: NullableIntFieldUpdateOperationsInput | number | null
+    title?: StringFieldUpdateOperationsInput | string
+    feeType?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    receiptNo?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    proofUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdditionalFeeUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    feeDisplayId?: NullableStringFieldUpdateOperationsInput | string | null
+    feeYear?: NullableIntFieldUpdateOperationsInput | number | null
+    feeSequence?: NullableIntFieldUpdateOperationsInput | number | null
+    title?: StringFieldUpdateOperationsInput | string
+    feeType?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    receiptNo?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    proofUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LeadCreateInput = {
+    id?: string
+    firstName: string
+    lastName: string
+    email?: string | null
+    phone?: string | null
+    source?: string
+    stage?: string
+    company?: string | null
+    value?: number
+    notes?: string | null
+    assignedTo?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutLeadsInput
+    branch?: BranchCreateNestedOneWithoutLeadsInput
+  }
+
+  export type LeadUncheckedCreateInput = {
+    id?: string
+    firstName: string
+    lastName: string
+    email?: string | null
+    phone?: string | null
+    source?: string
+    stage?: string
+    company?: string | null
+    value?: number
+    notes?: string | null
+    assignedTo?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organizationId: string
+    branchId?: string | null
+  }
+
+  export type LeadUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    stage?: StringFieldUpdateOperationsInput | string
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    value?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutLeadsNestedInput
+    branch?: BranchUpdateOneWithoutLeadsNestedInput
+  }
+
+  export type LeadUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    stage?: StringFieldUpdateOperationsInput | string
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    value?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type LeadCreateManyInput = {
+    id?: string
+    firstName: string
+    lastName: string
+    email?: string | null
+    phone?: string | null
+    source?: string
+    stage?: string
+    company?: string | null
+    value?: number
+    notes?: string | null
+    assignedTo?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organizationId: string
+    branchId?: string | null
+  }
+
+  export type LeadUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    stage?: StringFieldUpdateOperationsInput | string
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    value?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LeadUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    stage?: StringFieldUpdateOperationsInput | string
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    value?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    branchId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PostCreateInput = {
@@ -44802,6 +48230,12 @@ export namespace Prisma {
     none?: EnquiryWhereInput
   }
 
+  export type LeadListRelationFilter = {
+    every?: LeadWhereInput
+    some?: LeadWhereInput
+    none?: LeadWhereInput
+  }
+
   export type WalletTransactionListRelationFilter = {
     every?: WalletTransactionWhereInput
     some?: WalletTransactionWhereInput
@@ -44829,6 +48263,10 @@ export namespace Prisma {
   }
 
   export type EnquiryOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type LeadOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -45242,6 +48680,12 @@ export namespace Prisma {
     none?: ReceiptWhereInput
   }
 
+  export type AdditionalFeeListRelationFilter = {
+    every?: AdditionalFeeWhereInput
+    some?: AdditionalFeeWhereInput
+    none?: AdditionalFeeWhereInput
+  }
+
   export type ReferralNullableScalarRelationFilter = {
     is?: ReferralWhereInput | null
     isNot?: ReferralWhereInput | null
@@ -45252,6 +48696,10 @@ export namespace Prisma {
   }
 
   export type ReceiptOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AdditionalFeeOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -45652,6 +49100,7 @@ export namespace Prisma {
     receiptNo?: SortOrder
     transactionId?: SortOrder
     remarks?: SortOrder
+    proofUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -45675,6 +49124,7 @@ export namespace Prisma {
     receiptNo?: SortOrder
     transactionId?: SortOrder
     remarks?: SortOrder
+    proofUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -45692,6 +49142,7 @@ export namespace Prisma {
     receiptNo?: SortOrder
     transactionId?: SortOrder
     remarks?: SortOrder
+    proofUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -45895,6 +49346,7 @@ export namespace Prisma {
     description?: SortOrder
     status?: SortOrder
     source?: SortOrder
+    followUpDate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     organizationId?: SortOrder
@@ -45919,6 +49371,7 @@ export namespace Prisma {
     description?: SortOrder
     status?: SortOrder
     source?: SortOrder
+    followUpDate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     organizationId?: SortOrder
@@ -45938,6 +49391,7 @@ export namespace Prisma {
     description?: SortOrder
     status?: SortOrder
     source?: SortOrder
+    followUpDate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     organizationId?: SortOrder
@@ -45966,6 +49420,7 @@ export namespace Prisma {
     transactionId?: SortOrder
     remark?: SortOrder
     studentId?: SortOrder
+    proofUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -45987,6 +49442,7 @@ export namespace Prisma {
     transactionId?: SortOrder
     remark?: SortOrder
     studentId?: SortOrder
+    proofUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -46002,6 +49458,7 @@ export namespace Prisma {
     transactionId?: SortOrder
     remark?: SortOrder
     studentId?: SortOrder
+    proofUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -46010,6 +49467,150 @@ export namespace Prisma {
     receiptYear?: SortOrder
     receiptSequence?: SortOrder
     amount?: SortOrder
+  }
+
+  export type AdditionalFeeFeeYearFeeSequenceCompoundUniqueInput = {
+    feeYear: number
+    feeSequence: number
+  }
+
+  export type AdditionalFeeCountOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    feeDisplayId?: SortOrder
+    feeYear?: SortOrder
+    feeSequence?: SortOrder
+    title?: SortOrder
+    feeType?: SortOrder
+    amount?: SortOrder
+    status?: SortOrder
+    dueDate?: SortOrder
+    paidDate?: SortOrder
+    receiptNo?: SortOrder
+    transactionId?: SortOrder
+    proofUrl?: SortOrder
+    remarks?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AdditionalFeeAvgOrderByAggregateInput = {
+    feeYear?: SortOrder
+    feeSequence?: SortOrder
+    amount?: SortOrder
+  }
+
+  export type AdditionalFeeMaxOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    feeDisplayId?: SortOrder
+    feeYear?: SortOrder
+    feeSequence?: SortOrder
+    title?: SortOrder
+    feeType?: SortOrder
+    amount?: SortOrder
+    status?: SortOrder
+    dueDate?: SortOrder
+    paidDate?: SortOrder
+    receiptNo?: SortOrder
+    transactionId?: SortOrder
+    proofUrl?: SortOrder
+    remarks?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AdditionalFeeMinOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    feeDisplayId?: SortOrder
+    feeYear?: SortOrder
+    feeSequence?: SortOrder
+    title?: SortOrder
+    feeType?: SortOrder
+    amount?: SortOrder
+    status?: SortOrder
+    dueDate?: SortOrder
+    paidDate?: SortOrder
+    receiptNo?: SortOrder
+    transactionId?: SortOrder
+    proofUrl?: SortOrder
+    remarks?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type AdditionalFeeSumOrderByAggregateInput = {
+    feeYear?: SortOrder
+    feeSequence?: SortOrder
+    amount?: SortOrder
+  }
+
+  export type BranchNullableScalarRelationFilter = {
+    is?: BranchWhereInput | null
+    isNot?: BranchWhereInput | null
+  }
+
+  export type LeadCountOrderByAggregateInput = {
+    id?: SortOrder
+    firstName?: SortOrder
+    lastName?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    source?: SortOrder
+    stage?: SortOrder
+    company?: SortOrder
+    value?: SortOrder
+    notes?: SortOrder
+    assignedTo?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    organizationId?: SortOrder
+    branchId?: SortOrder
+  }
+
+  export type LeadAvgOrderByAggregateInput = {
+    value?: SortOrder
+  }
+
+  export type LeadMaxOrderByAggregateInput = {
+    id?: SortOrder
+    firstName?: SortOrder
+    lastName?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    source?: SortOrder
+    stage?: SortOrder
+    company?: SortOrder
+    value?: SortOrder
+    notes?: SortOrder
+    assignedTo?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    organizationId?: SortOrder
+    branchId?: SortOrder
+  }
+
+  export type LeadMinOrderByAggregateInput = {
+    id?: SortOrder
+    firstName?: SortOrder
+    lastName?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    source?: SortOrder
+    stage?: SortOrder
+    company?: SortOrder
+    value?: SortOrder
+    notes?: SortOrder
+    assignedTo?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    organizationId?: SortOrder
+    branchId?: SortOrder
+  }
+
+  export type LeadSumOrderByAggregateInput = {
+    value?: SortOrder
   }
 
   export type PostCountOrderByAggregateInput = {
@@ -46149,11 +49750,6 @@ export namespace Prisma {
     organizationId?: SortOrder
     module?: SortOrder
     canAccess?: SortOrder
-  }
-
-  export type BranchNullableScalarRelationFilter = {
-    is?: BranchWhereInput | null
-    isNot?: BranchWhereInput | null
   }
 
   export type ReferrerCountOrderByAggregateInput = {
@@ -46741,6 +50337,13 @@ export namespace Prisma {
     connect?: EnquiryWhereUniqueInput | EnquiryWhereUniqueInput[]
   }
 
+  export type LeadCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<LeadCreateWithoutOrganizationInput, LeadUncheckedCreateWithoutOrganizationInput> | LeadCreateWithoutOrganizationInput[] | LeadUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutOrganizationInput | LeadCreateOrConnectWithoutOrganizationInput[]
+    createMany?: LeadCreateManyOrganizationInputEnvelope
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+  }
+
   export type WalletTransactionCreateNestedManyWithoutOrganizationInput = {
     create?: XOR<WalletTransactionCreateWithoutOrganizationInput, WalletTransactionUncheckedCreateWithoutOrganizationInput> | WalletTransactionCreateWithoutOrganizationInput[] | WalletTransactionUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: WalletTransactionCreateOrConnectWithoutOrganizationInput | WalletTransactionCreateOrConnectWithoutOrganizationInput[]
@@ -46802,6 +50405,13 @@ export namespace Prisma {
     connectOrCreate?: EnquiryCreateOrConnectWithoutOrganizationInput | EnquiryCreateOrConnectWithoutOrganizationInput[]
     createMany?: EnquiryCreateManyOrganizationInputEnvelope
     connect?: EnquiryWhereUniqueInput | EnquiryWhereUniqueInput[]
+  }
+
+  export type LeadUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<LeadCreateWithoutOrganizationInput, LeadUncheckedCreateWithoutOrganizationInput> | LeadCreateWithoutOrganizationInput[] | LeadUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutOrganizationInput | LeadCreateOrConnectWithoutOrganizationInput[]
+    createMany?: LeadCreateManyOrganizationInputEnvelope
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
   }
 
   export type WalletTransactionUncheckedCreateNestedManyWithoutOrganizationInput = {
@@ -46917,6 +50527,20 @@ export namespace Prisma {
     update?: EnquiryUpdateWithWhereUniqueWithoutOrganizationInput | EnquiryUpdateWithWhereUniqueWithoutOrganizationInput[]
     updateMany?: EnquiryUpdateManyWithWhereWithoutOrganizationInput | EnquiryUpdateManyWithWhereWithoutOrganizationInput[]
     deleteMany?: EnquiryScalarWhereInput | EnquiryScalarWhereInput[]
+  }
+
+  export type LeadUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<LeadCreateWithoutOrganizationInput, LeadUncheckedCreateWithoutOrganizationInput> | LeadCreateWithoutOrganizationInput[] | LeadUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutOrganizationInput | LeadCreateOrConnectWithoutOrganizationInput[]
+    upsert?: LeadUpsertWithWhereUniqueWithoutOrganizationInput | LeadUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: LeadCreateManyOrganizationInputEnvelope
+    set?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    disconnect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    delete?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    update?: LeadUpdateWithWhereUniqueWithoutOrganizationInput | LeadUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: LeadUpdateManyWithWhereWithoutOrganizationInput | LeadUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
   }
 
   export type WalletTransactionUpdateManyWithoutOrganizationNestedInput = {
@@ -47043,6 +50667,20 @@ export namespace Prisma {
     update?: EnquiryUpdateWithWhereUniqueWithoutOrganizationInput | EnquiryUpdateWithWhereUniqueWithoutOrganizationInput[]
     updateMany?: EnquiryUpdateManyWithWhereWithoutOrganizationInput | EnquiryUpdateManyWithWhereWithoutOrganizationInput[]
     deleteMany?: EnquiryScalarWhereInput | EnquiryScalarWhereInput[]
+  }
+
+  export type LeadUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<LeadCreateWithoutOrganizationInput, LeadUncheckedCreateWithoutOrganizationInput> | LeadCreateWithoutOrganizationInput[] | LeadUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutOrganizationInput | LeadCreateOrConnectWithoutOrganizationInput[]
+    upsert?: LeadUpsertWithWhereUniqueWithoutOrganizationInput | LeadUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: LeadCreateManyOrganizationInputEnvelope
+    set?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    disconnect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    delete?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    update?: LeadUpdateWithWhereUniqueWithoutOrganizationInput | LeadUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: LeadUpdateManyWithWhereWithoutOrganizationInput | LeadUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
   }
 
   export type WalletTransactionUncheckedUpdateManyWithoutOrganizationNestedInput = {
@@ -47184,6 +50822,13 @@ export namespace Prisma {
     connect?: EnquiryWhereUniqueInput | EnquiryWhereUniqueInput[]
   }
 
+  export type LeadCreateNestedManyWithoutBranchInput = {
+    create?: XOR<LeadCreateWithoutBranchInput, LeadUncheckedCreateWithoutBranchInput> | LeadCreateWithoutBranchInput[] | LeadUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutBranchInput | LeadCreateOrConnectWithoutBranchInput[]
+    createMany?: LeadCreateManyBranchInputEnvelope
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+  }
+
   export type AttendanceCreateNestedManyWithoutBranchInput = {
     create?: XOR<AttendanceCreateWithoutBranchInput, AttendanceUncheckedCreateWithoutBranchInput> | AttendanceCreateWithoutBranchInput[] | AttendanceUncheckedCreateWithoutBranchInput[]
     connectOrCreate?: AttendanceCreateOrConnectWithoutBranchInput | AttendanceCreateOrConnectWithoutBranchInput[]
@@ -47217,6 +50862,13 @@ export namespace Prisma {
     connectOrCreate?: EnquiryCreateOrConnectWithoutBranchInput | EnquiryCreateOrConnectWithoutBranchInput[]
     createMany?: EnquiryCreateManyBranchInputEnvelope
     connect?: EnquiryWhereUniqueInput | EnquiryWhereUniqueInput[]
+  }
+
+  export type LeadUncheckedCreateNestedManyWithoutBranchInput = {
+    create?: XOR<LeadCreateWithoutBranchInput, LeadUncheckedCreateWithoutBranchInput> | LeadCreateWithoutBranchInput[] | LeadUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutBranchInput | LeadCreateOrConnectWithoutBranchInput[]
+    createMany?: LeadCreateManyBranchInputEnvelope
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
   }
 
   export type AttendanceUncheckedCreateNestedManyWithoutBranchInput = {
@@ -47281,6 +50933,20 @@ export namespace Prisma {
     update?: EnquiryUpdateWithWhereUniqueWithoutBranchInput | EnquiryUpdateWithWhereUniqueWithoutBranchInput[]
     updateMany?: EnquiryUpdateManyWithWhereWithoutBranchInput | EnquiryUpdateManyWithWhereWithoutBranchInput[]
     deleteMany?: EnquiryScalarWhereInput | EnquiryScalarWhereInput[]
+  }
+
+  export type LeadUpdateManyWithoutBranchNestedInput = {
+    create?: XOR<LeadCreateWithoutBranchInput, LeadUncheckedCreateWithoutBranchInput> | LeadCreateWithoutBranchInput[] | LeadUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutBranchInput | LeadCreateOrConnectWithoutBranchInput[]
+    upsert?: LeadUpsertWithWhereUniqueWithoutBranchInput | LeadUpsertWithWhereUniqueWithoutBranchInput[]
+    createMany?: LeadCreateManyBranchInputEnvelope
+    set?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    disconnect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    delete?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    update?: LeadUpdateWithWhereUniqueWithoutBranchInput | LeadUpdateWithWhereUniqueWithoutBranchInput[]
+    updateMany?: LeadUpdateManyWithWhereWithoutBranchInput | LeadUpdateManyWithWhereWithoutBranchInput[]
+    deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
   }
 
   export type AttendanceUpdateManyWithoutBranchNestedInput = {
@@ -47351,6 +51017,20 @@ export namespace Prisma {
     update?: EnquiryUpdateWithWhereUniqueWithoutBranchInput | EnquiryUpdateWithWhereUniqueWithoutBranchInput[]
     updateMany?: EnquiryUpdateManyWithWhereWithoutBranchInput | EnquiryUpdateManyWithWhereWithoutBranchInput[]
     deleteMany?: EnquiryScalarWhereInput | EnquiryScalarWhereInput[]
+  }
+
+  export type LeadUncheckedUpdateManyWithoutBranchNestedInput = {
+    create?: XOR<LeadCreateWithoutBranchInput, LeadUncheckedCreateWithoutBranchInput> | LeadCreateWithoutBranchInput[] | LeadUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: LeadCreateOrConnectWithoutBranchInput | LeadCreateOrConnectWithoutBranchInput[]
+    upsert?: LeadUpsertWithWhereUniqueWithoutBranchInput | LeadUpsertWithWhereUniqueWithoutBranchInput[]
+    createMany?: LeadCreateManyBranchInputEnvelope
+    set?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    disconnect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    delete?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    connect?: LeadWhereUniqueInput | LeadWhereUniqueInput[]
+    update?: LeadUpdateWithWhereUniqueWithoutBranchInput | LeadUpdateWithWhereUniqueWithoutBranchInput[]
+    updateMany?: LeadUpdateManyWithWhereWithoutBranchInput | LeadUpdateManyWithWhereWithoutBranchInput[]
+    deleteMany?: LeadScalarWhereInput | LeadScalarWhereInput[]
   }
 
   export type AttendanceUncheckedUpdateManyWithoutBranchNestedInput = {
@@ -47449,6 +51129,13 @@ export namespace Prisma {
     connect?: ReceiptWhereUniqueInput | ReceiptWhereUniqueInput[]
   }
 
+  export type AdditionalFeeCreateNestedManyWithoutStudentInput = {
+    create?: XOR<AdditionalFeeCreateWithoutStudentInput, AdditionalFeeUncheckedCreateWithoutStudentInput> | AdditionalFeeCreateWithoutStudentInput[] | AdditionalFeeUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: AdditionalFeeCreateOrConnectWithoutStudentInput | AdditionalFeeCreateOrConnectWithoutStudentInput[]
+    createMany?: AdditionalFeeCreateManyStudentInputEnvelope
+    connect?: AdditionalFeeWhereUniqueInput | AdditionalFeeWhereUniqueInput[]
+  }
+
   export type AttendanceCreateNestedManyWithoutStudentInput = {
     create?: XOR<AttendanceCreateWithoutStudentInput, AttendanceUncheckedCreateWithoutStudentInput> | AttendanceCreateWithoutStudentInput[] | AttendanceUncheckedCreateWithoutStudentInput[]
     connectOrCreate?: AttendanceCreateOrConnectWithoutStudentInput | AttendanceCreateOrConnectWithoutStudentInput[]
@@ -47474,6 +51161,13 @@ export namespace Prisma {
     connectOrCreate?: ReceiptCreateOrConnectWithoutStudentInput | ReceiptCreateOrConnectWithoutStudentInput[]
     createMany?: ReceiptCreateManyStudentInputEnvelope
     connect?: ReceiptWhereUniqueInput | ReceiptWhereUniqueInput[]
+  }
+
+  export type AdditionalFeeUncheckedCreateNestedManyWithoutStudentInput = {
+    create?: XOR<AdditionalFeeCreateWithoutStudentInput, AdditionalFeeUncheckedCreateWithoutStudentInput> | AdditionalFeeCreateWithoutStudentInput[] | AdditionalFeeUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: AdditionalFeeCreateOrConnectWithoutStudentInput | AdditionalFeeCreateOrConnectWithoutStudentInput[]
+    createMany?: AdditionalFeeCreateManyStudentInputEnvelope
+    connect?: AdditionalFeeWhereUniqueInput | AdditionalFeeWhereUniqueInput[]
   }
 
   export type AttendanceUncheckedCreateNestedManyWithoutStudentInput = {
@@ -47545,6 +51239,20 @@ export namespace Prisma {
     deleteMany?: ReceiptScalarWhereInput | ReceiptScalarWhereInput[]
   }
 
+  export type AdditionalFeeUpdateManyWithoutStudentNestedInput = {
+    create?: XOR<AdditionalFeeCreateWithoutStudentInput, AdditionalFeeUncheckedCreateWithoutStudentInput> | AdditionalFeeCreateWithoutStudentInput[] | AdditionalFeeUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: AdditionalFeeCreateOrConnectWithoutStudentInput | AdditionalFeeCreateOrConnectWithoutStudentInput[]
+    upsert?: AdditionalFeeUpsertWithWhereUniqueWithoutStudentInput | AdditionalFeeUpsertWithWhereUniqueWithoutStudentInput[]
+    createMany?: AdditionalFeeCreateManyStudentInputEnvelope
+    set?: AdditionalFeeWhereUniqueInput | AdditionalFeeWhereUniqueInput[]
+    disconnect?: AdditionalFeeWhereUniqueInput | AdditionalFeeWhereUniqueInput[]
+    delete?: AdditionalFeeWhereUniqueInput | AdditionalFeeWhereUniqueInput[]
+    connect?: AdditionalFeeWhereUniqueInput | AdditionalFeeWhereUniqueInput[]
+    update?: AdditionalFeeUpdateWithWhereUniqueWithoutStudentInput | AdditionalFeeUpdateWithWhereUniqueWithoutStudentInput[]
+    updateMany?: AdditionalFeeUpdateManyWithWhereWithoutStudentInput | AdditionalFeeUpdateManyWithWhereWithoutStudentInput[]
+    deleteMany?: AdditionalFeeScalarWhereInput | AdditionalFeeScalarWhereInput[]
+  }
+
   export type AttendanceUpdateManyWithoutStudentNestedInput = {
     create?: XOR<AttendanceCreateWithoutStudentInput, AttendanceUncheckedCreateWithoutStudentInput> | AttendanceCreateWithoutStudentInput[] | AttendanceUncheckedCreateWithoutStudentInput[]
     connectOrCreate?: AttendanceCreateOrConnectWithoutStudentInput | AttendanceCreateOrConnectWithoutStudentInput[]
@@ -47595,6 +51303,20 @@ export namespace Prisma {
     update?: ReceiptUpdateWithWhereUniqueWithoutStudentInput | ReceiptUpdateWithWhereUniqueWithoutStudentInput[]
     updateMany?: ReceiptUpdateManyWithWhereWithoutStudentInput | ReceiptUpdateManyWithWhereWithoutStudentInput[]
     deleteMany?: ReceiptScalarWhereInput | ReceiptScalarWhereInput[]
+  }
+
+  export type AdditionalFeeUncheckedUpdateManyWithoutStudentNestedInput = {
+    create?: XOR<AdditionalFeeCreateWithoutStudentInput, AdditionalFeeUncheckedCreateWithoutStudentInput> | AdditionalFeeCreateWithoutStudentInput[] | AdditionalFeeUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: AdditionalFeeCreateOrConnectWithoutStudentInput | AdditionalFeeCreateOrConnectWithoutStudentInput[]
+    upsert?: AdditionalFeeUpsertWithWhereUniqueWithoutStudentInput | AdditionalFeeUpsertWithWhereUniqueWithoutStudentInput[]
+    createMany?: AdditionalFeeCreateManyStudentInputEnvelope
+    set?: AdditionalFeeWhereUniqueInput | AdditionalFeeWhereUniqueInput[]
+    disconnect?: AdditionalFeeWhereUniqueInput | AdditionalFeeWhereUniqueInput[]
+    delete?: AdditionalFeeWhereUniqueInput | AdditionalFeeWhereUniqueInput[]
+    connect?: AdditionalFeeWhereUniqueInput | AdditionalFeeWhereUniqueInput[]
+    update?: AdditionalFeeUpdateWithWhereUniqueWithoutStudentInput | AdditionalFeeUpdateWithWhereUniqueWithoutStudentInput[]
+    updateMany?: AdditionalFeeUpdateManyWithWhereWithoutStudentInput | AdditionalFeeUpdateManyWithWhereWithoutStudentInput[]
+    deleteMany?: AdditionalFeeScalarWhereInput | AdditionalFeeScalarWhereInput[]
   }
 
   export type AttendanceUncheckedUpdateManyWithoutStudentNestedInput = {
@@ -48211,6 +51933,50 @@ export namespace Prisma {
     update?: XOR<XOR<StudentUpdateToOneWithWhereWithoutReceiptsInput, StudentUpdateWithoutReceiptsInput>, StudentUncheckedUpdateWithoutReceiptsInput>
   }
 
+  export type StudentCreateNestedOneWithoutAdditionalFeesInput = {
+    create?: XOR<StudentCreateWithoutAdditionalFeesInput, StudentUncheckedCreateWithoutAdditionalFeesInput>
+    connectOrCreate?: StudentCreateOrConnectWithoutAdditionalFeesInput
+    connect?: StudentWhereUniqueInput
+  }
+
+  export type StudentUpdateOneRequiredWithoutAdditionalFeesNestedInput = {
+    create?: XOR<StudentCreateWithoutAdditionalFeesInput, StudentUncheckedCreateWithoutAdditionalFeesInput>
+    connectOrCreate?: StudentCreateOrConnectWithoutAdditionalFeesInput
+    upsert?: StudentUpsertWithoutAdditionalFeesInput
+    connect?: StudentWhereUniqueInput
+    update?: XOR<XOR<StudentUpdateToOneWithWhereWithoutAdditionalFeesInput, StudentUpdateWithoutAdditionalFeesInput>, StudentUncheckedUpdateWithoutAdditionalFeesInput>
+  }
+
+  export type OrganizationCreateNestedOneWithoutLeadsInput = {
+    create?: XOR<OrganizationCreateWithoutLeadsInput, OrganizationUncheckedCreateWithoutLeadsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutLeadsInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type BranchCreateNestedOneWithoutLeadsInput = {
+    create?: XOR<BranchCreateWithoutLeadsInput, BranchUncheckedCreateWithoutLeadsInput>
+    connectOrCreate?: BranchCreateOrConnectWithoutLeadsInput
+    connect?: BranchWhereUniqueInput
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutLeadsNestedInput = {
+    create?: XOR<OrganizationCreateWithoutLeadsInput, OrganizationUncheckedCreateWithoutLeadsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutLeadsInput
+    upsert?: OrganizationUpsertWithoutLeadsInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutLeadsInput, OrganizationUpdateWithoutLeadsInput>, OrganizationUncheckedUpdateWithoutLeadsInput>
+  }
+
+  export type BranchUpdateOneWithoutLeadsNestedInput = {
+    create?: XOR<BranchCreateWithoutLeadsInput, BranchUncheckedCreateWithoutLeadsInput>
+    connectOrCreate?: BranchCreateOrConnectWithoutLeadsInput
+    upsert?: BranchUpsertWithoutLeadsInput
+    disconnect?: BranchWhereInput | boolean
+    delete?: BranchWhereInput | boolean
+    connect?: BranchWhereUniqueInput
+    update?: XOR<XOR<BranchUpdateToOneWithWhereWithoutLeadsInput, BranchUpdateWithoutLeadsInput>, BranchUncheckedUpdateWithoutLeadsInput>
+  }
+
   export type StudentCreateNestedOneWithoutAttendancesInput = {
     create?: XOR<StudentCreateWithoutAttendancesInput, StudentUncheckedCreateWithoutAttendancesInput>
     connectOrCreate?: StudentCreateOrConnectWithoutAttendancesInput
@@ -48747,6 +52513,7 @@ export namespace Prisma {
     branches?: BranchCreateNestedManyWithoutOrganizationInput
     courses?: CourseCreateNestedManyWithoutOrganizationInput
     enquiries?: EnquiryCreateNestedManyWithoutOrganizationInput
+    leads?: LeadCreateNestedManyWithoutOrganizationInput
     walletTransactions?: WalletTransactionCreateNestedManyWithoutOrganizationInput
     modulePermissions?: ModulePermissionCreateNestedManyWithoutOrganizationInput
     attendances?: AttendanceCreateNestedManyWithoutOrganizationInput
@@ -48785,6 +52552,7 @@ export namespace Prisma {
     branches?: BranchUncheckedCreateNestedManyWithoutOrganizationInput
     courses?: CourseUncheckedCreateNestedManyWithoutOrganizationInput
     enquiries?: EnquiryUncheckedCreateNestedManyWithoutOrganizationInput
+    leads?: LeadUncheckedCreateNestedManyWithoutOrganizationInput
     walletTransactions?: WalletTransactionUncheckedCreateNestedManyWithoutOrganizationInput
     modulePermissions?: ModulePermissionUncheckedCreateNestedManyWithoutOrganizationInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
@@ -49021,6 +52789,7 @@ export namespace Prisma {
     branches?: BranchUpdateManyWithoutOrganizationNestedInput
     courses?: CourseUpdateManyWithoutOrganizationNestedInput
     enquiries?: EnquiryUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUpdateManyWithoutOrganizationNestedInput
     walletTransactions?: WalletTransactionUpdateManyWithoutOrganizationNestedInput
     modulePermissions?: ModulePermissionUpdateManyWithoutOrganizationNestedInput
     attendances?: AttendanceUpdateManyWithoutOrganizationNestedInput
@@ -49059,6 +52828,7 @@ export namespace Prisma {
     branches?: BranchUncheckedUpdateManyWithoutOrganizationNestedInput
     courses?: CourseUncheckedUpdateManyWithoutOrganizationNestedInput
     enquiries?: EnquiryUncheckedUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutOrganizationNestedInput
     walletTransactions?: WalletTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
     modulePermissions?: ModulePermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -49831,6 +53601,7 @@ export namespace Prisma {
     userBranches?: UserBranchCreateNestedManyWithoutBranchInput
     students?: StudentCreateNestedManyWithoutBranchInput
     enquiries?: EnquiryCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
     attendances?: AttendanceCreateNestedManyWithoutBranchInput
     referrers?: ReferrerCreateNestedManyWithoutBranchInput
   }
@@ -49852,6 +53623,7 @@ export namespace Prisma {
     userBranches?: UserBranchUncheckedCreateNestedManyWithoutBranchInput
     students?: StudentUncheckedCreateNestedManyWithoutBranchInput
     enquiries?: EnquiryUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutBranchInput
     referrers?: ReferrerUncheckedCreateNestedManyWithoutBranchInput
   }
@@ -49940,6 +53712,7 @@ export namespace Prisma {
     description?: string | null
     status?: string
     source?: string | null
+    followUpDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     branch: BranchCreateNestedOneWithoutEnquiriesInput
@@ -49958,6 +53731,7 @@ export namespace Prisma {
     description?: string | null
     status?: string
     source?: string | null
+    followUpDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     branchId: string
@@ -49971,6 +53745,49 @@ export namespace Prisma {
 
   export type EnquiryCreateManyOrganizationInputEnvelope = {
     data: EnquiryCreateManyOrganizationInput | EnquiryCreateManyOrganizationInput[]
+  }
+
+  export type LeadCreateWithoutOrganizationInput = {
+    id?: string
+    firstName: string
+    lastName: string
+    email?: string | null
+    phone?: string | null
+    source?: string
+    stage?: string
+    company?: string | null
+    value?: number
+    notes?: string | null
+    assignedTo?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    branch?: BranchCreateNestedOneWithoutLeadsInput
+  }
+
+  export type LeadUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    firstName: string
+    lastName: string
+    email?: string | null
+    phone?: string | null
+    source?: string
+    stage?: string
+    company?: string | null
+    value?: number
+    notes?: string | null
+    assignedTo?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    branchId?: string | null
+  }
+
+  export type LeadCreateOrConnectWithoutOrganizationInput = {
+    where: LeadWhereUniqueInput
+    create: XOR<LeadCreateWithoutOrganizationInput, LeadUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type LeadCreateManyOrganizationInputEnvelope = {
+    data: LeadCreateManyOrganizationInput | LeadCreateManyOrganizationInput[]
   }
 
   export type WalletTransactionCreateWithoutOrganizationInput = {
@@ -50386,11 +54203,49 @@ export namespace Prisma {
     description?: StringNullableFilter<"Enquiry"> | string | null
     status?: StringFilter<"Enquiry"> | string
     source?: StringNullableFilter<"Enquiry"> | string | null
+    followUpDate?: DateTimeNullableFilter<"Enquiry"> | Date | string | null
     createdAt?: DateTimeFilter<"Enquiry"> | Date | string
     updatedAt?: DateTimeFilter<"Enquiry"> | Date | string
     organizationId?: StringFilter<"Enquiry"> | string
     branchId?: StringFilter<"Enquiry"> | string
     courseId?: StringNullableFilter<"Enquiry"> | string | null
+  }
+
+  export type LeadUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: LeadWhereUniqueInput
+    update: XOR<LeadUpdateWithoutOrganizationInput, LeadUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<LeadCreateWithoutOrganizationInput, LeadUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type LeadUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: LeadWhereUniqueInput
+    data: XOR<LeadUpdateWithoutOrganizationInput, LeadUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type LeadUpdateManyWithWhereWithoutOrganizationInput = {
+    where: LeadScalarWhereInput
+    data: XOR<LeadUpdateManyMutationInput, LeadUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
+  export type LeadScalarWhereInput = {
+    AND?: LeadScalarWhereInput | LeadScalarWhereInput[]
+    OR?: LeadScalarWhereInput[]
+    NOT?: LeadScalarWhereInput | LeadScalarWhereInput[]
+    id?: StringFilter<"Lead"> | string
+    firstName?: StringFilter<"Lead"> | string
+    lastName?: StringFilter<"Lead"> | string
+    email?: StringNullableFilter<"Lead"> | string | null
+    phone?: StringNullableFilter<"Lead"> | string | null
+    source?: StringFilter<"Lead"> | string
+    stage?: StringFilter<"Lead"> | string
+    company?: StringNullableFilter<"Lead"> | string | null
+    value?: FloatFilter<"Lead"> | number
+    notes?: StringNullableFilter<"Lead"> | string | null
+    assignedTo?: StringNullableFilter<"Lead"> | string | null
+    createdAt?: DateTimeFilter<"Lead"> | Date | string
+    updatedAt?: DateTimeFilter<"Lead"> | Date | string
+    organizationId?: StringFilter<"Lead"> | string
+    branchId?: StringNullableFilter<"Lead"> | string | null
   }
 
   export type WalletTransactionUpsertWithWhereUniqueWithoutOrganizationInput = {
@@ -50557,6 +54412,7 @@ export namespace Prisma {
     branches?: BranchCreateNestedManyWithoutOrganizationInput
     courses?: CourseCreateNestedManyWithoutOrganizationInput
     enquiries?: EnquiryCreateNestedManyWithoutOrganizationInput
+    leads?: LeadCreateNestedManyWithoutOrganizationInput
     modulePermissions?: ModulePermissionCreateNestedManyWithoutOrganizationInput
     attendances?: AttendanceCreateNestedManyWithoutOrganizationInput
     referrers?: ReferrerCreateNestedManyWithoutOrganizationInput
@@ -50595,6 +54451,7 @@ export namespace Prisma {
     branches?: BranchUncheckedCreateNestedManyWithoutOrganizationInput
     courses?: CourseUncheckedCreateNestedManyWithoutOrganizationInput
     enquiries?: EnquiryUncheckedCreateNestedManyWithoutOrganizationInput
+    leads?: LeadUncheckedCreateNestedManyWithoutOrganizationInput
     modulePermissions?: ModulePermissionUncheckedCreateNestedManyWithoutOrganizationInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
     referrers?: ReferrerUncheckedCreateNestedManyWithoutOrganizationInput
@@ -50649,6 +54506,7 @@ export namespace Prisma {
     branches?: BranchUpdateManyWithoutOrganizationNestedInput
     courses?: CourseUpdateManyWithoutOrganizationNestedInput
     enquiries?: EnquiryUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUpdateManyWithoutOrganizationNestedInput
     modulePermissions?: ModulePermissionUpdateManyWithoutOrganizationNestedInput
     attendances?: AttendanceUpdateManyWithoutOrganizationNestedInput
     referrers?: ReferrerUpdateManyWithoutOrganizationNestedInput
@@ -50687,6 +54545,7 @@ export namespace Prisma {
     branches?: BranchUncheckedUpdateManyWithoutOrganizationNestedInput
     courses?: CourseUncheckedUpdateManyWithoutOrganizationNestedInput
     enquiries?: EnquiryUncheckedUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutOrganizationNestedInput
     modulePermissions?: ModulePermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
     referrers?: ReferrerUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -50724,6 +54583,7 @@ export namespace Prisma {
     branches?: BranchCreateNestedManyWithoutOrganizationInput
     courses?: CourseCreateNestedManyWithoutOrganizationInput
     enquiries?: EnquiryCreateNestedManyWithoutOrganizationInput
+    leads?: LeadCreateNestedManyWithoutOrganizationInput
     walletTransactions?: WalletTransactionCreateNestedManyWithoutOrganizationInput
     modulePermissions?: ModulePermissionCreateNestedManyWithoutOrganizationInput
     attendances?: AttendanceCreateNestedManyWithoutOrganizationInput
@@ -50762,6 +54622,7 @@ export namespace Prisma {
     branches?: BranchUncheckedCreateNestedManyWithoutOrganizationInput
     courses?: CourseUncheckedCreateNestedManyWithoutOrganizationInput
     enquiries?: EnquiryUncheckedCreateNestedManyWithoutOrganizationInput
+    leads?: LeadUncheckedCreateNestedManyWithoutOrganizationInput
     walletTransactions?: WalletTransactionUncheckedCreateNestedManyWithoutOrganizationInput
     modulePermissions?: ModulePermissionUncheckedCreateNestedManyWithoutOrganizationInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
@@ -50933,6 +54794,7 @@ export namespace Prisma {
     branches?: BranchUpdateManyWithoutOrganizationNestedInput
     courses?: CourseUpdateManyWithoutOrganizationNestedInput
     enquiries?: EnquiryUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUpdateManyWithoutOrganizationNestedInput
     walletTransactions?: WalletTransactionUpdateManyWithoutOrganizationNestedInput
     modulePermissions?: ModulePermissionUpdateManyWithoutOrganizationNestedInput
     attendances?: AttendanceUpdateManyWithoutOrganizationNestedInput
@@ -50971,6 +54833,7 @@ export namespace Prisma {
     branches?: BranchUncheckedUpdateManyWithoutOrganizationNestedInput
     courses?: CourseUncheckedUpdateManyWithoutOrganizationNestedInput
     enquiries?: EnquiryUncheckedUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutOrganizationNestedInput
     walletTransactions?: WalletTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
     modulePermissions?: ModulePermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -51132,6 +54995,7 @@ export namespace Prisma {
     members?: OrganizationMemberCreateNestedManyWithoutOrganizationInput
     courses?: CourseCreateNestedManyWithoutOrganizationInput
     enquiries?: EnquiryCreateNestedManyWithoutOrganizationInput
+    leads?: LeadCreateNestedManyWithoutOrganizationInput
     walletTransactions?: WalletTransactionCreateNestedManyWithoutOrganizationInput
     modulePermissions?: ModulePermissionCreateNestedManyWithoutOrganizationInput
     attendances?: AttendanceCreateNestedManyWithoutOrganizationInput
@@ -51170,6 +55034,7 @@ export namespace Prisma {
     members?: OrganizationMemberUncheckedCreateNestedManyWithoutOrganizationInput
     courses?: CourseUncheckedCreateNestedManyWithoutOrganizationInput
     enquiries?: EnquiryUncheckedCreateNestedManyWithoutOrganizationInput
+    leads?: LeadUncheckedCreateNestedManyWithoutOrganizationInput
     walletTransactions?: WalletTransactionUncheckedCreateNestedManyWithoutOrganizationInput
     modulePermissions?: ModulePermissionUncheckedCreateNestedManyWithoutOrganizationInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
@@ -51301,6 +55166,7 @@ export namespace Prisma {
     batch?: BatchCreateNestedOneWithoutStudentsInput
     studentCourses?: StudentCourseCreateNestedManyWithoutStudentInput
     receipts?: ReceiptCreateNestedManyWithoutStudentInput
+    additionalFees?: AdditionalFeeCreateNestedManyWithoutStudentInput
     attendances?: AttendanceCreateNestedManyWithoutStudentInput
     referral?: ReferralCreateNestedOneWithoutStudentInput
   }
@@ -51383,6 +55249,7 @@ export namespace Prisma {
     batchId?: string | null
     studentCourses?: StudentCourseUncheckedCreateNestedManyWithoutStudentInput
     receipts?: ReceiptUncheckedCreateNestedManyWithoutStudentInput
+    additionalFees?: AdditionalFeeUncheckedCreateNestedManyWithoutStudentInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutStudentInput
     referral?: ReferralUncheckedCreateNestedOneWithoutStudentInput
   }
@@ -51408,6 +55275,7 @@ export namespace Prisma {
     description?: string | null
     status?: string
     source?: string | null
+    followUpDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     organization: OrganizationCreateNestedOneWithoutEnquiriesInput
@@ -51426,6 +55294,7 @@ export namespace Prisma {
     description?: string | null
     status?: string
     source?: string | null
+    followUpDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     organizationId: string
@@ -51439,6 +55308,49 @@ export namespace Prisma {
 
   export type EnquiryCreateManyBranchInputEnvelope = {
     data: EnquiryCreateManyBranchInput | EnquiryCreateManyBranchInput[]
+  }
+
+  export type LeadCreateWithoutBranchInput = {
+    id?: string
+    firstName: string
+    lastName: string
+    email?: string | null
+    phone?: string | null
+    source?: string
+    stage?: string
+    company?: string | null
+    value?: number
+    notes?: string | null
+    assignedTo?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutLeadsInput
+  }
+
+  export type LeadUncheckedCreateWithoutBranchInput = {
+    id?: string
+    firstName: string
+    lastName: string
+    email?: string | null
+    phone?: string | null
+    source?: string
+    stage?: string
+    company?: string | null
+    value?: number
+    notes?: string | null
+    assignedTo?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organizationId: string
+  }
+
+  export type LeadCreateOrConnectWithoutBranchInput = {
+    where: LeadWhereUniqueInput
+    create: XOR<LeadCreateWithoutBranchInput, LeadUncheckedCreateWithoutBranchInput>
+  }
+
+  export type LeadCreateManyBranchInputEnvelope = {
+    data: LeadCreateManyBranchInput | LeadCreateManyBranchInput[]
   }
 
   export type AttendanceCreateWithoutBranchInput = {
@@ -51555,6 +55467,7 @@ export namespace Prisma {
     members?: OrganizationMemberUpdateManyWithoutOrganizationNestedInput
     courses?: CourseUpdateManyWithoutOrganizationNestedInput
     enquiries?: EnquiryUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUpdateManyWithoutOrganizationNestedInput
     walletTransactions?: WalletTransactionUpdateManyWithoutOrganizationNestedInput
     modulePermissions?: ModulePermissionUpdateManyWithoutOrganizationNestedInput
     attendances?: AttendanceUpdateManyWithoutOrganizationNestedInput
@@ -51593,6 +55506,7 @@ export namespace Prisma {
     members?: OrganizationMemberUncheckedUpdateManyWithoutOrganizationNestedInput
     courses?: CourseUncheckedUpdateManyWithoutOrganizationNestedInput
     enquiries?: EnquiryUncheckedUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutOrganizationNestedInput
     walletTransactions?: WalletTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
     modulePermissions?: ModulePermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -51728,6 +55642,22 @@ export namespace Prisma {
   export type EnquiryUpdateManyWithWhereWithoutBranchInput = {
     where: EnquiryScalarWhereInput
     data: XOR<EnquiryUpdateManyMutationInput, EnquiryUncheckedUpdateManyWithoutBranchInput>
+  }
+
+  export type LeadUpsertWithWhereUniqueWithoutBranchInput = {
+    where: LeadWhereUniqueInput
+    update: XOR<LeadUpdateWithoutBranchInput, LeadUncheckedUpdateWithoutBranchInput>
+    create: XOR<LeadCreateWithoutBranchInput, LeadUncheckedCreateWithoutBranchInput>
+  }
+
+  export type LeadUpdateWithWhereUniqueWithoutBranchInput = {
+    where: LeadWhereUniqueInput
+    data: XOR<LeadUpdateWithoutBranchInput, LeadUncheckedUpdateWithoutBranchInput>
+  }
+
+  export type LeadUpdateManyWithWhereWithoutBranchInput = {
+    where: LeadScalarWhereInput
+    data: XOR<LeadUpdateManyMutationInput, LeadUncheckedUpdateManyWithoutBranchInput>
   }
 
   export type AttendanceUpsertWithWhereUniqueWithoutBranchInput = {
@@ -51896,6 +55826,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutBranchesInput
     students?: StudentCreateNestedManyWithoutBranchInput
     enquiries?: EnquiryCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
     attendances?: AttendanceCreateNestedManyWithoutBranchInput
     referrers?: ReferrerCreateNestedManyWithoutBranchInput
   }
@@ -51917,6 +55848,7 @@ export namespace Prisma {
     organizationId: string
     students?: StudentUncheckedCreateNestedManyWithoutBranchInput
     enquiries?: EnquiryUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutBranchInput
     referrers?: ReferrerUncheckedCreateNestedManyWithoutBranchInput
   }
@@ -52077,6 +56009,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutBranchesNestedInput
     students?: StudentUpdateManyWithoutBranchNestedInput
     enquiries?: EnquiryUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUpdateManyWithoutBranchNestedInput
     referrers?: ReferrerUpdateManyWithoutBranchNestedInput
   }
@@ -52098,6 +56031,7 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     students?: StudentUncheckedUpdateManyWithoutBranchNestedInput
     enquiries?: EnquiryUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutBranchNestedInput
     referrers?: ReferrerUncheckedUpdateManyWithoutBranchNestedInput
   }
@@ -52119,6 +56053,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutBranchesInput
     userBranches?: UserBranchCreateNestedManyWithoutBranchInput
     enquiries?: EnquiryCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
     attendances?: AttendanceCreateNestedManyWithoutBranchInput
     referrers?: ReferrerCreateNestedManyWithoutBranchInput
   }
@@ -52140,6 +56075,7 @@ export namespace Prisma {
     organizationId: string
     userBranches?: UserBranchUncheckedCreateNestedManyWithoutBranchInput
     enquiries?: EnquiryUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutBranchInput
     referrers?: ReferrerUncheckedCreateNestedManyWithoutBranchInput
   }
@@ -52290,6 +56226,7 @@ export namespace Prisma {
     mode: string
     transactionId?: string | null
     remark?: string | null
+    proofUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -52304,6 +56241,7 @@ export namespace Prisma {
     mode: string
     transactionId?: string | null
     remark?: string | null
+    proofUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -52315,6 +56253,53 @@ export namespace Prisma {
 
   export type ReceiptCreateManyStudentInputEnvelope = {
     data: ReceiptCreateManyStudentInput | ReceiptCreateManyStudentInput[]
+  }
+
+  export type AdditionalFeeCreateWithoutStudentInput = {
+    id?: string
+    feeDisplayId?: string | null
+    feeYear?: number | null
+    feeSequence?: number | null
+    title: string
+    feeType: string
+    amount: number
+    status?: string
+    dueDate?: Date | string | null
+    paidDate?: Date | string | null
+    receiptNo?: string | null
+    transactionId?: string | null
+    proofUrl?: string | null
+    remarks?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AdditionalFeeUncheckedCreateWithoutStudentInput = {
+    id?: string
+    feeDisplayId?: string | null
+    feeYear?: number | null
+    feeSequence?: number | null
+    title: string
+    feeType: string
+    amount: number
+    status?: string
+    dueDate?: Date | string | null
+    paidDate?: Date | string | null
+    receiptNo?: string | null
+    transactionId?: string | null
+    proofUrl?: string | null
+    remarks?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AdditionalFeeCreateOrConnectWithoutStudentInput = {
+    where: AdditionalFeeWhereUniqueInput
+    create: XOR<AdditionalFeeCreateWithoutStudentInput, AdditionalFeeUncheckedCreateWithoutStudentInput>
+  }
+
+  export type AdditionalFeeCreateManyStudentInputEnvelope = {
+    data: AdditionalFeeCreateManyStudentInput | AdditionalFeeCreateManyStudentInput[]
   }
 
   export type AttendanceCreateWithoutStudentInput = {
@@ -52415,6 +56400,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutBranchesNestedInput
     userBranches?: UserBranchUpdateManyWithoutBranchNestedInput
     enquiries?: EnquiryUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUpdateManyWithoutBranchNestedInput
     referrers?: ReferrerUpdateManyWithoutBranchNestedInput
   }
@@ -52436,6 +56422,7 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     userBranches?: UserBranchUncheckedUpdateManyWithoutBranchNestedInput
     enquiries?: EnquiryUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutBranchNestedInput
     referrers?: ReferrerUncheckedUpdateManyWithoutBranchNestedInput
   }
@@ -52609,8 +56596,48 @@ export namespace Prisma {
     transactionId?: StringNullableFilter<"Receipt"> | string | null
     remark?: StringNullableFilter<"Receipt"> | string | null
     studentId?: StringFilter<"Receipt"> | string
+    proofUrl?: StringNullableFilter<"Receipt"> | string | null
     createdAt?: DateTimeFilter<"Receipt"> | Date | string
     updatedAt?: DateTimeFilter<"Receipt"> | Date | string
+  }
+
+  export type AdditionalFeeUpsertWithWhereUniqueWithoutStudentInput = {
+    where: AdditionalFeeWhereUniqueInput
+    update: XOR<AdditionalFeeUpdateWithoutStudentInput, AdditionalFeeUncheckedUpdateWithoutStudentInput>
+    create: XOR<AdditionalFeeCreateWithoutStudentInput, AdditionalFeeUncheckedCreateWithoutStudentInput>
+  }
+
+  export type AdditionalFeeUpdateWithWhereUniqueWithoutStudentInput = {
+    where: AdditionalFeeWhereUniqueInput
+    data: XOR<AdditionalFeeUpdateWithoutStudentInput, AdditionalFeeUncheckedUpdateWithoutStudentInput>
+  }
+
+  export type AdditionalFeeUpdateManyWithWhereWithoutStudentInput = {
+    where: AdditionalFeeScalarWhereInput
+    data: XOR<AdditionalFeeUpdateManyMutationInput, AdditionalFeeUncheckedUpdateManyWithoutStudentInput>
+  }
+
+  export type AdditionalFeeScalarWhereInput = {
+    AND?: AdditionalFeeScalarWhereInput | AdditionalFeeScalarWhereInput[]
+    OR?: AdditionalFeeScalarWhereInput[]
+    NOT?: AdditionalFeeScalarWhereInput | AdditionalFeeScalarWhereInput[]
+    id?: StringFilter<"AdditionalFee"> | string
+    studentId?: StringFilter<"AdditionalFee"> | string
+    feeDisplayId?: StringNullableFilter<"AdditionalFee"> | string | null
+    feeYear?: IntNullableFilter<"AdditionalFee"> | number | null
+    feeSequence?: IntNullableFilter<"AdditionalFee"> | number | null
+    title?: StringFilter<"AdditionalFee"> | string
+    feeType?: StringFilter<"AdditionalFee"> | string
+    amount?: FloatFilter<"AdditionalFee"> | number
+    status?: StringFilter<"AdditionalFee"> | string
+    dueDate?: DateTimeNullableFilter<"AdditionalFee"> | Date | string | null
+    paidDate?: DateTimeNullableFilter<"AdditionalFee"> | Date | string | null
+    receiptNo?: StringNullableFilter<"AdditionalFee"> | string | null
+    transactionId?: StringNullableFilter<"AdditionalFee"> | string | null
+    proofUrl?: StringNullableFilter<"AdditionalFee"> | string | null
+    remarks?: StringNullableFilter<"AdditionalFee"> | string | null
+    createdAt?: DateTimeFilter<"AdditionalFee"> | Date | string
+    updatedAt?: DateTimeFilter<"AdditionalFee"> | Date | string
   }
 
   export type AttendanceUpsertWithWhereUniqueWithoutStudentInput = {
@@ -52750,6 +56777,7 @@ export namespace Prisma {
     course?: CourseCreateNestedOneWithoutStudentsInput
     batch?: BatchCreateNestedOneWithoutStudentsInput
     receipts?: ReceiptCreateNestedManyWithoutStudentInput
+    additionalFees?: AdditionalFeeCreateNestedManyWithoutStudentInput
     attendances?: AttendanceCreateNestedManyWithoutStudentInput
     referral?: ReferralCreateNestedOneWithoutStudentInput
   }
@@ -52832,6 +56860,7 @@ export namespace Prisma {
     courseId?: string | null
     batchId?: string | null
     receipts?: ReceiptUncheckedCreateNestedManyWithoutStudentInput
+    additionalFees?: AdditionalFeeUncheckedCreateNestedManyWithoutStudentInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutStudentInput
     referral?: ReferralUncheckedCreateNestedOneWithoutStudentInput
   }
@@ -52912,6 +56941,7 @@ export namespace Prisma {
     receiptNo?: string | null
     transactionId?: string | null
     remarks?: string | null
+    proofUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -52928,6 +56958,7 @@ export namespace Prisma {
     receiptNo?: string | null
     transactionId?: string | null
     remarks?: string | null
+    proofUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -53049,6 +57080,7 @@ export namespace Prisma {
     course?: CourseUpdateOneWithoutStudentsNestedInput
     batch?: BatchUpdateOneWithoutStudentsNestedInput
     receipts?: ReceiptUpdateManyWithoutStudentNestedInput
+    additionalFees?: AdditionalFeeUpdateManyWithoutStudentNestedInput
     attendances?: AttendanceUpdateManyWithoutStudentNestedInput
     referral?: ReferralUpdateOneWithoutStudentNestedInput
   }
@@ -53131,6 +57163,7 @@ export namespace Prisma {
     courseId?: NullableStringFieldUpdateOperationsInput | string | null
     batchId?: NullableStringFieldUpdateOperationsInput | string | null
     receipts?: ReceiptUncheckedUpdateManyWithoutStudentNestedInput
+    additionalFees?: AdditionalFeeUncheckedUpdateManyWithoutStudentNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutStudentNestedInput
     referral?: ReferralUncheckedUpdateOneWithoutStudentNestedInput
   }
@@ -53232,6 +57265,7 @@ export namespace Prisma {
     receiptNo?: StringNullableFilter<"Installment"> | string | null
     transactionId?: StringNullableFilter<"Installment"> | string | null
     remarks?: StringNullableFilter<"Installment"> | string | null
+    proofUrl?: StringNullableFilter<"Installment"> | string | null
     createdAt?: DateTimeFilter<"Installment"> | Date | string
     updatedAt?: DateTimeFilter<"Installment"> | Date | string
   }
@@ -53508,6 +57542,7 @@ export namespace Prisma {
     members?: OrganizationMemberCreateNestedManyWithoutOrganizationInput
     branches?: BranchCreateNestedManyWithoutOrganizationInput
     enquiries?: EnquiryCreateNestedManyWithoutOrganizationInput
+    leads?: LeadCreateNestedManyWithoutOrganizationInput
     walletTransactions?: WalletTransactionCreateNestedManyWithoutOrganizationInput
     modulePermissions?: ModulePermissionCreateNestedManyWithoutOrganizationInput
     attendances?: AttendanceCreateNestedManyWithoutOrganizationInput
@@ -53546,6 +57581,7 @@ export namespace Prisma {
     members?: OrganizationMemberUncheckedCreateNestedManyWithoutOrganizationInput
     branches?: BranchUncheckedCreateNestedManyWithoutOrganizationInput
     enquiries?: EnquiryUncheckedCreateNestedManyWithoutOrganizationInput
+    leads?: LeadUncheckedCreateNestedManyWithoutOrganizationInput
     walletTransactions?: WalletTransactionUncheckedCreateNestedManyWithoutOrganizationInput
     modulePermissions?: ModulePermissionUncheckedCreateNestedManyWithoutOrganizationInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
@@ -53661,6 +57697,7 @@ export namespace Prisma {
     batch?: BatchCreateNestedOneWithoutStudentsInput
     studentCourses?: StudentCourseCreateNestedManyWithoutStudentInput
     receipts?: ReceiptCreateNestedManyWithoutStudentInput
+    additionalFees?: AdditionalFeeCreateNestedManyWithoutStudentInput
     attendances?: AttendanceCreateNestedManyWithoutStudentInput
     referral?: ReferralCreateNestedOneWithoutStudentInput
   }
@@ -53743,6 +57780,7 @@ export namespace Prisma {
     batchId?: string | null
     studentCourses?: StudentCourseUncheckedCreateNestedManyWithoutStudentInput
     receipts?: ReceiptUncheckedCreateNestedManyWithoutStudentInput
+    additionalFees?: AdditionalFeeUncheckedCreateNestedManyWithoutStudentInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutStudentInput
     referral?: ReferralUncheckedCreateNestedOneWithoutStudentInput
   }
@@ -53844,6 +57882,7 @@ export namespace Prisma {
     description?: string | null
     status?: string
     source?: string | null
+    followUpDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     organization: OrganizationCreateNestedOneWithoutEnquiriesInput
@@ -53862,6 +57901,7 @@ export namespace Prisma {
     description?: string | null
     status?: string
     source?: string | null
+    followUpDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     organizationId: string
@@ -53919,6 +57959,7 @@ export namespace Prisma {
     members?: OrganizationMemberUpdateManyWithoutOrganizationNestedInput
     branches?: BranchUpdateManyWithoutOrganizationNestedInput
     enquiries?: EnquiryUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUpdateManyWithoutOrganizationNestedInput
     walletTransactions?: WalletTransactionUpdateManyWithoutOrganizationNestedInput
     modulePermissions?: ModulePermissionUpdateManyWithoutOrganizationNestedInput
     attendances?: AttendanceUpdateManyWithoutOrganizationNestedInput
@@ -53957,6 +57998,7 @@ export namespace Prisma {
     members?: OrganizationMemberUncheckedUpdateManyWithoutOrganizationNestedInput
     branches?: BranchUncheckedUpdateManyWithoutOrganizationNestedInput
     enquiries?: EnquiryUncheckedUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutOrganizationNestedInput
     walletTransactions?: WalletTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
     modulePermissions?: ModulePermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -54210,6 +58252,7 @@ export namespace Prisma {
     course?: CourseCreateNestedOneWithoutStudentsInput
     studentCourses?: StudentCourseCreateNestedManyWithoutStudentInput
     receipts?: ReceiptCreateNestedManyWithoutStudentInput
+    additionalFees?: AdditionalFeeCreateNestedManyWithoutStudentInput
     attendances?: AttendanceCreateNestedManyWithoutStudentInput
     referral?: ReferralCreateNestedOneWithoutStudentInput
   }
@@ -54292,6 +58335,7 @@ export namespace Prisma {
     courseId?: string | null
     studentCourses?: StudentCourseUncheckedCreateNestedManyWithoutStudentInput
     receipts?: ReceiptUncheckedCreateNestedManyWithoutStudentInput
+    additionalFees?: AdditionalFeeUncheckedCreateNestedManyWithoutStudentInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutStudentInput
     referral?: ReferralUncheckedCreateNestedOneWithoutStudentInput
   }
@@ -54625,6 +58669,7 @@ export namespace Prisma {
     members?: OrganizationMemberCreateNestedManyWithoutOrganizationInput
     branches?: BranchCreateNestedManyWithoutOrganizationInput
     courses?: CourseCreateNestedManyWithoutOrganizationInput
+    leads?: LeadCreateNestedManyWithoutOrganizationInput
     walletTransactions?: WalletTransactionCreateNestedManyWithoutOrganizationInput
     modulePermissions?: ModulePermissionCreateNestedManyWithoutOrganizationInput
     attendances?: AttendanceCreateNestedManyWithoutOrganizationInput
@@ -54663,6 +58708,7 @@ export namespace Prisma {
     members?: OrganizationMemberUncheckedCreateNestedManyWithoutOrganizationInput
     branches?: BranchUncheckedCreateNestedManyWithoutOrganizationInput
     courses?: CourseUncheckedCreateNestedManyWithoutOrganizationInput
+    leads?: LeadUncheckedCreateNestedManyWithoutOrganizationInput
     walletTransactions?: WalletTransactionUncheckedCreateNestedManyWithoutOrganizationInput
     modulePermissions?: ModulePermissionUncheckedCreateNestedManyWithoutOrganizationInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
@@ -54692,6 +58738,7 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutBranchesInput
     userBranches?: UserBranchCreateNestedManyWithoutBranchInput
     students?: StudentCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
     attendances?: AttendanceCreateNestedManyWithoutBranchInput
     referrers?: ReferrerCreateNestedManyWithoutBranchInput
   }
@@ -54713,6 +58760,7 @@ export namespace Prisma {
     organizationId: string
     userBranches?: UserBranchUncheckedCreateNestedManyWithoutBranchInput
     students?: StudentUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutBranchInput
     referrers?: ReferrerUncheckedCreateNestedManyWithoutBranchInput
   }
@@ -54823,6 +58871,7 @@ export namespace Prisma {
     members?: OrganizationMemberUpdateManyWithoutOrganizationNestedInput
     branches?: BranchUpdateManyWithoutOrganizationNestedInput
     courses?: CourseUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUpdateManyWithoutOrganizationNestedInput
     walletTransactions?: WalletTransactionUpdateManyWithoutOrganizationNestedInput
     modulePermissions?: ModulePermissionUpdateManyWithoutOrganizationNestedInput
     attendances?: AttendanceUpdateManyWithoutOrganizationNestedInput
@@ -54861,6 +58910,7 @@ export namespace Prisma {
     members?: OrganizationMemberUncheckedUpdateManyWithoutOrganizationNestedInput
     branches?: BranchUncheckedUpdateManyWithoutOrganizationNestedInput
     courses?: CourseUncheckedUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutOrganizationNestedInput
     walletTransactions?: WalletTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
     modulePermissions?: ModulePermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -54896,6 +58946,7 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutBranchesNestedInput
     userBranches?: UserBranchUpdateManyWithoutBranchNestedInput
     students?: StudentUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUpdateManyWithoutBranchNestedInput
     referrers?: ReferrerUpdateManyWithoutBranchNestedInput
   }
@@ -54917,6 +58968,7 @@ export namespace Prisma {
     organizationId?: StringFieldUpdateOperationsInput | string
     userBranches?: UserBranchUncheckedUpdateManyWithoutBranchNestedInput
     students?: StudentUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutBranchNestedInput
     referrers?: ReferrerUncheckedUpdateManyWithoutBranchNestedInput
   }
@@ -55064,6 +59116,7 @@ export namespace Prisma {
     course?: CourseCreateNestedOneWithoutStudentsInput
     batch?: BatchCreateNestedOneWithoutStudentsInput
     studentCourses?: StudentCourseCreateNestedManyWithoutStudentInput
+    additionalFees?: AdditionalFeeCreateNestedManyWithoutStudentInput
     attendances?: AttendanceCreateNestedManyWithoutStudentInput
     referral?: ReferralCreateNestedOneWithoutStudentInput
   }
@@ -55146,6 +59199,7 @@ export namespace Prisma {
     courseId?: string | null
     batchId?: string | null
     studentCourses?: StudentCourseUncheckedCreateNestedManyWithoutStudentInput
+    additionalFees?: AdditionalFeeUncheckedCreateNestedManyWithoutStudentInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutStudentInput
     referral?: ReferralUncheckedCreateNestedOneWithoutStudentInput
   }
@@ -55244,6 +59298,7 @@ export namespace Prisma {
     course?: CourseUpdateOneWithoutStudentsNestedInput
     batch?: BatchUpdateOneWithoutStudentsNestedInput
     studentCourses?: StudentCourseUpdateManyWithoutStudentNestedInput
+    additionalFees?: AdditionalFeeUpdateManyWithoutStudentNestedInput
     attendances?: AttendanceUpdateManyWithoutStudentNestedInput
     referral?: ReferralUpdateOneWithoutStudentNestedInput
   }
@@ -55326,8 +59381,633 @@ export namespace Prisma {
     courseId?: NullableStringFieldUpdateOperationsInput | string | null
     batchId?: NullableStringFieldUpdateOperationsInput | string | null
     studentCourses?: StudentCourseUncheckedUpdateManyWithoutStudentNestedInput
+    additionalFees?: AdditionalFeeUncheckedUpdateManyWithoutStudentNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutStudentNestedInput
     referral?: ReferralUncheckedUpdateOneWithoutStudentNestedInput
+  }
+
+  export type StudentCreateWithoutAdditionalFeesInput = {
+    id?: string
+    studentDisplayId?: string | null
+    studentYear?: number | null
+    studentSequence?: number | null
+    instituteCode?: string
+    admissionDisplayId?: string | null
+    admissionYear?: number | null
+    admissionSequence?: number | null
+    firstName: string
+    lastName: string
+    email?: string | null
+    phone?: string | null
+    dateOfBirth?: Date | string | null
+    gender?: string | null
+    address?: string | null
+    city?: string | null
+    state?: string | null
+    country?: string | null
+    zipCode?: string | null
+    enrollmentNo?: string | null
+    paymentStatus?: string
+    enrollmentDate?: Date | string
+    status?: string
+    notes?: string | null
+    fathersName?: string | null
+    fathersPhone?: string | null
+    mothersName?: string | null
+    category?: string | null
+    maritalStatus?: string | null
+    aadhaarNumber?: string | null
+    alternatePhone?: string | null
+    addressLine1?: string | null
+    addressLine2?: string | null
+    district?: string | null
+    imageUrl?: string | null
+    schoolCollege?: string | null
+    referredBy?: string | null
+    highestQualification?: string | null
+    hsSchoolName?: string | null
+    hsBoard?: string | null
+    hsPassingYear?: string | null
+    hsPercentage?: string | null
+    hssSchoolName?: string | null
+    hssBoard?: string | null
+    hssStream?: string | null
+    hssPassingYear?: string | null
+    hssPercentage?: string | null
+    gradCollegeName?: string | null
+    gradUniversity?: string | null
+    gradDegree?: string | null
+    gradPassingYear?: string | null
+    gradPercentage?: string | null
+    pgCollegeName?: string | null
+    pgUniversity?: string | null
+    pgDegree?: string | null
+    pgPassingYear?: string | null
+    pgPercentage?: string | null
+    totalAmount?: number
+    discountAmount?: number
+    netPayableFee?: number
+    isPartPayment?: boolean
+    installmentPlan?: string | null
+    installmentMode?: string | null
+    fullPayment?: string | null
+    receivedBy?: string | null
+    aadhaarCardUrl?: string | null
+    hsMarksheetUrl?: string | null
+    hssMarksheetUrl?: string | null
+    gradDegreeUrl?: string | null
+    pgDegreeUrl?: string | null
+    admissionFormUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    branch: BranchCreateNestedOneWithoutStudentsInput
+    course?: CourseCreateNestedOneWithoutStudentsInput
+    batch?: BatchCreateNestedOneWithoutStudentsInput
+    studentCourses?: StudentCourseCreateNestedManyWithoutStudentInput
+    receipts?: ReceiptCreateNestedManyWithoutStudentInput
+    attendances?: AttendanceCreateNestedManyWithoutStudentInput
+    referral?: ReferralCreateNestedOneWithoutStudentInput
+  }
+
+  export type StudentUncheckedCreateWithoutAdditionalFeesInput = {
+    id?: string
+    studentDisplayId?: string | null
+    studentYear?: number | null
+    studentSequence?: number | null
+    instituteCode?: string
+    admissionDisplayId?: string | null
+    admissionYear?: number | null
+    admissionSequence?: number | null
+    firstName: string
+    lastName: string
+    email?: string | null
+    phone?: string | null
+    dateOfBirth?: Date | string | null
+    gender?: string | null
+    address?: string | null
+    city?: string | null
+    state?: string | null
+    country?: string | null
+    zipCode?: string | null
+    enrollmentNo?: string | null
+    paymentStatus?: string
+    enrollmentDate?: Date | string
+    status?: string
+    notes?: string | null
+    fathersName?: string | null
+    fathersPhone?: string | null
+    mothersName?: string | null
+    category?: string | null
+    maritalStatus?: string | null
+    aadhaarNumber?: string | null
+    alternatePhone?: string | null
+    addressLine1?: string | null
+    addressLine2?: string | null
+    district?: string | null
+    imageUrl?: string | null
+    schoolCollege?: string | null
+    referredBy?: string | null
+    highestQualification?: string | null
+    hsSchoolName?: string | null
+    hsBoard?: string | null
+    hsPassingYear?: string | null
+    hsPercentage?: string | null
+    hssSchoolName?: string | null
+    hssBoard?: string | null
+    hssStream?: string | null
+    hssPassingYear?: string | null
+    hssPercentage?: string | null
+    gradCollegeName?: string | null
+    gradUniversity?: string | null
+    gradDegree?: string | null
+    gradPassingYear?: string | null
+    gradPercentage?: string | null
+    pgCollegeName?: string | null
+    pgUniversity?: string | null
+    pgDegree?: string | null
+    pgPassingYear?: string | null
+    pgPercentage?: string | null
+    totalAmount?: number
+    discountAmount?: number
+    netPayableFee?: number
+    isPartPayment?: boolean
+    installmentPlan?: string | null
+    installmentMode?: string | null
+    fullPayment?: string | null
+    receivedBy?: string | null
+    aadhaarCardUrl?: string | null
+    hsMarksheetUrl?: string | null
+    hssMarksheetUrl?: string | null
+    gradDegreeUrl?: string | null
+    pgDegreeUrl?: string | null
+    admissionFormUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    branchId: string
+    courseId?: string | null
+    batchId?: string | null
+    studentCourses?: StudentCourseUncheckedCreateNestedManyWithoutStudentInput
+    receipts?: ReceiptUncheckedCreateNestedManyWithoutStudentInput
+    attendances?: AttendanceUncheckedCreateNestedManyWithoutStudentInput
+    referral?: ReferralUncheckedCreateNestedOneWithoutStudentInput
+  }
+
+  export type StudentCreateOrConnectWithoutAdditionalFeesInput = {
+    where: StudentWhereUniqueInput
+    create: XOR<StudentCreateWithoutAdditionalFeesInput, StudentUncheckedCreateWithoutAdditionalFeesInput>
+  }
+
+  export type StudentUpsertWithoutAdditionalFeesInput = {
+    update: XOR<StudentUpdateWithoutAdditionalFeesInput, StudentUncheckedUpdateWithoutAdditionalFeesInput>
+    create: XOR<StudentCreateWithoutAdditionalFeesInput, StudentUncheckedCreateWithoutAdditionalFeesInput>
+    where?: StudentWhereInput
+  }
+
+  export type StudentUpdateToOneWithWhereWithoutAdditionalFeesInput = {
+    where?: StudentWhereInput
+    data: XOR<StudentUpdateWithoutAdditionalFeesInput, StudentUncheckedUpdateWithoutAdditionalFeesInput>
+  }
+
+  export type StudentUpdateWithoutAdditionalFeesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentDisplayId?: NullableStringFieldUpdateOperationsInput | string | null
+    studentYear?: NullableIntFieldUpdateOperationsInput | number | null
+    studentSequence?: NullableIntFieldUpdateOperationsInput | number | null
+    instituteCode?: StringFieldUpdateOperationsInput | string
+    admissionDisplayId?: NullableStringFieldUpdateOperationsInput | string | null
+    admissionYear?: NullableIntFieldUpdateOperationsInput | number | null
+    admissionSequence?: NullableIntFieldUpdateOperationsInput | number | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    zipCode?: NullableStringFieldUpdateOperationsInput | string | null
+    enrollmentNo?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentStatus?: StringFieldUpdateOperationsInput | string
+    enrollmentDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    fathersName?: NullableStringFieldUpdateOperationsInput | string | null
+    fathersPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    mothersName?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    maritalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    aadhaarNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    alternatePhone?: NullableStringFieldUpdateOperationsInput | string | null
+    addressLine1?: NullableStringFieldUpdateOperationsInput | string | null
+    addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    schoolCollege?: NullableStringFieldUpdateOperationsInput | string | null
+    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
+    highestQualification?: NullableStringFieldUpdateOperationsInput | string | null
+    hsSchoolName?: NullableStringFieldUpdateOperationsInput | string | null
+    hsBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    hsPassingYear?: NullableStringFieldUpdateOperationsInput | string | null
+    hsPercentage?: NullableStringFieldUpdateOperationsInput | string | null
+    hssSchoolName?: NullableStringFieldUpdateOperationsInput | string | null
+    hssBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    hssStream?: NullableStringFieldUpdateOperationsInput | string | null
+    hssPassingYear?: NullableStringFieldUpdateOperationsInput | string | null
+    hssPercentage?: NullableStringFieldUpdateOperationsInput | string | null
+    gradCollegeName?: NullableStringFieldUpdateOperationsInput | string | null
+    gradUniversity?: NullableStringFieldUpdateOperationsInput | string | null
+    gradDegree?: NullableStringFieldUpdateOperationsInput | string | null
+    gradPassingYear?: NullableStringFieldUpdateOperationsInput | string | null
+    gradPercentage?: NullableStringFieldUpdateOperationsInput | string | null
+    pgCollegeName?: NullableStringFieldUpdateOperationsInput | string | null
+    pgUniversity?: NullableStringFieldUpdateOperationsInput | string | null
+    pgDegree?: NullableStringFieldUpdateOperationsInput | string | null
+    pgPassingYear?: NullableStringFieldUpdateOperationsInput | string | null
+    pgPercentage?: NullableStringFieldUpdateOperationsInput | string | null
+    totalAmount?: FloatFieldUpdateOperationsInput | number
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    netPayableFee?: FloatFieldUpdateOperationsInput | number
+    isPartPayment?: BoolFieldUpdateOperationsInput | boolean
+    installmentPlan?: NullableStringFieldUpdateOperationsInput | string | null
+    installmentMode?: NullableStringFieldUpdateOperationsInput | string | null
+    fullPayment?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    aadhaarCardUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    hsMarksheetUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    hssMarksheetUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    gradDegreeUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    pgDegreeUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    admissionFormUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    branch?: BranchUpdateOneRequiredWithoutStudentsNestedInput
+    course?: CourseUpdateOneWithoutStudentsNestedInput
+    batch?: BatchUpdateOneWithoutStudentsNestedInput
+    studentCourses?: StudentCourseUpdateManyWithoutStudentNestedInput
+    receipts?: ReceiptUpdateManyWithoutStudentNestedInput
+    attendances?: AttendanceUpdateManyWithoutStudentNestedInput
+    referral?: ReferralUpdateOneWithoutStudentNestedInput
+  }
+
+  export type StudentUncheckedUpdateWithoutAdditionalFeesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentDisplayId?: NullableStringFieldUpdateOperationsInput | string | null
+    studentYear?: NullableIntFieldUpdateOperationsInput | number | null
+    studentSequence?: NullableIntFieldUpdateOperationsInput | number | null
+    instituteCode?: StringFieldUpdateOperationsInput | string
+    admissionDisplayId?: NullableStringFieldUpdateOperationsInput | string | null
+    admissionYear?: NullableIntFieldUpdateOperationsInput | number | null
+    admissionSequence?: NullableIntFieldUpdateOperationsInput | number | null
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    dateOfBirth?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    zipCode?: NullableStringFieldUpdateOperationsInput | string | null
+    enrollmentNo?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentStatus?: StringFieldUpdateOperationsInput | string
+    enrollmentDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: StringFieldUpdateOperationsInput | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    fathersName?: NullableStringFieldUpdateOperationsInput | string | null
+    fathersPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    mothersName?: NullableStringFieldUpdateOperationsInput | string | null
+    category?: NullableStringFieldUpdateOperationsInput | string | null
+    maritalStatus?: NullableStringFieldUpdateOperationsInput | string | null
+    aadhaarNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    alternatePhone?: NullableStringFieldUpdateOperationsInput | string | null
+    addressLine1?: NullableStringFieldUpdateOperationsInput | string | null
+    addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    schoolCollege?: NullableStringFieldUpdateOperationsInput | string | null
+    referredBy?: NullableStringFieldUpdateOperationsInput | string | null
+    highestQualification?: NullableStringFieldUpdateOperationsInput | string | null
+    hsSchoolName?: NullableStringFieldUpdateOperationsInput | string | null
+    hsBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    hsPassingYear?: NullableStringFieldUpdateOperationsInput | string | null
+    hsPercentage?: NullableStringFieldUpdateOperationsInput | string | null
+    hssSchoolName?: NullableStringFieldUpdateOperationsInput | string | null
+    hssBoard?: NullableStringFieldUpdateOperationsInput | string | null
+    hssStream?: NullableStringFieldUpdateOperationsInput | string | null
+    hssPassingYear?: NullableStringFieldUpdateOperationsInput | string | null
+    hssPercentage?: NullableStringFieldUpdateOperationsInput | string | null
+    gradCollegeName?: NullableStringFieldUpdateOperationsInput | string | null
+    gradUniversity?: NullableStringFieldUpdateOperationsInput | string | null
+    gradDegree?: NullableStringFieldUpdateOperationsInput | string | null
+    gradPassingYear?: NullableStringFieldUpdateOperationsInput | string | null
+    gradPercentage?: NullableStringFieldUpdateOperationsInput | string | null
+    pgCollegeName?: NullableStringFieldUpdateOperationsInput | string | null
+    pgUniversity?: NullableStringFieldUpdateOperationsInput | string | null
+    pgDegree?: NullableStringFieldUpdateOperationsInput | string | null
+    pgPassingYear?: NullableStringFieldUpdateOperationsInput | string | null
+    pgPercentage?: NullableStringFieldUpdateOperationsInput | string | null
+    totalAmount?: FloatFieldUpdateOperationsInput | number
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    netPayableFee?: FloatFieldUpdateOperationsInput | number
+    isPartPayment?: BoolFieldUpdateOperationsInput | boolean
+    installmentPlan?: NullableStringFieldUpdateOperationsInput | string | null
+    installmentMode?: NullableStringFieldUpdateOperationsInput | string | null
+    fullPayment?: NullableStringFieldUpdateOperationsInput | string | null
+    receivedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    aadhaarCardUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    hsMarksheetUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    hssMarksheetUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    gradDegreeUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    pgDegreeUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    admissionFormUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    branchId?: StringFieldUpdateOperationsInput | string
+    courseId?: NullableStringFieldUpdateOperationsInput | string | null
+    batchId?: NullableStringFieldUpdateOperationsInput | string | null
+    studentCourses?: StudentCourseUncheckedUpdateManyWithoutStudentNestedInput
+    receipts?: ReceiptUncheckedUpdateManyWithoutStudentNestedInput
+    attendances?: AttendanceUncheckedUpdateManyWithoutStudentNestedInput
+    referral?: ReferralUncheckedUpdateOneWithoutStudentNestedInput
+  }
+
+  export type OrganizationCreateWithoutLeadsInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    logo?: string | null
+    industry?: string | null
+    size?: string | null
+    website?: string | null
+    phone?: string | null
+    email?: string | null
+    address?: string | null
+    city?: string | null
+    state?: string | null
+    country?: string | null
+    zipCode?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    planName?: string | null
+    planAmount?: number
+    planStartDate?: Date | string | null
+    planExpiryDate?: Date | string | null
+    emailBalance?: number
+    textBalance?: number
+    whatsappMarketingBalance?: number
+    whatsappUtilityBalance?: number
+    attendanceRules?: string | null
+    owner: UserCreateNestedOneWithoutOwnedOrganizationInput
+    members?: OrganizationMemberCreateNestedManyWithoutOrganizationInput
+    branches?: BranchCreateNestedManyWithoutOrganizationInput
+    courses?: CourseCreateNestedManyWithoutOrganizationInput
+    enquiries?: EnquiryCreateNestedManyWithoutOrganizationInput
+    walletTransactions?: WalletTransactionCreateNestedManyWithoutOrganizationInput
+    modulePermissions?: ModulePermissionCreateNestedManyWithoutOrganizationInput
+    attendances?: AttendanceCreateNestedManyWithoutOrganizationInput
+    referrers?: ReferrerCreateNestedManyWithoutOrganizationInput
+    referrals?: ReferralCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutLeadsInput = {
+    id?: string
+    name: string
+    slug: string
+    description?: string | null
+    logo?: string | null
+    industry?: string | null
+    size?: string | null
+    website?: string | null
+    phone?: string | null
+    email?: string | null
+    address?: string | null
+    city?: string | null
+    state?: string | null
+    country?: string | null
+    zipCode?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    planName?: string | null
+    planAmount?: number
+    planStartDate?: Date | string | null
+    planExpiryDate?: Date | string | null
+    emailBalance?: number
+    textBalance?: number
+    whatsappMarketingBalance?: number
+    whatsappUtilityBalance?: number
+    attendanceRules?: string | null
+    ownerId: string
+    members?: OrganizationMemberUncheckedCreateNestedManyWithoutOrganizationInput
+    branches?: BranchUncheckedCreateNestedManyWithoutOrganizationInput
+    courses?: CourseUncheckedCreateNestedManyWithoutOrganizationInput
+    enquiries?: EnquiryUncheckedCreateNestedManyWithoutOrganizationInput
+    walletTransactions?: WalletTransactionUncheckedCreateNestedManyWithoutOrganizationInput
+    modulePermissions?: ModulePermissionUncheckedCreateNestedManyWithoutOrganizationInput
+    attendances?: AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
+    referrers?: ReferrerUncheckedCreateNestedManyWithoutOrganizationInput
+    referrals?: ReferralUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutLeadsInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutLeadsInput, OrganizationUncheckedCreateWithoutLeadsInput>
+  }
+
+  export type BranchCreateWithoutLeadsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    address?: string | null
+    city?: string | null
+    state?: string | null
+    country?: string | null
+    zipCode?: string | null
+    phone?: string | null
+    email?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organization: OrganizationCreateNestedOneWithoutBranchesInput
+    userBranches?: UserBranchCreateNestedManyWithoutBranchInput
+    students?: StudentCreateNestedManyWithoutBranchInput
+    enquiries?: EnquiryCreateNestedManyWithoutBranchInput
+    attendances?: AttendanceCreateNestedManyWithoutBranchInput
+    referrers?: ReferrerCreateNestedManyWithoutBranchInput
+  }
+
+  export type BranchUncheckedCreateWithoutLeadsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    address?: string | null
+    city?: string | null
+    state?: string | null
+    country?: string | null
+    zipCode?: string | null
+    phone?: string | null
+    email?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organizationId: string
+    userBranches?: UserBranchUncheckedCreateNestedManyWithoutBranchInput
+    students?: StudentUncheckedCreateNestedManyWithoutBranchInput
+    enquiries?: EnquiryUncheckedCreateNestedManyWithoutBranchInput
+    attendances?: AttendanceUncheckedCreateNestedManyWithoutBranchInput
+    referrers?: ReferrerUncheckedCreateNestedManyWithoutBranchInput
+  }
+
+  export type BranchCreateOrConnectWithoutLeadsInput = {
+    where: BranchWhereUniqueInput
+    create: XOR<BranchCreateWithoutLeadsInput, BranchUncheckedCreateWithoutLeadsInput>
+  }
+
+  export type OrganizationUpsertWithoutLeadsInput = {
+    update: XOR<OrganizationUpdateWithoutLeadsInput, OrganizationUncheckedUpdateWithoutLeadsInput>
+    create: XOR<OrganizationCreateWithoutLeadsInput, OrganizationUncheckedCreateWithoutLeadsInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutLeadsInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutLeadsInput, OrganizationUncheckedUpdateWithoutLeadsInput>
+  }
+
+  export type OrganizationUpdateWithoutLeadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    logo?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    zipCode?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    planName?: NullableStringFieldUpdateOperationsInput | string | null
+    planAmount?: FloatFieldUpdateOperationsInput | number
+    planStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    planExpiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailBalance?: IntFieldUpdateOperationsInput | number
+    textBalance?: IntFieldUpdateOperationsInput | number
+    whatsappMarketingBalance?: IntFieldUpdateOperationsInput | number
+    whatsappUtilityBalance?: IntFieldUpdateOperationsInput | number
+    attendanceRules?: NullableStringFieldUpdateOperationsInput | string | null
+    owner?: UserUpdateOneRequiredWithoutOwnedOrganizationNestedInput
+    members?: OrganizationMemberUpdateManyWithoutOrganizationNestedInput
+    branches?: BranchUpdateManyWithoutOrganizationNestedInput
+    courses?: CourseUpdateManyWithoutOrganizationNestedInput
+    enquiries?: EnquiryUpdateManyWithoutOrganizationNestedInput
+    walletTransactions?: WalletTransactionUpdateManyWithoutOrganizationNestedInput
+    modulePermissions?: ModulePermissionUpdateManyWithoutOrganizationNestedInput
+    attendances?: AttendanceUpdateManyWithoutOrganizationNestedInput
+    referrers?: ReferrerUpdateManyWithoutOrganizationNestedInput
+    referrals?: ReferralUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutLeadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    logo?: NullableStringFieldUpdateOperationsInput | string | null
+    industry?: NullableStringFieldUpdateOperationsInput | string | null
+    size?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    zipCode?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    planName?: NullableStringFieldUpdateOperationsInput | string | null
+    planAmount?: FloatFieldUpdateOperationsInput | number
+    planStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    planExpiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    emailBalance?: IntFieldUpdateOperationsInput | number
+    textBalance?: IntFieldUpdateOperationsInput | number
+    whatsappMarketingBalance?: IntFieldUpdateOperationsInput | number
+    whatsappUtilityBalance?: IntFieldUpdateOperationsInput | number
+    attendanceRules?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerId?: StringFieldUpdateOperationsInput | string
+    members?: OrganizationMemberUncheckedUpdateManyWithoutOrganizationNestedInput
+    branches?: BranchUncheckedUpdateManyWithoutOrganizationNestedInput
+    courses?: CourseUncheckedUpdateManyWithoutOrganizationNestedInput
+    enquiries?: EnquiryUncheckedUpdateManyWithoutOrganizationNestedInput
+    walletTransactions?: WalletTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
+    modulePermissions?: ModulePermissionUncheckedUpdateManyWithoutOrganizationNestedInput
+    attendances?: AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
+    referrers?: ReferrerUncheckedUpdateManyWithoutOrganizationNestedInput
+    referrals?: ReferralUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type BranchUpsertWithoutLeadsInput = {
+    update: XOR<BranchUpdateWithoutLeadsInput, BranchUncheckedUpdateWithoutLeadsInput>
+    create: XOR<BranchCreateWithoutLeadsInput, BranchUncheckedCreateWithoutLeadsInput>
+    where?: BranchWhereInput
+  }
+
+  export type BranchUpdateToOneWithWhereWithoutLeadsInput = {
+    where?: BranchWhereInput
+    data: XOR<BranchUpdateWithoutLeadsInput, BranchUncheckedUpdateWithoutLeadsInput>
+  }
+
+  export type BranchUpdateWithoutLeadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    zipCode?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutBranchesNestedInput
+    userBranches?: UserBranchUpdateManyWithoutBranchNestedInput
+    students?: StudentUpdateManyWithoutBranchNestedInput
+    enquiries?: EnquiryUpdateManyWithoutBranchNestedInput
+    attendances?: AttendanceUpdateManyWithoutBranchNestedInput
+    referrers?: ReferrerUpdateManyWithoutBranchNestedInput
+  }
+
+  export type BranchUncheckedUpdateWithoutLeadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    zipCode?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+    userBranches?: UserBranchUncheckedUpdateManyWithoutBranchNestedInput
+    students?: StudentUncheckedUpdateManyWithoutBranchNestedInput
+    enquiries?: EnquiryUncheckedUpdateManyWithoutBranchNestedInput
+    attendances?: AttendanceUncheckedUpdateManyWithoutBranchNestedInput
+    referrers?: ReferrerUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type StudentCreateWithoutAttendancesInput = {
@@ -55409,6 +60089,7 @@ export namespace Prisma {
     batch?: BatchCreateNestedOneWithoutStudentsInput
     studentCourses?: StudentCourseCreateNestedManyWithoutStudentInput
     receipts?: ReceiptCreateNestedManyWithoutStudentInput
+    additionalFees?: AdditionalFeeCreateNestedManyWithoutStudentInput
     referral?: ReferralCreateNestedOneWithoutStudentInput
   }
 
@@ -55491,6 +60172,7 @@ export namespace Prisma {
     batchId?: string | null
     studentCourses?: StudentCourseUncheckedCreateNestedManyWithoutStudentInput
     receipts?: ReceiptUncheckedCreateNestedManyWithoutStudentInput
+    additionalFees?: AdditionalFeeUncheckedCreateNestedManyWithoutStudentInput
     referral?: ReferralUncheckedCreateNestedOneWithoutStudentInput
   }
 
@@ -55634,6 +60316,7 @@ export namespace Prisma {
     userBranches?: UserBranchCreateNestedManyWithoutBranchInput
     students?: StudentCreateNestedManyWithoutBranchInput
     enquiries?: EnquiryCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
     referrers?: ReferrerCreateNestedManyWithoutBranchInput
   }
 
@@ -55655,6 +60338,7 @@ export namespace Prisma {
     userBranches?: UserBranchUncheckedCreateNestedManyWithoutBranchInput
     students?: StudentUncheckedCreateNestedManyWithoutBranchInput
     enquiries?: EnquiryUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
     referrers?: ReferrerUncheckedCreateNestedManyWithoutBranchInput
   }
 
@@ -55732,6 +60416,7 @@ export namespace Prisma {
     branches?: BranchCreateNestedManyWithoutOrganizationInput
     courses?: CourseCreateNestedManyWithoutOrganizationInput
     enquiries?: EnquiryCreateNestedManyWithoutOrganizationInput
+    leads?: LeadCreateNestedManyWithoutOrganizationInput
     walletTransactions?: WalletTransactionCreateNestedManyWithoutOrganizationInput
     modulePermissions?: ModulePermissionCreateNestedManyWithoutOrganizationInput
     referrers?: ReferrerCreateNestedManyWithoutOrganizationInput
@@ -55770,6 +60455,7 @@ export namespace Prisma {
     branches?: BranchUncheckedCreateNestedManyWithoutOrganizationInput
     courses?: CourseUncheckedCreateNestedManyWithoutOrganizationInput
     enquiries?: EnquiryUncheckedCreateNestedManyWithoutOrganizationInput
+    leads?: LeadUncheckedCreateNestedManyWithoutOrganizationInput
     walletTransactions?: WalletTransactionUncheckedCreateNestedManyWithoutOrganizationInput
     modulePermissions?: ModulePermissionUncheckedCreateNestedManyWithoutOrganizationInput
     referrers?: ReferrerUncheckedCreateNestedManyWithoutOrganizationInput
@@ -55871,6 +60557,7 @@ export namespace Prisma {
     batch?: BatchUpdateOneWithoutStudentsNestedInput
     studentCourses?: StudentCourseUpdateManyWithoutStudentNestedInput
     receipts?: ReceiptUpdateManyWithoutStudentNestedInput
+    additionalFees?: AdditionalFeeUpdateManyWithoutStudentNestedInput
     referral?: ReferralUpdateOneWithoutStudentNestedInput
   }
 
@@ -55953,6 +60640,7 @@ export namespace Prisma {
     batchId?: NullableStringFieldUpdateOperationsInput | string | null
     studentCourses?: StudentCourseUncheckedUpdateManyWithoutStudentNestedInput
     receipts?: ReceiptUncheckedUpdateManyWithoutStudentNestedInput
+    additionalFees?: AdditionalFeeUncheckedUpdateManyWithoutStudentNestedInput
     referral?: ReferralUncheckedUpdateOneWithoutStudentNestedInput
   }
 
@@ -56108,6 +60796,7 @@ export namespace Prisma {
     userBranches?: UserBranchUpdateManyWithoutBranchNestedInput
     students?: StudentUpdateManyWithoutBranchNestedInput
     enquiries?: EnquiryUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
     referrers?: ReferrerUpdateManyWithoutBranchNestedInput
   }
 
@@ -56129,6 +60818,7 @@ export namespace Prisma {
     userBranches?: UserBranchUncheckedUpdateManyWithoutBranchNestedInput
     students?: StudentUncheckedUpdateManyWithoutBranchNestedInput
     enquiries?: EnquiryUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
     referrers?: ReferrerUncheckedUpdateManyWithoutBranchNestedInput
   }
 
@@ -56218,6 +60908,7 @@ export namespace Prisma {
     branches?: BranchUpdateManyWithoutOrganizationNestedInput
     courses?: CourseUpdateManyWithoutOrganizationNestedInput
     enquiries?: EnquiryUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUpdateManyWithoutOrganizationNestedInput
     walletTransactions?: WalletTransactionUpdateManyWithoutOrganizationNestedInput
     modulePermissions?: ModulePermissionUpdateManyWithoutOrganizationNestedInput
     referrers?: ReferrerUpdateManyWithoutOrganizationNestedInput
@@ -56256,6 +60947,7 @@ export namespace Prisma {
     branches?: BranchUncheckedUpdateManyWithoutOrganizationNestedInput
     courses?: CourseUncheckedUpdateManyWithoutOrganizationNestedInput
     enquiries?: EnquiryUncheckedUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutOrganizationNestedInput
     walletTransactions?: WalletTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
     modulePermissions?: ModulePermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     referrers?: ReferrerUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -56411,6 +61103,7 @@ export namespace Prisma {
     branches?: BranchCreateNestedManyWithoutOrganizationInput
     courses?: CourseCreateNestedManyWithoutOrganizationInput
     enquiries?: EnquiryCreateNestedManyWithoutOrganizationInput
+    leads?: LeadCreateNestedManyWithoutOrganizationInput
     walletTransactions?: WalletTransactionCreateNestedManyWithoutOrganizationInput
     attendances?: AttendanceCreateNestedManyWithoutOrganizationInput
     referrers?: ReferrerCreateNestedManyWithoutOrganizationInput
@@ -56449,6 +61142,7 @@ export namespace Prisma {
     branches?: BranchUncheckedCreateNestedManyWithoutOrganizationInput
     courses?: CourseUncheckedCreateNestedManyWithoutOrganizationInput
     enquiries?: EnquiryUncheckedCreateNestedManyWithoutOrganizationInput
+    leads?: LeadUncheckedCreateNestedManyWithoutOrganizationInput
     walletTransactions?: WalletTransactionUncheckedCreateNestedManyWithoutOrganizationInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
     referrers?: ReferrerUncheckedCreateNestedManyWithoutOrganizationInput
@@ -56626,6 +61320,7 @@ export namespace Prisma {
     branches?: BranchUpdateManyWithoutOrganizationNestedInput
     courses?: CourseUpdateManyWithoutOrganizationNestedInput
     enquiries?: EnquiryUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUpdateManyWithoutOrganizationNestedInput
     walletTransactions?: WalletTransactionUpdateManyWithoutOrganizationNestedInput
     attendances?: AttendanceUpdateManyWithoutOrganizationNestedInput
     referrers?: ReferrerUpdateManyWithoutOrganizationNestedInput
@@ -56664,6 +61359,7 @@ export namespace Prisma {
     branches?: BranchUncheckedUpdateManyWithoutOrganizationNestedInput
     courses?: CourseUncheckedUpdateManyWithoutOrganizationNestedInput
     enquiries?: EnquiryUncheckedUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutOrganizationNestedInput
     walletTransactions?: WalletTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
     referrers?: ReferrerUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -56702,6 +61398,7 @@ export namespace Prisma {
     branches?: BranchCreateNestedManyWithoutOrganizationInput
     courses?: CourseCreateNestedManyWithoutOrganizationInput
     enquiries?: EnquiryCreateNestedManyWithoutOrganizationInput
+    leads?: LeadCreateNestedManyWithoutOrganizationInput
     walletTransactions?: WalletTransactionCreateNestedManyWithoutOrganizationInput
     modulePermissions?: ModulePermissionCreateNestedManyWithoutOrganizationInput
     attendances?: AttendanceCreateNestedManyWithoutOrganizationInput
@@ -56740,6 +61437,7 @@ export namespace Prisma {
     branches?: BranchUncheckedCreateNestedManyWithoutOrganizationInput
     courses?: CourseUncheckedCreateNestedManyWithoutOrganizationInput
     enquiries?: EnquiryUncheckedCreateNestedManyWithoutOrganizationInput
+    leads?: LeadUncheckedCreateNestedManyWithoutOrganizationInput
     walletTransactions?: WalletTransactionUncheckedCreateNestedManyWithoutOrganizationInput
     modulePermissions?: ModulePermissionUncheckedCreateNestedManyWithoutOrganizationInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
@@ -56769,6 +61467,7 @@ export namespace Prisma {
     userBranches?: UserBranchCreateNestedManyWithoutBranchInput
     students?: StudentCreateNestedManyWithoutBranchInput
     enquiries?: EnquiryCreateNestedManyWithoutBranchInput
+    leads?: LeadCreateNestedManyWithoutBranchInput
     attendances?: AttendanceCreateNestedManyWithoutBranchInput
   }
 
@@ -56790,6 +61489,7 @@ export namespace Prisma {
     userBranches?: UserBranchUncheckedCreateNestedManyWithoutBranchInput
     students?: StudentUncheckedCreateNestedManyWithoutBranchInput
     enquiries?: EnquiryUncheckedCreateNestedManyWithoutBranchInput
+    leads?: LeadUncheckedCreateNestedManyWithoutBranchInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutBranchInput
   }
 
@@ -56882,6 +61582,7 @@ export namespace Prisma {
     branches?: BranchUpdateManyWithoutOrganizationNestedInput
     courses?: CourseUpdateManyWithoutOrganizationNestedInput
     enquiries?: EnquiryUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUpdateManyWithoutOrganizationNestedInput
     walletTransactions?: WalletTransactionUpdateManyWithoutOrganizationNestedInput
     modulePermissions?: ModulePermissionUpdateManyWithoutOrganizationNestedInput
     attendances?: AttendanceUpdateManyWithoutOrganizationNestedInput
@@ -56920,6 +61621,7 @@ export namespace Prisma {
     branches?: BranchUncheckedUpdateManyWithoutOrganizationNestedInput
     courses?: CourseUncheckedUpdateManyWithoutOrganizationNestedInput
     enquiries?: EnquiryUncheckedUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutOrganizationNestedInput
     walletTransactions?: WalletTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
     modulePermissions?: ModulePermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -56955,6 +61657,7 @@ export namespace Prisma {
     userBranches?: UserBranchUpdateManyWithoutBranchNestedInput
     students?: StudentUpdateManyWithoutBranchNestedInput
     enquiries?: EnquiryUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUpdateManyWithoutBranchNestedInput
   }
 
@@ -56976,6 +61679,7 @@ export namespace Prisma {
     userBranches?: UserBranchUncheckedUpdateManyWithoutBranchNestedInput
     students?: StudentUncheckedUpdateManyWithoutBranchNestedInput
     enquiries?: EnquiryUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutBranchNestedInput
   }
 
@@ -57109,6 +61813,7 @@ export namespace Prisma {
     batch?: BatchCreateNestedOneWithoutStudentsInput
     studentCourses?: StudentCourseCreateNestedManyWithoutStudentInput
     receipts?: ReceiptCreateNestedManyWithoutStudentInput
+    additionalFees?: AdditionalFeeCreateNestedManyWithoutStudentInput
     attendances?: AttendanceCreateNestedManyWithoutStudentInput
   }
 
@@ -57191,6 +61896,7 @@ export namespace Prisma {
     batchId?: string | null
     studentCourses?: StudentCourseUncheckedCreateNestedManyWithoutStudentInput
     receipts?: ReceiptUncheckedCreateNestedManyWithoutStudentInput
+    additionalFees?: AdditionalFeeUncheckedCreateNestedManyWithoutStudentInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutStudentInput
   }
 
@@ -57231,6 +61937,7 @@ export namespace Prisma {
     branches?: BranchCreateNestedManyWithoutOrganizationInput
     courses?: CourseCreateNestedManyWithoutOrganizationInput
     enquiries?: EnquiryCreateNestedManyWithoutOrganizationInput
+    leads?: LeadCreateNestedManyWithoutOrganizationInput
     walletTransactions?: WalletTransactionCreateNestedManyWithoutOrganizationInput
     modulePermissions?: ModulePermissionCreateNestedManyWithoutOrganizationInput
     attendances?: AttendanceCreateNestedManyWithoutOrganizationInput
@@ -57269,6 +61976,7 @@ export namespace Prisma {
     branches?: BranchUncheckedCreateNestedManyWithoutOrganizationInput
     courses?: CourseUncheckedCreateNestedManyWithoutOrganizationInput
     enquiries?: EnquiryUncheckedCreateNestedManyWithoutOrganizationInput
+    leads?: LeadUncheckedCreateNestedManyWithoutOrganizationInput
     walletTransactions?: WalletTransactionUncheckedCreateNestedManyWithoutOrganizationInput
     modulePermissions?: ModulePermissionUncheckedCreateNestedManyWithoutOrganizationInput
     attendances?: AttendanceUncheckedCreateNestedManyWithoutOrganizationInput
@@ -57411,6 +62119,7 @@ export namespace Prisma {
     batch?: BatchUpdateOneWithoutStudentsNestedInput
     studentCourses?: StudentCourseUpdateManyWithoutStudentNestedInput
     receipts?: ReceiptUpdateManyWithoutStudentNestedInput
+    additionalFees?: AdditionalFeeUpdateManyWithoutStudentNestedInput
     attendances?: AttendanceUpdateManyWithoutStudentNestedInput
   }
 
@@ -57493,6 +62202,7 @@ export namespace Prisma {
     batchId?: NullableStringFieldUpdateOperationsInput | string | null
     studentCourses?: StudentCourseUncheckedUpdateManyWithoutStudentNestedInput
     receipts?: ReceiptUncheckedUpdateManyWithoutStudentNestedInput
+    additionalFees?: AdditionalFeeUncheckedUpdateManyWithoutStudentNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutStudentNestedInput
   }
 
@@ -57539,6 +62249,7 @@ export namespace Prisma {
     branches?: BranchUpdateManyWithoutOrganizationNestedInput
     courses?: CourseUpdateManyWithoutOrganizationNestedInput
     enquiries?: EnquiryUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUpdateManyWithoutOrganizationNestedInput
     walletTransactions?: WalletTransactionUpdateManyWithoutOrganizationNestedInput
     modulePermissions?: ModulePermissionUpdateManyWithoutOrganizationNestedInput
     attendances?: AttendanceUpdateManyWithoutOrganizationNestedInput
@@ -57577,6 +62288,7 @@ export namespace Prisma {
     branches?: BranchUncheckedUpdateManyWithoutOrganizationNestedInput
     courses?: CourseUncheckedUpdateManyWithoutOrganizationNestedInput
     enquiries?: EnquiryUncheckedUpdateManyWithoutOrganizationNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutOrganizationNestedInput
     walletTransactions?: WalletTransactionUncheckedUpdateManyWithoutOrganizationNestedInput
     modulePermissions?: ModulePermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -57890,10 +62602,28 @@ export namespace Prisma {
     description?: string | null
     status?: string
     source?: string | null
+    followUpDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     branchId: string
     courseId?: string | null
+  }
+
+  export type LeadCreateManyOrganizationInput = {
+    id?: string
+    firstName: string
+    lastName: string
+    email?: string | null
+    phone?: string | null
+    source?: string
+    stage?: string
+    company?: string | null
+    value?: number
+    notes?: string | null
+    assignedTo?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    branchId?: string | null
   }
 
   export type WalletTransactionCreateManyOrganizationInput = {
@@ -57999,6 +62729,7 @@ export namespace Prisma {
     userBranches?: UserBranchUpdateManyWithoutBranchNestedInput
     students?: StudentUpdateManyWithoutBranchNestedInput
     enquiries?: EnquiryUpdateManyWithoutBranchNestedInput
+    leads?: LeadUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUpdateManyWithoutBranchNestedInput
     referrers?: ReferrerUpdateManyWithoutBranchNestedInput
   }
@@ -58020,6 +62751,7 @@ export namespace Prisma {
     userBranches?: UserBranchUncheckedUpdateManyWithoutBranchNestedInput
     students?: StudentUncheckedUpdateManyWithoutBranchNestedInput
     enquiries?: EnquiryUncheckedUpdateManyWithoutBranchNestedInput
+    leads?: LeadUncheckedUpdateManyWithoutBranchNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutBranchNestedInput
     referrers?: ReferrerUncheckedUpdateManyWithoutBranchNestedInput
   }
@@ -58128,6 +62860,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     source?: NullableStringFieldUpdateOperationsInput | string | null
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     branch?: BranchUpdateOneRequiredWithoutEnquiriesNestedInput
@@ -58146,6 +62879,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     source?: NullableStringFieldUpdateOperationsInput | string | null
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     branchId?: StringFieldUpdateOperationsInput | string
@@ -58164,10 +62898,62 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     source?: NullableStringFieldUpdateOperationsInput | string | null
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     branchId?: StringFieldUpdateOperationsInput | string
     courseId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type LeadUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    stage?: StringFieldUpdateOperationsInput | string
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    value?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    branch?: BranchUpdateOneWithoutLeadsNestedInput
+  }
+
+  export type LeadUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    stage?: StringFieldUpdateOperationsInput | string
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    value?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type LeadUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    stage?: StringFieldUpdateOperationsInput | string
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    value?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    branchId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type WalletTransactionUpdateWithoutOrganizationInput = {
@@ -58455,10 +63241,28 @@ export namespace Prisma {
     description?: string | null
     status?: string
     source?: string | null
+    followUpDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     organizationId: string
     courseId?: string | null
+  }
+
+  export type LeadCreateManyBranchInput = {
+    id?: string
+    firstName: string
+    lastName: string
+    email?: string | null
+    phone?: string | null
+    source?: string
+    stage?: string
+    company?: string | null
+    value?: number
+    notes?: string | null
+    assignedTo?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    organizationId: string
   }
 
   export type AttendanceCreateManyBranchInput = {
@@ -58613,6 +63417,7 @@ export namespace Prisma {
     batch?: BatchUpdateOneWithoutStudentsNestedInput
     studentCourses?: StudentCourseUpdateManyWithoutStudentNestedInput
     receipts?: ReceiptUpdateManyWithoutStudentNestedInput
+    additionalFees?: AdditionalFeeUpdateManyWithoutStudentNestedInput
     attendances?: AttendanceUpdateManyWithoutStudentNestedInput
     referral?: ReferralUpdateOneWithoutStudentNestedInput
   }
@@ -58695,6 +63500,7 @@ export namespace Prisma {
     batchId?: NullableStringFieldUpdateOperationsInput | string | null
     studentCourses?: StudentCourseUncheckedUpdateManyWithoutStudentNestedInput
     receipts?: ReceiptUncheckedUpdateManyWithoutStudentNestedInput
+    additionalFees?: AdditionalFeeUncheckedUpdateManyWithoutStudentNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutStudentNestedInput
     referral?: ReferralUncheckedUpdateOneWithoutStudentNestedInput
   }
@@ -58789,6 +63595,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     source?: NullableStringFieldUpdateOperationsInput | string | null
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutEnquiriesNestedInput
@@ -58807,6 +63614,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     source?: NullableStringFieldUpdateOperationsInput | string | null
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organizationId?: StringFieldUpdateOperationsInput | string
@@ -58825,10 +63633,62 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     source?: NullableStringFieldUpdateOperationsInput | string | null
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organizationId?: StringFieldUpdateOperationsInput | string
     courseId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type LeadUpdateWithoutBranchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    stage?: StringFieldUpdateOperationsInput | string
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    value?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutLeadsNestedInput
+  }
+
+  export type LeadUncheckedUpdateWithoutBranchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    stage?: StringFieldUpdateOperationsInput | string
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    value?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organizationId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type LeadUncheckedUpdateManyWithoutBranchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    stage?: StringFieldUpdateOperationsInput | string
+    company?: NullableStringFieldUpdateOperationsInput | string | null
+    value?: FloatFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedTo?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    organizationId?: StringFieldUpdateOperationsInput | string
   }
 
   export type AttendanceUpdateWithoutBranchInput = {
@@ -58932,6 +63792,26 @@ export namespace Prisma {
     mode: string
     transactionId?: string | null
     remark?: string | null
+    proofUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AdditionalFeeCreateManyStudentInput = {
+    id?: string
+    feeDisplayId?: string | null
+    feeYear?: number | null
+    feeSequence?: number | null
+    title: string
+    feeType: string
+    amount: number
+    status?: string
+    dueDate?: Date | string | null
+    paidDate?: Date | string | null
+    receiptNo?: string | null
+    transactionId?: string | null
+    proofUrl?: string | null
+    remarks?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -58995,6 +63875,7 @@ export namespace Prisma {
     mode?: StringFieldUpdateOperationsInput | string
     transactionId?: NullableStringFieldUpdateOperationsInput | string | null
     remark?: NullableStringFieldUpdateOperationsInput | string | null
+    proofUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -59009,6 +63890,7 @@ export namespace Prisma {
     mode?: StringFieldUpdateOperationsInput | string
     transactionId?: NullableStringFieldUpdateOperationsInput | string | null
     remark?: NullableStringFieldUpdateOperationsInput | string | null
+    proofUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -59023,6 +63905,64 @@ export namespace Prisma {
     mode?: StringFieldUpdateOperationsInput | string
     transactionId?: NullableStringFieldUpdateOperationsInput | string | null
     remark?: NullableStringFieldUpdateOperationsInput | string | null
+    proofUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdditionalFeeUpdateWithoutStudentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    feeDisplayId?: NullableStringFieldUpdateOperationsInput | string | null
+    feeYear?: NullableIntFieldUpdateOperationsInput | number | null
+    feeSequence?: NullableIntFieldUpdateOperationsInput | number | null
+    title?: StringFieldUpdateOperationsInput | string
+    feeType?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    receiptNo?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    proofUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdditionalFeeUncheckedUpdateWithoutStudentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    feeDisplayId?: NullableStringFieldUpdateOperationsInput | string | null
+    feeYear?: NullableIntFieldUpdateOperationsInput | number | null
+    feeSequence?: NullableIntFieldUpdateOperationsInput | number | null
+    title?: StringFieldUpdateOperationsInput | string
+    feeType?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    receiptNo?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    proofUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdditionalFeeUncheckedUpdateManyWithoutStudentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    feeDisplayId?: NullableStringFieldUpdateOperationsInput | string | null
+    feeYear?: NullableIntFieldUpdateOperationsInput | number | null
+    feeSequence?: NullableIntFieldUpdateOperationsInput | number | null
+    title?: StringFieldUpdateOperationsInput | string
+    feeType?: StringFieldUpdateOperationsInput | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    receiptNo?: NullableStringFieldUpdateOperationsInput | string | null
+    transactionId?: NullableStringFieldUpdateOperationsInput | string | null
+    proofUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -59075,6 +64015,7 @@ export namespace Prisma {
     receiptNo?: string | null
     transactionId?: string | null
     remarks?: string | null
+    proofUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -59096,6 +64037,7 @@ export namespace Prisma {
     receiptNo?: NullableStringFieldUpdateOperationsInput | string | null
     transactionId?: NullableStringFieldUpdateOperationsInput | string | null
     remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    proofUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -59112,6 +64054,7 @@ export namespace Prisma {
     receiptNo?: NullableStringFieldUpdateOperationsInput | string | null
     transactionId?: NullableStringFieldUpdateOperationsInput | string | null
     remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    proofUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -59128,6 +64071,7 @@ export namespace Prisma {
     receiptNo?: NullableStringFieldUpdateOperationsInput | string | null
     transactionId?: NullableStringFieldUpdateOperationsInput | string | null
     remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    proofUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -59269,6 +64213,7 @@ export namespace Prisma {
     description?: string | null
     status?: string
     source?: string | null
+    followUpDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     organizationId: string
@@ -59377,6 +64322,7 @@ export namespace Prisma {
     batch?: BatchUpdateOneWithoutStudentsNestedInput
     studentCourses?: StudentCourseUpdateManyWithoutStudentNestedInput
     receipts?: ReceiptUpdateManyWithoutStudentNestedInput
+    additionalFees?: AdditionalFeeUpdateManyWithoutStudentNestedInput
     attendances?: AttendanceUpdateManyWithoutStudentNestedInput
     referral?: ReferralUpdateOneWithoutStudentNestedInput
   }
@@ -59459,6 +64405,7 @@ export namespace Prisma {
     batchId?: NullableStringFieldUpdateOperationsInput | string | null
     studentCourses?: StudentCourseUncheckedUpdateManyWithoutStudentNestedInput
     receipts?: ReceiptUncheckedUpdateManyWithoutStudentNestedInput
+    additionalFees?: AdditionalFeeUncheckedUpdateManyWithoutStudentNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutStudentNestedInput
     referral?: ReferralUncheckedUpdateOneWithoutStudentNestedInput
   }
@@ -59635,6 +64582,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     source?: NullableStringFieldUpdateOperationsInput | string | null
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutEnquiriesNestedInput
@@ -59653,6 +64601,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     source?: NullableStringFieldUpdateOperationsInput | string | null
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organizationId?: StringFieldUpdateOperationsInput | string
@@ -59671,6 +64620,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     source?: NullableStringFieldUpdateOperationsInput | string | null
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     organizationId?: StringFieldUpdateOperationsInput | string
@@ -59850,6 +64800,7 @@ export namespace Prisma {
     course?: CourseUpdateOneWithoutStudentsNestedInput
     studentCourses?: StudentCourseUpdateManyWithoutStudentNestedInput
     receipts?: ReceiptUpdateManyWithoutStudentNestedInput
+    additionalFees?: AdditionalFeeUpdateManyWithoutStudentNestedInput
     attendances?: AttendanceUpdateManyWithoutStudentNestedInput
     referral?: ReferralUpdateOneWithoutStudentNestedInput
   }
@@ -59932,6 +64883,7 @@ export namespace Prisma {
     courseId?: NullableStringFieldUpdateOperationsInput | string | null
     studentCourses?: StudentCourseUncheckedUpdateManyWithoutStudentNestedInput
     receipts?: ReceiptUncheckedUpdateManyWithoutStudentNestedInput
+    additionalFees?: AdditionalFeeUncheckedUpdateManyWithoutStudentNestedInput
     attendances?: AttendanceUncheckedUpdateManyWithoutStudentNestedInput
     referral?: ReferralUncheckedUpdateOneWithoutStudentNestedInput
   }

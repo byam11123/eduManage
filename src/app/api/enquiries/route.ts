@@ -21,7 +21,8 @@ export async function POST(request: NextRequest) {
             email,
             courseId,
             description,
-            source = 'web'
+            source = 'web',
+            followUpDate
         } = body
 
         if (!firstName || !lastName || !mobile) {
@@ -76,6 +77,7 @@ export async function POST(request: NextRequest) {
                 description,
                 status: 'new',
                 source,
+                followUpDate: followUpDate ? new Date(followUpDate) : null,
                 branchId,
                 organizationId,
                 courseId: courseId || null

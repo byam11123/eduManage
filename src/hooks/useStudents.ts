@@ -20,12 +20,19 @@ interface UseStudentsReturn {
     saving: boolean
 
     // Actions
-    fetchStudents: (params?: { branchId?: string; courseId?: string; batchId?: string }) => Promise<void>
+    fetchStudents: (params?: { branchId?: string; courseId?: string; batchId?: string; cursor?: string }) => Promise<void>
     fetchStudentById: (id: string) => Promise<Student | null>
     createStudent: (data: StudentFormData) => Promise<boolean>
     updateStudent: (id: string, data: Partial<StudentFormData>) => Promise<boolean>
     deleteStudent: (id: string) => Promise<boolean>
     selectStudent: (student: Student | null) => void
+
+    // Pagination
+    currentPage: number
+    hasMore: boolean
+    totalCount: number
+    goToNextPage: () => void
+    goToPrevPage: () => void
 
     // Stats
     stats: {
@@ -49,6 +56,15 @@ export function useStudents(): UseStudentsReturn {
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
 
+    // Pagination state
+    const PAGE_SIZE = 25
+    const [currentPage, setCurrentPage]   = useState(1)
+    const [hasMore, setHasMore]           = useState(false)
+    const [nextCursor, setNextCursor]     = useState<string | null>(null)
+    const [totalCount, setTotalCount]     = useState(0)
+    // cursor stack for back-navigation: index 0 = page 1 cursor (null = start)
+    const [cursorStack, setCursorStack]   = useState<(string | null)[]>([null])
+
     const {
         studentSearch,
         studentStatus,
@@ -57,17 +73,26 @@ export function useStudents(): UseStudentsReturn {
         studentBatchId
     } = useFilterStore()
 
-    // Fetch students with optional filters
+    // Internal fetch — accepts explicit cursor to support next/prev
     const fetchStudents = useCallback(async (params?: {
-        branchId?: string;
-        courseId?: string;
+        branchId?: string
+        courseId?: string
         batchId?: string
+        cursor?: string
     }) => {
         setLoading(true)
         try {
-            const response = await studentService.getAll(params)
+            const response = await studentService.getAll({
+                ...params,
+                limit: PAGE_SIZE
+            })
             if (response.success && response.data) {
                 setStudents(response.data)
+            }
+            if (response.meta) {
+                setHasMore(response.meta.hasMore)
+                setNextCursor(response.meta.nextCursor)
+                setTotalCount(response.meta.total)
             }
         } catch (error) {
             console.error('useStudents.fetchStudents error:', error)
@@ -75,6 +100,24 @@ export function useStudents(): UseStudentsReturn {
             setLoading(false)
         }
     }, [])
+
+    // Go to next page
+    const goToNextPage = useCallback(() => {
+        if (!hasMore || !nextCursor) return
+        setCursorStack(prev => [...prev, nextCursor])
+        setCurrentPage(prev => prev + 1)
+        fetchStudents({ cursor: nextCursor })
+    }, [hasMore, nextCursor, fetchStudents])
+
+    // Go to previous page
+    const goToPrevPage = useCallback(() => {
+        if (currentPage <= 1) return
+        const newStack = cursorStack.slice(0, -1)
+        setCursorStack(newStack)
+        const prevCursor = newStack[newStack.length - 2] ?? null // cursor before current page
+        setCurrentPage(prev => prev - 1)
+        fetchStudents({ cursor: prevCursor || undefined })
+    }, [currentPage, cursorStack, fetchStudents])
 
     // Fetch single student by ID
     const fetchStudentById = useCallback(async (id: string): Promise<Student | null> => {
@@ -275,11 +318,20 @@ export function useStudents(): UseStudentsReturn {
         updateStudent,
         deleteStudent,
         selectStudent,
+        // Pagination
+        currentPage,
+        hasMore,
+        totalCount,
+        goToNextPage,
+        goToPrevPage,
         bulkCreate: async (data: { students: any[]; branchId: string; courseId: string; batchId?: string }) => {
             setSaving(true)
             try {
                 const response = await studentService.bulkCreate(data)
                 if (response.success) {
+                    // Reset pagination on bulk import
+                    setCurrentPage(1)
+                    setCursorStack([null])
                     await fetchStudents()
                     return true
                 }

@@ -383,6 +383,7 @@ exports.Prisma.InstallmentScalarFieldEnum = {
   receiptNo: 'receiptNo',
   transactionId: 'transactionId',
   remarks: 'remarks',
+  proofUrl: 'proofUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -445,6 +446,7 @@ exports.Prisma.EnquiryScalarFieldEnum = {
   description: 'description',
   status: 'status',
   source: 'source',
+  followUpDate: 'followUpDate',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   organizationId: 'organizationId',
@@ -463,8 +465,47 @@ exports.Prisma.ReceiptScalarFieldEnum = {
   transactionId: 'transactionId',
   remark: 'remark',
   studentId: 'studentId',
+  proofUrl: 'proofUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AdditionalFeeScalarFieldEnum = {
+  id: 'id',
+  studentId: 'studentId',
+  feeDisplayId: 'feeDisplayId',
+  feeYear: 'feeYear',
+  feeSequence: 'feeSequence',
+  title: 'title',
+  feeType: 'feeType',
+  amount: 'amount',
+  status: 'status',
+  dueDate: 'dueDate',
+  paidDate: 'paidDate',
+  receiptNo: 'receiptNo',
+  transactionId: 'transactionId',
+  proofUrl: 'proofUrl',
+  remarks: 'remarks',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.LeadScalarFieldEnum = {
+  id: 'id',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  email: 'email',
+  phone: 'phone',
+  source: 'source',
+  stage: 'stage',
+  company: 'company',
+  value: 'value',
+  notes: 'notes',
+  assignedTo: 'assignedTo',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  organizationId: 'organizationId',
+  branchId: 'branchId'
 };
 
 exports.Prisma.PostScalarFieldEnum = {
@@ -594,6 +635,8 @@ exports.Prisma.ModelName = {
   Subject: 'Subject',
   Enquiry: 'Enquiry',
   Receipt: 'Receipt',
+  AdditionalFee: 'AdditionalFee',
+  Lead: 'Lead',
   Post: 'Post',
   Counter: 'Counter',
   Attendance: 'Attendance',

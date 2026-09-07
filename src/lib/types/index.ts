@@ -481,6 +481,7 @@ export interface Enquiry {
     organizationId: string
     course?: Course
     branch?: Branch
+    followUpDate?: string
     createdAt: string
     updatedAt: string
 }
@@ -494,6 +495,7 @@ export interface EnquiryFormData {
     courseId: string
     status: string
     source: string
+    followUpDate?: string
 }
 
 // ===========================================
@@ -509,6 +511,11 @@ export interface DashboardStats {
     totalBatches: number
     totalEnquiries: number
     recentEnquiries: number
+    trends?: {
+        enrollment: { value: string, isUp: boolean }
+        revenue: { value: string, isUp: boolean }
+        enquiries: { value: string, isUp: boolean }
+    }
 }
 
 export interface RevenueData {

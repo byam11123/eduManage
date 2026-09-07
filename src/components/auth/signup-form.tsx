@@ -94,8 +94,6 @@ export function SignupForm() {
     setError('')
 
     try {
-      console.log('Verifying OTP:', formData.otp, 'for email:', formData.email)
-
       const response = await fetch('/api/auth/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -106,8 +104,6 @@ export function SignupForm() {
       })
 
       const data = await response.json()
-
-      console.log('Verify OTP response:', data)
 
       if (!response.ok || !data.success) {
         setError(data.error || 'Failed to verify OTP')
@@ -208,8 +204,6 @@ export function SignupForm() {
     setIsLoading(true)
 
     try {
-      console.log('Submitting signup with verified OTP:', formData.otp)
-
       const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -217,8 +211,6 @@ export function SignupForm() {
       })
 
       const data = await response.json()
-
-      console.log('Signup response:', data)
 
       if (!response.ok || !data.success) {
         setError(data.error || 'Signup failed')
@@ -241,6 +233,37 @@ export function SignupForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Step indicator */}
+      <div className="flex items-center gap-2 mb-2">
+        <div className={`flex items-center gap-1.5 text-xs font-medium ${
+          !isOtpVerified ? 'text-primary' : 'text-emerald-600'
+        }`}>
+          <div className={`h-5 w-5 rounded-full flex items-center justify-center text-xs border-2 ${
+            !isOtpVerified
+              ? 'border-primary bg-primary text-primary-foreground'
+              : 'border-emerald-500 bg-emerald-500 text-white'
+          }`}>
+            {isOtpVerified ? '✓' : '1'}
+          </div>
+          Verify Email
+        </div>
+        <div className={`flex-1 h-px ${
+          isOtpVerified ? 'bg-emerald-400' : 'bg-border'
+        }`} />
+        <div className={`flex items-center gap-1.5 text-xs font-medium ${
+          isOtpVerified ? 'text-primary' : 'text-muted-foreground'
+        }`}>
+          <div className={`h-5 w-5 rounded-full flex items-center justify-center text-xs border-2 ${
+            isOtpVerified
+              ? 'border-primary bg-primary text-primary-foreground'
+              : 'border-muted-foreground/40 text-muted-foreground'
+          }`}>
+            2
+          </div>
+          Set Password
+        </div>
+      </div>
+
       {error && (
         <Alert variant="destructive">
           <AlertDescription>{error}</AlertDescription>
@@ -249,7 +272,7 @@ export function SignupForm() {
 
       {success && (
         <Alert>
-          <AlertDescription className="text-green-700 dark:text-green-400">
+          <AlertDescription className="text-emerald-700 dark:text-emerald-400">
             {success}
           </AlertDescription>
         </Alert>
@@ -389,56 +412,24 @@ export function SignupForm() {
         {/* Password Requirements */}
         {formData.password && (
           <div className="space-y-2 text-sm">
-            <div className="flex items-center gap-2">
-              {hasMinLength ? (
-                <Check className="h-4 w-4 text-green-600" />
-              ) : (
-                <X className="h-4 w-4 text-muted-foreground" />
-              )}
-              <span className={hasMinLength ? 'text-green-600' : 'text-muted-foreground'}>
-                At least 8 characters
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              {hasLowercase ? (
-                <Check className="h-4 w-4 text-green-600" />
-              ) : (
-                <X className="h-4 w-4 text-muted-foreground" />
-              )}
-              <span className={hasLowercase ? 'text-green-600' : 'text-muted-foreground'}>
-                One lowercase letter (a-z)
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              {hasUppercase ? (
-                <Check className="h-4 w-4 text-green-600" />
-              ) : (
-                <X className="h-4 w-4 text-muted-foreground" />
-              )}
-              <span className={hasUppercase ? 'text-green-600' : 'text-muted-foreground'}>
-                One uppercase letter (A-Z)
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              {hasNumber ? (
-                <Check className="h-4 w-4 text-green-600" />
-              ) : (
-                <X className="h-4 w-4 text-muted-foreground" />
-              )}
-              <span className={hasNumber ? 'text-green-600' : 'text-muted-foreground'}>
-                One number (0-9)
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              {hasSpecialChar ? (
-                <Check className="h-4 w-4 text-green-600" />
-              ) : (
-                <X className="h-4 w-4 text-muted-foreground" />
-              )}
-              <span className={hasSpecialChar ? 'text-green-600' : 'text-muted-foreground'}>
-                One special character (@ $ ! % * ? &)
-              </span>
-            </div>
+            {[
+              [hasMinLength, 'At least 8 characters'],
+              [hasLowercase, 'One lowercase letter (a-z)'],
+              [hasUppercase, 'One uppercase letter (A-Z)'],
+              [hasNumber, 'One number (0-9)'],
+              [hasSpecialChar, 'One special character (@ $ ! % * ? &)'],
+            ].map(([met, label]) => (
+              <div key={label as string} className="flex items-center gap-2">
+                {met ? (
+                  <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                ) : (
+                  <X className="h-3.5 w-3.5 text-muted-foreground/50" />
+                )}
+                <span className={met ? 'text-emerald-700 dark:text-emerald-400' : 'text-muted-foreground'}>
+                  {label as string}
+                </span>
+              </div>
+            ))}
           </div>
         )}
       </div>

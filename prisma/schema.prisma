@@ -153,6 +153,7 @@ model Organization {
   branches   Branch[]
   courses    Course[]
   enquiries  Enquiry[]
+  leads      Lead[]
   walletTransactions WalletTransaction[]
   modulePermissions ModulePermission[]
   attendances      Attendance[]
@@ -216,6 +217,7 @@ model Branch {
   userBranches  UserBranch[]
   students      Student[]
   enquiries     Enquiry[]
+  leads         Lead[]
   attendances   Attendance[]
   referrers     Referrer[]
 
@@ -357,7 +359,8 @@ model Student {
   // New Multi-Course Architecture
   studentCourses StudentCourse[]
 
-  receipts      Receipt[]
+  receipts            Receipt[]
+  additionalFees      AdditionalFee[]
   attendances   Attendance[]
   referral      Referral?
 
@@ -428,6 +431,7 @@ model Installment {
   receiptNo       String?
   transactionId   String?
   remarks         String?
+  proofUrl        String?
   
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -518,6 +522,7 @@ model Enquiry {
   description String?
   status      String   @default("new") // new, contacted, interested, admitted, lost
   source      String?  // web, referral, walk-in
+  followUpDate DateTime?
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -556,11 +561,66 @@ model Receipt {
   studentId       String
   student         Student  @relation(fields: [studentId], references: [id])
   
+  proofUrl        String?  // URL to the uploaded proof of payment image/pdf
+
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   @@unique([receiptYear, receiptSequence])
   @@index([studentId])
+}
+
+model AdditionalFee {
+  id              String   @id @default(cuid())
+  studentId       String
+  student         Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  feeDisplayId    String?  @unique  // AF/YY/NNNNN e.g. AF/26/00042
+  feeYear         Int?
+  feeSequence     Int?
+
+  title           String
+  feeType         String   // exam, tour, project, id_card, fine, other
+  amount          Float
+  status          String   @default("pending") // pending, paid, cancelled
+  dueDate         DateTime?
+  paidDate        DateTime?
+  receiptNo       String?
+  transactionId   String?
+  proofUrl        String?
+  remarks         String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([feeYear, feeSequence])
+  @@index([studentId])
+}
+
+// Lead model for sales pipeline management
+model Lead {
+  id          String   @id @default(cuid())
+  firstName   String
+  lastName    String
+  email       String?
+  phone       String?
+  source      String   @default("website") // website, referral, social_media, campaign, other
+  stage       String   @default("new")     // new, contacted, qualified, proposal, negotiation, won, lost
+  company     String?
+  value       Float    @default(0)
+  notes       String?
+  assignedTo  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId String
+  branch         Branch?      @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  branchId       String?
+
+  @@index([organizationId])
+  @@index([branchId])
+  @@index([stage])
 }
 
 // Keep Post model for future use

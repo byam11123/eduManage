@@ -29,7 +29,12 @@ const defaultStats: DashboardStats = {
     totalCourses: 0,
     totalBatches: 0,
     totalEnquiries: 0,
-    recentEnquiries: 0
+    recentEnquiries: 0,
+    trends: {
+        enrollment: { value: '0%', isUp: true },
+        revenue: { value: '0%', isUp: true },
+        enquiries: { value: '0%', isUp: true }
+    }
 }
 
 export function useDashboard(): UseDashboardReturn {

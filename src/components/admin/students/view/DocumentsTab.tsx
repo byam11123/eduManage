@@ -9,6 +9,8 @@ import type { Student } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { studentService } from '@/lib/services/student.service'
+import { ScannerDialog } from '@/components/shared/ScannerDialog'
+import { ScanLine as ScanIcon } from 'lucide-react'
 
 interface DocumentsTabProps {
     student: Student
@@ -21,10 +23,16 @@ export function DocumentsTab({ student }: DocumentsTabProps) {
     const [preview, setPreview] = useState<{ url: string, title: string } | null>(null)
     const [isSyncing, setIsSyncing] = useState(false)
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
+    const [isScannerOpen, setIsScannerOpen] = useState(false)
 
     const handleUpload = (docId: string) => {
         setActiveUpload(docId)
         fileInputRef.current?.click()
+    }
+
+    const handleScan = (docId: string) => {
+        setActiveUpload(docId)
+        setIsScannerOpen(true)
     }
 
     const fieldMap: Record<string, string> = {
@@ -97,6 +105,37 @@ export function DocumentsTab({ student }: DocumentsTabProps) {
         { id: 'admission', name: 'Admission Form', type: 'Internal', icon: FileText, exists: !!student.admissionFormUrl || !!uploadedDocs['admission'], url: uploadedDocs['admission'] || student.admissionFormUrl },
     ].filter(d => d.visible !== false)
 
+    const handleScanComplete = async (file: File) => {
+        if (file && activeUpload) {
+            try {
+                setIsSyncing(true)
+                const reader = new FileReader()
+                reader.onloadend = async () => {
+                    const url = reader.result as string
+                    
+                    const field = fieldMap[activeUpload]
+                    if (field) {
+                        const response = await studentService.update(student.id, { [field]: url })
+                        if (response.success) {
+                            setUploadedDocs(prev => ({ ...prev, [activeUpload]: url }))
+                            const doc = documents.find(d => d.id === activeUpload)
+                            toast.success(`Scanned document saved as ${doc?.name}`)
+                        } else {
+                            toast.error("Failed to persist scanned document")
+                        }
+                    }
+                }
+                reader.readAsDataURL(file)
+            } catch (error) {
+                console.error("Scan processing error:", error)
+                toast.error("Error during scan synchronization")
+            } finally {
+                setIsSyncing(false)
+                setActiveUpload(null)
+            }
+        }
+    }
+
     return (
         <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-10">
             <input 
@@ -113,6 +152,13 @@ export function DocumentsTab({ student }: DocumentsTabProps) {
                 onClose={() => setPreview(null)}
                 imageUrl={preview?.url || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'}
                 title={preview?.title || ''}
+            />
+
+            <ScannerDialog 
+                open={isScannerOpen}
+                onOpenChange={setIsScannerOpen}
+                onScanComplete={handleScanComplete}
+                title={`Scan ${documents.find(d => d.id === activeUpload)?.name || 'Document'}`}
             />
 
             <Card className="border-none shadow-xl shadow-gray-50 dark:shadow-none bg-white dark:bg-gray-900 rounded-[3rem] overflow-hidden">
@@ -202,24 +248,43 @@ export function DocumentsTab({ student }: DocumentsTabProps) {
                                                             <Eye className="h-5 w-5" />
                                                         </Button>
                                                         <Button 
+                                                            onClick={() => handleScan(doc.id)}
+                                                            variant="ghost" 
+                                                            size="icon" 
+                                                            className="h-11 w-11 rounded-2xl bg-white/20 backdrop-blur-xl border border-white/20 text-white hover:bg-white hover:text-indigo-600 transition-all shadow-xl"
+                                                            title="Scan Replacement"
+                                                        >
+                                                            <ScanIcon className="h-5 w-5" />
+                                                        </Button>
+                                                        <Button 
                                                             onClick={() => handleUpload(doc.id)}
                                                             variant="ghost" 
                                                             size="icon" 
                                                             className="h-11 w-11 rounded-2xl bg-white/20 backdrop-blur-xl border border-white/20 text-white hover:bg-white hover:text-indigo-600 transition-all shadow-xl"
-                                                            title="Update"
+                                                            title="Upload Replacement"
                                                         >
                                                             <UploadCloud className="h-5 w-5" />
                                                         </Button>
                                                     </>
                                                 ) : (
-                                                    <Button 
-                                                        onClick={() => handleUpload(doc.id)}
-                                                        variant="ghost" 
-                                                        size="icon" 
-                                                        className="h-14 w-14 rounded-[1.5rem] bg-indigo-600 text-white shadow-xl shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 hover:scale-105 transition-all"
-                                                    >
-                                                        <UploadCloud className="h-7 w-7" />
-                                                    </Button>
+                                                    <div className="flex flex-col gap-2">
+                                                        <Button 
+                                                            onClick={() => handleScan(doc.id)}
+                                                            variant="ghost" 
+                                                            size="icon" 
+                                                            className="h-14 w-14 rounded-[1.5rem] bg-indigo-600 text-white shadow-xl shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 hover:scale-105 transition-all mb-2"
+                                                        >
+                                                            <ScanIcon className="h-7 w-7" />
+                                                        </Button>
+                                                        <Button 
+                                                            onClick={() => handleUpload(doc.id)}
+                                                            variant="ghost" 
+                                                            size="icon" 
+                                                            className="h-10 w-10 self-center rounded-xl bg-white dark:bg-gray-800 text-gray-400 border border-gray-100 dark:border-gray-700 hover:text-indigo-600 shadow-lg"
+                                                        >
+                                                            <UploadCloud className="h-5 w-5" />
+                                                        </Button>
+                                                    </div>
                                                 )}
                                             </div>
                                         </div>
@@ -313,23 +378,41 @@ export function DocumentsTab({ student }: DocumentsTabProps) {
                                                     View
                                                 </Button>
                                                 <Button 
+                                                    onClick={() => handleScan(doc.id)}
+                                                    variant="ghost" 
+                                                    size="icon" 
+                                                    className="h-10 w-10 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-400 hover:bg-emerald-600 hover:text-white transition-all"
+                                                    title="Scan"
+                                                >
+                                                    <ScanIcon className="h-4 w-4" />
+                                                </Button>
+                                                <Button 
                                                     onClick={() => handleUpload(doc.id)}
                                                     variant="ghost" 
                                                     size="icon" 
                                                     className="h-10 w-10 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-400 hover:bg-amber-600 hover:text-white transition-all"
-                                                    title="Update"
+                                                    title="Upload"
                                                 >
                                                     <UploadCloud className="h-4 w-4" />
                                                 </Button>
                                             </>
                                         ) : (
-                                            <Button 
-                                                onClick={() => handleUpload(doc.id)}
-                                                className="h-10 rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 transition-all font-black uppercase tracking-widest text-[9px] gap-2 px-6"
-                                            >
-                                                <UploadCloud className="h-3.5 w-3.5" />
-                                                Upload Now
-                                            </Button>
+                                            <div className="flex gap-2">
+                                                <Button 
+                                                    onClick={() => handleScan(doc.id)}
+                                                    className="h-10 rounded-xl bg-emerald-600 text-white shadow-lg shadow-emerald-200 dark:shadow-none hover:bg-emerald-700 transition-all font-black uppercase tracking-widest text-[9px] gap-2 px-6"
+                                                >
+                                                    <ScanIcon className="h-3.5 w-3.5" />
+                                                    Scan
+                                                </Button>
+                                                <Button 
+                                                    onClick={() => handleUpload(doc.id)}
+                                                    variant="outline"
+                                                    className="h-10 rounded-xl border-gray-200 text-gray-500 font-black uppercase tracking-widest text-[9px] gap-2 px-4"
+                                                >
+                                                    <UploadCloud className="h-3.5 w-3.5" />
+                                                </Button>
+                                            </div>
                                         )}
                                     </div>
                                 </div>

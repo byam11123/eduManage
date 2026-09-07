@@ -13,7 +13,7 @@ export function useReferrals() {
     const fetchAllData = useCallback(async () => {
         setLoading(true)
         try {
-            const response = await fetch('/api/admin/referrals')
+            const response = await fetch(`/api/admin/referrals?t=${Date.now()}`)
             const result: ApiResponse<any> = await response.json()
             if (result.success && result.data) {
                 setReferrers(result.data.referrers || [])

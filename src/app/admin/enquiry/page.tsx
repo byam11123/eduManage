@@ -39,7 +39,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
 import { useEnquiries, useCourses } from '@/hooks'
-import { EditEnquiryDialog, DeleteEnquiryDialog, AddEnquiryDialog } from '@/components/admin/enquiry'
+import { EditEnquiryDialog, DeleteEnquiryDialog, AddEnquiryDialog, EnquiryKanban } from '@/components/admin/enquiry'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { StatsGrid } from '@/components/shared/StatsGrid'
 import { StatusBadge } from '@/components/shared/StatusBadge'
@@ -323,115 +323,133 @@ export default function EnquiryListPage() {
                     </div>
                 </div>
                 <CardContent className="p-0">
-                    <div className="min-h-[400px] overflow-x-auto">
-                        <Table>
-                            <TableHeader>
-                                <TableRow className="bg-gray-50/50 dark:bg-gray-800/50 border-none">
-                                    <TableHead className="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-widest">Action</TableHead>
-                                    <TableHead className="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-widest">Student</TableHead>
-                                    <TableHead className="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-widest">Course</TableHead>
-                                    <TableHead className="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-widest">Contact Details</TableHead>
-                                    <TableHead className="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-widest">Status</TableHead>
-                                    <TableHead className="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-widest">Source</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {loading ? (
-                                    <TableRow>
-                                        <TableCell colSpan={6} className="text-center py-20">
-                                            <div className="flex flex-col items-center gap-4">
-                                                <div className="h-10 w-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-                                                <span className="font-black uppercase tracking-widest text-[10px] text-gray-500">Loading enquiries...</span>
-                                            </div>
-                                        </TableCell>
+                    {viewMode === 'kanban' ? (
+                        <div className="p-8 bg-gray-50/30 dark:bg-gray-900/50 min-h-[500px]">
+                            <EnquiryKanban 
+                                enquiries={filteredEnquiries}
+                                loading={loading}
+                                onStageChange={async (id, stage) => {
+                                    await updateEnquiry(id, { status: stage as any })
+                                }}
+                                onEdit={handleEdit}
+                            />
+                        </div>
+                    ) : (
+                        <div className="min-h-[400px] overflow-x-auto">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow className="bg-gray-50/50 dark:bg-gray-800/50 border-none">
+                                        <TableHead className="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-widest">Action</TableHead>
+                                        <TableHead className="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-widest">Student</TableHead>
+                                        <TableHead className="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-widest">Course</TableHead>
+                                        <TableHead className="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-widest">Contact Details</TableHead>
+                                        <TableHead className="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-widest">Status</TableHead>
+                                        <TableHead className="px-8 py-5 text-[10px] font-black text-gray-500 uppercase tracking-widest">Source</TableHead>
                                     </TableRow>
-                                ) : filteredEnquiries.length === 0 ? (
-                                    <TableRow>
-                                        <TableCell colSpan={6} className="text-center py-20">
-                                            <div className="flex flex-col items-center gap-2 opacity-50">
-                                                <Users className="h-12 w-12 mb-2" />
-                                                <p className="font-bold uppercase tracking-widest text-xs">No active enquiries found.</p>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ) : (
-                                    filteredEnquiries.map((enquiry) => (
-                                        <TableRow key={enquiry.id} className="group hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-all border-b border-gray-50 dark:border-gray-800">
-                                            <TableCell className="px-8 py-5">
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-gray-400 hover:text-indigo-600 hover:bg-indigo-50">
-                                                            <MoreVertical className="h-4 w-4" />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="start" className="w-56 p-2 rounded-2xl shadow-2xl border-gray-100 dark:border-gray-800">
-                                                        <DropdownMenuItem onClick={() => handleEdit(enquiry)} className="rounded-xl py-3 cursor-pointer">
-                                                            Edit Enquiry Info
-                                                        </DropdownMenuItem>
-                                                        {enquiry.status !== 'admitted' && (
-                                                            <DropdownMenuItem
-                                                                className="text-emerald-600 font-bold rounded-xl py-3 cursor-pointer"
-                                                                onClick={() => {
-                                                                    const params = new URLSearchParams({
-                                                                        fromEnquiry: 'true',
-                                                                        enquiryId: enquiry.id,
-                                                                        firstName: enquiry.firstName || '',
-                                                                        lastName: enquiry.lastName || '',
-                                                                        phone: enquiry.mobile || '',
-                                                                        email: enquiry.email || '',
-                                                                        courseId: enquiry.courseId || ''
-                                                                    })
-                                                                    router.push(`/admin/students/add?${params.toString()}`)
-                                                                }}
-                                                            >
-                                                                <GraduationCap className="w-4 h-4 mr-2" />
-                                                                Admit as Student
-                                                            </DropdownMenuItem>
-                                                        )}
-                                                        <DropdownMenuItem
-                                                            className="text-rose-600 focus:text-rose-600 focus:bg-rose-50 font-bold rounded-xl py-3 cursor-pointer mt-1"
-                                                            onClick={() => handleDelete(enquiry)}
-                                                        >
-                                                            Delete Record
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </TableCell>
-                                            <TableCell className="px-8 py-5">
-                                                <div className="flex flex-col">
-                                                    <span className="font-black text-gray-900 dark:text-white group-hover:text-indigo-600 transition-colors">
-                                                        {enquiry.firstName} {enquiry.lastName}
-                                                    </span>
-                                                    <span className="text-[10px] font-black uppercase tracking-tighter text-gray-400 mt-0.5">
-                                                        {enquiry.branch?.name || 'Main Branch'}
-                                                    </span>
+                                </TableHeader>
+                                <TableBody>
+                                    {loading ? (
+                                        <TableRow>
+                                            <TableCell colSpan={6} className="text-center py-20">
+                                                <div className="flex flex-col items-center gap-4">
+                                                    <div className="h-10 w-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                                                    <span className="font-black uppercase tracking-widest text-[10px] text-gray-500">Loading enquiries...</span>
                                                 </div>
-                                            </TableCell>
-                                            <TableCell className="px-8 py-5">
-                                                <Badge variant="outline" className="font-black uppercase tracking-widest text-[9px] border-indigo-100 text-indigo-600 bg-indigo-50/30">
-                                                    {enquiry.course?.name || 'General Inquiry'}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell className="px-8 py-5">
-                                                <div className="flex flex-col gap-1">
-                                                    <span className="text-[13px] font-bold text-gray-700 dark:text-gray-300">{enquiry.mobile}</span>
-                                                    <span className="text-[11px] text-gray-400">{enquiry.email || 'No email provided'}</span>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="px-8 py-5">
-                                                <StatusBadge status={enquiry.status} />
-                                            </TableCell>
-                                            <TableCell className="px-8 py-5">
-                                                <span className="text-[11px] font-black uppercase tracking-widest text-gray-400 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-lg">
-                                                    {enquiry.source || 'Direct'}
-                                                </span>
                                             </TableCell>
                                         </TableRow>
-                                    ))
-                                )}
-                            </TableBody>
-                        </Table>
-                    </div>
+                                    ) : filteredEnquiries.length === 0 ? (
+                                        <TableRow>
+                                            <TableCell colSpan={6} className="text-center py-20">
+                                                <div className="flex flex-col items-center gap-2 opacity-50">
+                                                    <Users className="h-12 w-12 mb-2" />
+                                                    <p className="font-bold uppercase tracking-widest text-xs">No active enquiries found.</p>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ) : (
+                                        filteredEnquiries.map((enquiry) => (
+                                            <TableRow key={enquiry.id} className="group hover:bg-gray-50/50 dark:hover:bg-gray-800/30 transition-all border-b border-gray-50 dark:border-gray-800">
+                                                <TableCell className="px-8 py-5">
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-gray-400 hover:text-indigo-600 hover:bg-indigo-50">
+                                                                <MoreVertical className="h-4 w-4" />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="start" className="w-56 p-2 rounded-2xl shadow-2xl border-gray-100 dark:border-gray-800">
+                                                            <DropdownMenuItem onClick={() => handleEdit(enquiry)} className="rounded-xl py-3 cursor-pointer">
+                                                                Edit Enquiry Info
+                                                            </DropdownMenuItem>
+                                                            {enquiry.status !== 'admitted' && (
+                                                                <DropdownMenuItem
+                                                                    className="text-emerald-600 font-bold rounded-xl py-3 cursor-pointer"
+                                                                    onClick={() => {
+                                                                        const params = new URLSearchParams({
+                                                                            fromEnquiry: 'true',
+                                                                            enquiryId: enquiry.id,
+                                                                            firstName: enquiry.firstName || '',
+                                                                            lastName: enquiry.lastName || '',
+                                                                            phone: enquiry.mobile || '',
+                                                                            email: enquiry.email || '',
+                                                                            courseId: enquiry.courseId || ''
+                                                                        })
+                                                                        router.push(`/admin/students/add?${params.toString()}`)
+                                                                    }}
+                                                                >
+                                                                    <GraduationCap className="w-4 h-4 mr-2" />
+                                                                    Admit as Student
+                                                                </DropdownMenuItem>
+                                                            )}
+                                                            <DropdownMenuItem
+                                                                className="text-rose-600 focus:text-rose-600 focus:bg-rose-50 font-bold rounded-xl py-3 cursor-pointer mt-1"
+                                                                onClick={() => handleDelete(enquiry)}
+                                                            >
+                                                                Delete Record
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </TableCell>
+                                                <TableCell className="px-8 py-5">
+                                                    <div className="flex flex-col">
+                                                        <span className="font-black text-gray-900 dark:text-white group-hover:text-indigo-600 transition-colors">
+                                                            {enquiry.firstName} {enquiry.lastName}
+                                                        </span>
+                                                        <span className="text-[10px] font-black uppercase tracking-tighter text-gray-400 mt-0.5">
+                                                            {enquiry.branch?.name || 'Main Branch'}
+                                                        </span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="px-8 py-5">
+                                                    <Badge variant="outline" className="font-black uppercase tracking-widest text-[9px] border-indigo-100 text-indigo-600 bg-indigo-50/30">
+                                                        {enquiry.course?.name || 'General Inquiry'}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="px-8 py-5">
+                                                    <div className="flex flex-col gap-1">
+                                                        <span className="text-[13px] font-bold text-gray-700 dark:text-gray-300">{enquiry.mobile}</span>
+                                                        <span className="text-[11px] text-gray-400">{enquiry.email || 'No email provided'}</span>
+                                                        {enquiry.followUpDate && (
+                                                            <span className="text-[10px] font-bold text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 px-2 py-0.5 rounded-md w-fit">
+                                                                Follow up: {new Date(enquiry.followUpDate).toLocaleDateString()}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="px-8 py-5">
+                                                    <StatusBadge status={enquiry.status} />
+                                                </TableCell>
+                                                <TableCell className="px-8 py-5">
+                                                    <span className="text-[11px] font-black uppercase tracking-widest text-gray-400 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-lg">
+                                                        {enquiry.source || 'Direct'}
+                                                    </span>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    )}
                     
                     {/* Pagination */}
                     <div className="p-8 border-t border-gray-50 dark:border-gray-800 flex items-center justify-between">

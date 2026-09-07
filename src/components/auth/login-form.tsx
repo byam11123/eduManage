@@ -25,10 +25,6 @@ export function LoginForm() {
     setError('')
 
     try {
-      console.log('[LOGIN] ========== FORM SUBMISSION START =========')
-      console.log('[LOGIN] Email:', formData.email)
-      console.log('[LOGIN] Password length:', formData.password.length)
-      console.log('[LOGIN] Remember:', formData.remember)
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -36,44 +32,32 @@ export function LoginForm() {
       })
 
       const data = await response.json()
-      console.log('[Login] Response:', data)
 
       if (!response.ok || !data.success) {
         setError(data.error || 'Login failed')
         return
       }
 
-      // Login successful - use redirectTo from login response if available
-      console.log('[Login] Login successful, response:', data)
-
       if (data.redirectTo) {
-        console.log('[Login] Using redirectTo from response:', data.redirectTo)
         window.location.href = data.redirectTo
         return
       }
 
       // Fallback: fetch user info to determine redirect destination
-      console.log('[Login] No redirectTo in response, fetching user info')
       const userResponse = await fetch('/api/auth/me')
       const userData = await userResponse.json()
 
       if (userData.success && userData.user) {
         const userRole = userData.user.role
-        console.log('[Login] User role:', userRole)
 
         if (userRole === 'super_admin') {
-          console.log('[Login] Redirecting super admin to /admin')
           window.location.href = '/admin'
         } else if (userRole === 'branch_admin' || userRole === 'user') {
-          console.log('[Login] Redirecting branch user to /branch')
           window.location.href = '/branch'
         } else {
-          console.log('[Login] Redirecting to /organization (new user)')
           window.location.href = '/organization'
         }
       } else {
-        // Fallback to organization page if user info fetch fails
-        console.log('[Login] Redirecting to /organization (fallback)')
         window.location.href = '/organization'
       }
     } catch (err) {
@@ -189,16 +173,13 @@ export function LoginForm() {
         </div>
       </div>
 
-      {/* Google Sign In */}
+      {/* Google Sign In — Coming Soon */}
       <Button
         type="button"
         variant="outline"
-        className="w-full"
-        disabled={isLoading}
-        onClick={() => {
-          // TODO: Implement Google OAuth
-          console.log('Google sign in clicked - will be implemented with NextAuth')
-        }}
+        className="w-full opacity-60 cursor-not-allowed"
+        disabled={true}
+        title="Google Sign In coming soon"
       >
         <svg
           className="mr-2 h-4 w-4"
@@ -211,6 +192,7 @@ export function LoginForm() {
           <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
         </svg>
         Sign in with Google
+        <span className="ml-2 text-xs text-muted-foreground">(Coming soon)</span>
       </Button>
 
       {/* Sign Up Link */}

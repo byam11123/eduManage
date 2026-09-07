@@ -152,6 +152,17 @@ export function EnquiryForm({
                     )}
 
                     <div className="space-y-4">
+                        <Label className="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-600">Follow-up Date</Label>
+                        <Input
+                            type="date"
+                            name="followUpDate"
+                            value={formData.followUpDate ? formData.followUpDate.split('T')[0] : ''}
+                            onChange={handleChange}
+                            className="h-14 rounded-2xl bg-gray-50 dark:bg-gray-900 border-none font-bold px-6 text-base"
+                        />
+                    </div>
+
+                    <div className="space-y-4">
                         <Label className="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-600">Engagement Notes</Label>
                         <div className="relative group">
                             <FileText className="absolute left-5 top-5 h-4 w-4 text-gray-400 group-focus-within:text-indigo-600 transition-colors" />

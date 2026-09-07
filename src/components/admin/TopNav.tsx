@@ -124,10 +124,11 @@ export function TopNav() {
                 <Button
                     variant="ghost"
                     size="icon"
+                    aria-label="Toggle mobile menu"
                     className="h-11 w-11 shrink-0 rounded-2xl text-gray-400 transition-all hover:bg-indigo-50 hover:text-indigo-600 dark:hover:bg-indigo-950/40 lg:hidden"
                     onClick={toggleSidebar}
                 >
-                    <Menu className="h-6 w-6" />
+                    <Menu aria-hidden="true" className="h-6 w-6" />
                 </Button>
 
                 <Button
@@ -145,7 +146,8 @@ export function TopNav() {
                     )}
                 </Button>
 
-                <div 
+                <button 
+                    type="button"
                     className="group flex min-w-0 cursor-pointer items-center gap-3 rounded-2xl border border-gray-100/50 bg-gray-50/50 px-3 py-2 transition-all hover:bg-white hover:shadow-xl hover:shadow-indigo-500/5 dark:border-gray-800/50 dark:bg-gray-900/50 dark:hover:bg-gray-900 sm:px-4" 
                     onClick={() => router.push(user?.organizationId ? '/admin' : '/organization')}
                 >
@@ -167,26 +169,27 @@ export function TopNav() {
                             </span>
                         </div>
                     </div>
-                </div>
+                </button>
             </div>
 
             {/* Center Section: Advanced Search */}
             <div className="mx-4 hidden max-w-lg flex-1 md:block lg:mx-12">
-                <div 
-                    className="relative group cursor-pointer" 
+                <button 
+                    type="button"
+                    className="relative group cursor-pointer w-full text-left" 
                     onClick={() => setOpenSearch(true)}
                 >
-                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-hover:text-indigo-600 transition-colors z-10" />
+                    <Search aria-hidden="true" className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 group-hover:text-indigo-600 transition-colors z-10" />
                     <Input
-                        placeholder="Quick search... (Students, Fees, Courses)" 
+                        placeholder="Quick search… (Students, Fees, Courses)" 
                         readOnly
-                        className="pl-12 h-12 bg-gray-100/50 dark:bg-gray-900/50 border border-transparent group-hover:border-indigo-500/30 group-hover:bg-white dark:group-hover:bg-gray-900 rounded-2xl focus-visible:ring-0 cursor-pointer transition-all duration-300 placeholder:text-gray-400 text-[13px] font-black uppercase tracking-wider"
+                        className="pl-12 h-12 bg-gray-100/50 dark:bg-gray-900/50 border border-transparent group-hover:border-indigo-500/30 group-hover:bg-white dark:group-hover:bg-gray-900 rounded-2xl focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 cursor-pointer transition-all duration-300 placeholder:text-gray-400 text-[13px] font-black uppercase tracking-wider"
                     />
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 hidden lg:flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-gray-200/50 dark:border-gray-700/50 bg-white dark:bg-gray-950 text-[10px] font-black text-gray-400 shadow-sm group-hover:border-indigo-200 dark:group-hover:border-indigo-900 transition-all">
                         <CommandIcon className="h-3 w-3" />
                         <span>K</span>
                     </div>
-                </div>
+                </button>
             </div>
 
             {/* Right Section: Actions & Profile */}
@@ -195,10 +198,11 @@ export function TopNav() {
                 <Button
                     variant="ghost"
                     size="icon"
+                    aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
                     className="h-11 w-11 rounded-2xl text-gray-400 transition-all hover:bg-indigo-50 hover:text-indigo-600 dark:hover:bg-gray-900"
                     onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
                 >
-                    {theme === 'dark' ? <Sun className="h-5.5 w-5.5" /> : <Moon className="h-5.5 w-5.5" />}
+                    {theme === 'dark' ? <Sun aria-hidden="true" className="h-5.5 w-5.5" /> : <Moon aria-hidden="true" className="h-5.5 w-5.5" />}
                 </Button>
 
                 {/* Notifications */}
@@ -207,10 +211,11 @@ export function TopNav() {
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-11 w-11 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-gray-900 relative rounded-2xl transition-all"
+                            aria-label="View notifications"
+                            className="h-11 w-11 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-gray-900 relative rounded-2xl transition-all focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
                         >
-                            <Bell className="h-5.5 w-5.5" />
-                            <span className="absolute top-3 right-3 h-2 w-2 bg-rose-500 rounded-full border-2 border-white dark:border-gray-950 animate-pulse"></span>
+                            <Bell aria-hidden="true" className="h-5.5 w-5.5" />
+                            <span className="absolute top-3 right-3 h-2 w-2 bg-rose-500 rounded-full border-2 border-white dark:border-gray-950 motion-safe:animate-pulse"></span>
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-96 p-0 rounded-[2.5rem] shadow-3xl border-none bg-white dark:bg-gray-950 overflow-hidden" align="end">
@@ -220,26 +225,26 @@ export function TopNav() {
                         </div>
                         <div className="max-h-[400px] overflow-y-auto">
                             {[1, 2, 3].map((i) => (
-                                <div key={i} className="p-6 hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 border-b border-gray-50 dark:border-gray-900 last:border-0 cursor-pointer transition-all flex gap-4">
+                                <button type="button" key={i} className="w-full text-left p-6 hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 border-b border-gray-50 dark:border-gray-900 last:border-0 cursor-pointer transition-all flex gap-4 focus-visible:outline-none focus-visible:bg-indigo-50/50 dark:focus-visible:bg-indigo-900/20">
                                     <div className="h-10 w-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center shrink-0">
-                                        <CheckCircle2 className="h-5 w-5 text-indigo-600" />
+                                        <CheckCircle2 aria-hidden="true" className="h-5 w-5 text-indigo-600" />
                                     </div>
                                     <div>
                                         <p className="text-sm font-black text-gray-900 dark:text-white">Institutional Update</p>
                                         <p className="text-[11px] font-bold text-gray-400 mt-1 line-clamp-1">New student registered in Batch A-2024</p>
                                         <p className="text-[9px] font-black text-indigo-600 mt-2 uppercase tracking-widest opacity-60">2m ago</p>
                                     </div>
-                                </div>
+                                </button>
                             ))}
                         </div>
                         <Button variant="ghost" className="w-full h-14 rounded-none border-t border-gray-50 dark:border-gray-900 font-black uppercase tracking-widest text-[10px] text-gray-400 hover:text-indigo-600">View All Syncs</Button>
                     </PopoverContent>
                 </Popover>
 
-                {/* Profile Profile */}
+                {/* Profile Dropdown */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-11 w-11 rounded-2xl p-0 transition-all active:scale-95 group relative">
+                        <Button variant="ghost" aria-label="User profile menu" className="h-11 w-11 rounded-2xl p-0 transition-all active:scale-95 group relative focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2">
                             <div className="absolute inset-0 bg-indigo-600 rounded-2xl blur-lg opacity-0 group-hover:opacity-20 transition-opacity"></div>
                             <Avatar className="h-10 w-10 border-2 border-white dark:border-gray-900 shadow-xl ring-4 ring-indigo-50 dark:ring-indigo-950 transition-all group-hover:ring-indigo-100 dark:group-hover:ring-indigo-900">
                                 <AvatarImage src={user?.image || ''} />

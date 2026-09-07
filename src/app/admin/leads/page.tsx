@@ -14,6 +14,7 @@ import { Plus, List, Kanban, Target, TrendingUp, DollarSign, Users, Filter, Sear
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
 import { ExportButton } from '@/components/shared/ExportButton'
 import { toast } from 'sonner'
@@ -22,6 +23,9 @@ export default function LeadsPage() {
     const [view, setView] = useState<'list' | 'kanban'>('list')
     const [isFormOpen, setIsFormOpen] = useState(false)
     const [editingLead, setEditingLead] = useState<Lead | undefined>(undefined)
+    
+    const [searchQuery, setSearchQuery] = useState('')
+    const [stageFilter, setStageFilter] = useState<string>('all')
 
     const {
         loading,
@@ -72,6 +76,20 @@ export default function LeadsPage() {
         toast.success(`${ids.length} lead(s) exported`)
     }
 
+    const filteredLeads = useMemo(() => {
+        return leads.filter(l => {
+            const matchesSearch = 
+                l.firstName.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                l.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                (l.email && l.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                (l.phone && l.phone.includes(searchQuery))
+            
+            const matchesStage = stageFilter === 'all' ? true : l.stage === stageFilter
+
+            return matchesSearch && matchesStage
+        })
+    }, [leads, searchQuery, stageFilter])
+
     useEffect(() => {
         fetchLeads()
     }, [fetchLeads])
@@ -101,11 +119,11 @@ export default function LeadsPage() {
     }
 
     const stats = useMemo(() => [
-        { title: 'Total Leads', value: leads.length, icon: Users, color: 'indigo' as const, trend: 'Total' },
-        { title: 'Active Leads', value: leads.filter(l => !['won', 'lost'].includes(l.stage)).length, icon: Target, color: 'emerald' as const, trend: 'Active' },
-        { title: 'Total Value', value: `₹${leads.reduce((sum, l) => sum + (l.value || 0), 0).toLocaleString()}`, icon: DollarSign, color: 'amber' as const, trend: 'Estimated' },
-        { title: 'Conversion Rate', value: leads.length > 0 ? `${Math.round((leads.filter(l => l.stage === 'won').length / leads.length) * 100)}%` : '0%', icon: TrendingUp, color: 'sky' as const, trend: 'Rate' },
-    ], [leads])
+        { title: 'Total Leads', value: filteredLeads.length, icon: Users, color: 'indigo' as const, trend: 'Total' },
+        { title: 'Active Leads', value: filteredLeads.filter(l => !['won', 'lost'].includes(l.stage)).length, icon: Target, color: 'emerald' as const, trend: 'Active' },
+        { title: 'Total Value', value: `₹${filteredLeads.reduce((sum, l) => sum + (l.value || 0), 0).toLocaleString()}`, icon: DollarSign, color: 'amber' as const, trend: 'Estimated' },
+        { title: 'Conversion Rate', value: filteredLeads.length > 0 ? `${Math.round((filteredLeads.filter(l => l.stage === 'won').length / filteredLeads.length) * 100)}%` : '0%', icon: TrendingUp, color: 'sky' as const, trend: 'Rate' },
+    ], [filteredLeads])
 
     return (
         <div className="min-h-screen bg-gray-50/30 dark:bg-gray-950 p-8 space-y-8">
@@ -159,17 +177,33 @@ export default function LeadsPage() {
                             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 group-hover:text-indigo-600 transition-colors" />
                             <input 
                                 placeholder="Search leads..." 
+                                value={searchQuery}
+                                onChange={e => setSearchQuery(e.target.value)}
                                 className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-800 border-none rounded-xl text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all"
                             />
                         </div>
-                        <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-gray-400 hover:text-indigo-600 hover:bg-indigo-50">
-                            <Filter className="h-4 w-4" />
-                        </Button>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant={stageFilter !== 'all' ? 'default' : 'ghost'} size="icon" className={cn("h-10 w-10 rounded-xl", stageFilter !== 'all' ? "bg-indigo-600 hover:bg-indigo-700" : "text-gray-400 hover:text-indigo-600 hover:bg-indigo-50")}>
+                                    <Filter className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-48 rounded-2xl border-none shadow-xl">
+                                <DropdownMenuItem onClick={() => setStageFilter('all')} className={cn("font-medium text-xs py-2.5 px-3", stageFilter === 'all' && "bg-indigo-50 text-indigo-600")}>All Stages</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setStageFilter('new')} className={cn("font-medium text-xs py-2.5 px-3", stageFilter === 'new' && "bg-indigo-50 text-indigo-600")}>New Opportunity</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setStageFilter('contacted')} className={cn("font-medium text-xs py-2.5 px-3", stageFilter === 'contacted' && "bg-indigo-50 text-indigo-600")}>Contacted</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setStageFilter('qualified')} className={cn("font-medium text-xs py-2.5 px-3", stageFilter === 'qualified' && "bg-indigo-50 text-indigo-600")}>Qualified</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setStageFilter('proposal')} className={cn("font-medium text-xs py-2.5 px-3", stageFilter === 'proposal' && "bg-indigo-50 text-indigo-600")}>Proposal Sent</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setStageFilter('negotiation')} className={cn("font-medium text-xs py-2.5 px-3", stageFilter === 'negotiation' && "bg-indigo-50 text-indigo-600")}>Negotiation</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setStageFilter('won')} className={cn("font-medium text-xs py-2.5 px-3", stageFilter === 'won' && "bg-emerald-50 text-emerald-600")}>Won / Enrolled</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setStageFilter('lost')} className={cn("font-medium text-xs py-2.5 px-3", stageFilter === 'lost' && "bg-rose-50 text-rose-600")}>Lost</DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                         <Badge variant="secondary" className="h-10 px-4 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 border-none font-black text-[10px] uppercase tracking-widest">
-                            {leads.length} Leads
+                            {filteredLeads.length} Leads
                         </Badge>
                         <ExportButton 
-                            data={leads.map(l => ({
+                            data={filteredLeads.map(l => ({
                                 name: `${l.firstName} ${l.lastName}`,
                                 email: l.email || 'N/A',
                                 phone: l.phone || 'N/A',
@@ -205,10 +239,11 @@ export default function LeadsPage() {
                         {view === 'list' ? (
                             <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl shadow-gray-200/50 dark:shadow-none overflow-hidden border border-gray-50 dark:border-gray-800">
                                 <LeadList
-                                    leads={leads}
+                                    leads={filteredLeads}
                                     loading={loading}
-                                    onEdit={handleEditClick}
+                                    onStageChange={updateLeadStage}
                                     onDelete={handleDeleteClick}
+                                    onEdit={handleEditClick}
                                     onBulkDelete={handleBulkDelete}
                                     onBulkExport={handleBulkExport}
                                     isBulkDeleting={isBulkDeleting}
@@ -217,7 +252,7 @@ export default function LeadsPage() {
                             </div>
                         ) : (
                             <LeadKanban
-                                leads={leads}
+                                leads={filteredLeads}
                                 loading={loading}
                                 onStageChange={updateLeadStage}
                                 onEdit={handleEditClick}

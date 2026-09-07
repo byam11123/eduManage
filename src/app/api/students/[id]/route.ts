@@ -66,9 +66,12 @@ export async function GET(
                             }
                         }
                     }
+                },
+                additionalFees: {
+                    orderBy: { createdAt: 'desc' }
                 }
             }
-        })
+        }) as any
 
         if (!student) {
             return NextResponse.json(

@@ -158,7 +158,7 @@ export function SidebarContent({ isMobile = false }: { isMobile?: boolean }) {
     const filteredUpcoming = filterItems(upcomingNavItems)
 
     return (
-        <>
+        <TooltipProvider>
             <div className={cn(
                 "relative flex h-full flex-col border-r border-gray-100 bg-white transition-all duration-300 dark:border-gray-800 dark:bg-gray-950",
                 isMobile ? "w-full" : "",
@@ -175,7 +175,7 @@ export function SidebarContent({ isMobile = false }: { isMobile?: boolean }) {
                             "bg-indigo-600 flex items-center justify-center shadow-xl shadow-indigo-100 dark:shadow-none group-hover:rotate-6 transition-all duration-300",
                             collapsed ? "h-14 w-14 rounded-2xl" : "h-11 w-11 rounded-2xl"
                         )}>
-                            <GraduationCap className={cn("text-white", collapsed ? "h-8 w-8" : "h-6 w-6")} />
+                            <GraduationCap aria-hidden="true" className={cn("text-white", collapsed ? "h-8 w-8" : "h-6 w-6")} />
                         </div>
                         {!collapsed && (
                             <span className="text-2xl font-black tracking-tight text-gray-900 dark:text-white transition-all">
@@ -245,16 +245,17 @@ export function SidebarContent({ isMobile = false }: { isMobile?: boolean }) {
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-9 w-9 text-gray-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all rounded-xl"
+                                aria-label="Logout"
+                                className="h-9 w-9 text-gray-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all rounded-xl focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
                                 onClick={handleLogout}
                             >
-                                <LogOut className="h-4 w-4" />
+                                <LogOut aria-hidden="true" className="h-4 w-4" />
                             </Button>
                         )}
                     </div>
                 </div>
             </div>
-        </>
+        </TooltipProvider>
     )
 }
 
@@ -280,7 +281,7 @@ function renderNavItem(
                         if (isMobile) closeSidebar()
                     }}
                     className={cn(
-                        "w-full flex items-center justify-between px-4 py-3.5 text-sm font-bold rounded-2xl transition-all duration-200 group",
+                        "w-full flex items-center justify-between px-4 py-3.5 text-sm font-bold rounded-2xl transition-colors duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2",
                         isActive || isExpanded
                             ? 'bg-gray-50/80 text-gray-900 dark:bg-gray-800/50 dark:text-white border border-gray-100 dark:border-gray-800 shadow-sm'
                             : 'text-gray-500 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-800/30 hover:text-indigo-600'
@@ -288,11 +289,11 @@ function renderNavItem(
                 >
                     <div className="flex items-center gap-4">
                         <div className="flex h-5 w-5 items-center justify-center">
-                            <item.icon className={cn("h-5 w-5 shrink-0 transition-transform group-hover:scale-110", (isActive || isExpanded) ? "text-indigo-600" : "text-gray-400")} />
+                            <item.icon aria-hidden="true" className={cn("h-5 w-5 shrink-0 transition-transform group-hover:scale-110", (isActive || isExpanded) ? "text-indigo-600" : "text-gray-400")} />
                         </div>
                         <span className="leading-none">{item.title}</span>
                     </div>
-                    <ChevronDown className={cn("h-3.5 w-3.5 transition-transform duration-300 opacity-40", isExpanded ? "rotate-180" : "rotate-0")} />
+                    <ChevronDown aria-hidden="true" className={cn("h-3.5 w-3.5 transition-transform duration-300 opacity-40", isExpanded ? "rotate-180" : "rotate-0")} />
                 </Link>
 
                 {isExpanded && (

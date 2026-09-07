@@ -9,23 +9,35 @@ const BASE_URL = '/api/students'
 
 export const studentService = {
     /**
-     * Get all students with optional filters
+     * Get all students with optional filters and cursor-based pagination
      */
-    async getAll(params?: { branchId?: string; courseId?: string; batchId?: string; status?: string }): Promise<ApiResponse<Student[]>> {
+    async getAll(params?: {
+        branchId?: string
+        courseId?: string
+        batchId?: string
+        status?: string
+        search?: string
+        cursor?: string
+        limit?: number
+    }): Promise<ApiResponse<Student[]> & { meta?: { total: number; hasMore: boolean; nextCursor: string | null; limit: number } }> {
         try {
             const searchParams = new URLSearchParams()
             if (params?.branchId) searchParams.set('branchId', params.branchId)
             if (params?.courseId) searchParams.set('courseId', params.courseId)
-            if (params?.batchId) searchParams.set('batchId', params.batchId)
-            if (params?.status) searchParams.set('status', params.status)
+            if (params?.batchId)  searchParams.set('batchId',  params.batchId)
+            if (params?.status)   searchParams.set('status',   params.status)
+            if (params?.search)   searchParams.set('search',   params.search)
+            if (params?.cursor)   searchParams.set('cursor',   params.cursor)
+            if (params?.limit)    searchParams.set('limit',    params.limit.toString())
 
             const url = searchParams.toString() ? `${BASE_URL}?${searchParams}` : BASE_URL
-            const res = await fetch(url, { cache: 'no-store' })
+            const res  = await fetch(url, { cache: 'no-store' })
             const data = await res.json()
             return {
                 success: data.success,
-                data: data.students || [],
-                error: data.error
+                data:    data.students || [],
+                error:   data.error,
+                meta:    data.meta
             }
         } catch (error) {
             console.error('studentService.getAll error:', error)
