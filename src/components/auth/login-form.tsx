@@ -9,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Loader2, Mail, Lock } from 'lucide-react'
+import { useAuthStore } from '@/lib/stores'
 
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
@@ -19,37 +20,36 @@ export function LoginForm() {
     remember: false
   })
 
+  const login = useAuthStore((state) => state.login)
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError('')
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok || !data.success) {
-        setError(data.error || 'Login failed')
+      const response = await login(formData.email, formData.password)
+      
+      if (!response.success) {
+        setError(response.error || 'Login failed')
         return
       }
 
-      if (data.redirectTo) {
-        window.location.href = data.redirectTo
-        return
+      // Try setting document cookie as fallback for environments that support it
+      if (response.token) {
+        try {
+          document.cookie = `session=${response.token}; path=/; max-age=2592000; SameSite=Lax`
+        } catch (e) {
+          console.error('Cookie error:', e)
+        }
       }
 
-      // Fallback: fetch user info to determine redirect destination
+      // Fetch user info to determine redirect destination
       const userResponse = await fetch('/api/auth/me')
       const userData = await userResponse.json()
-
+      
       if (userData.success && userData.user) {
         const userRole = userData.user.role
-
         if (userRole === 'super_admin') {
           window.location.href = '/admin'
         } else if (userRole === 'branch_admin' || userRole === 'user') {
@@ -58,8 +58,9 @@ export function LoginForm() {
           window.location.href = '/organization'
         }
       } else {
-        window.location.href = '/organization'
+        window.location.href = '/admin'
       }
+
     } catch (err) {
       console.error('[Login] Error:', err)
       setError('Failed to login. Please try again.')
@@ -68,15 +69,32 @@ export function LoginForm() {
     }
   }
 
+  const handleFillDemo = () => {
+    setFormData({
+      email: 'demo@coaching.com',
+      password: 'Demo123!@#',
+      remember: true,
+    })
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Demo Credentials Hint */}
       {process.env.NODE_ENV !== 'production' && (
-        <Alert className="mb-4 border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-400">
-          <AlertDescription className="text-sm">
-            <strong>Demo Account:</strong><br />
-            📧 Email: <code className="bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded font-mono">demo@coaching.com</code><br />
-            🔑 Password: <code className="bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded font-mono">Demo123!@#</code>
+        <Alert className="mb-4 border-indigo-500 bg-indigo-50 text-indigo-900 dark:bg-indigo-950/50 dark:text-indigo-300">
+          <AlertDescription className="text-sm space-y-2">
+            <div>
+              <strong>Demo Administrator Account:</strong><br />
+              📧 Email: <code className="bg-indigo-100 dark:bg-indigo-900 px-1.5 py-0.5 rounded font-mono">demo@coaching.com</code><br />
+              🔑 Password: <code className="bg-indigo-100 dark:bg-indigo-900 px-1.5 py-0.5 rounded font-mono">Demo123!@#</code>
+            </div>
+            <button
+              type="button"
+              onClick={handleFillDemo}
+              className="mt-1 inline-flex items-center text-xs font-semibold text-indigo-700 dark:text-indigo-300 underline hover:opacity-80 transition-opacity"
+            >
+              Click here to auto-fill demo credentials
+            </button>
           </AlertDescription>
         </Alert>
       )}

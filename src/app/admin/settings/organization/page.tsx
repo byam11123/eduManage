@@ -1,15 +1,15 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { OrganizationInfoTab } from "@/components/admin/settings/OrganizationInfoTab"
 import { PaymentDetailsTab } from "@/components/admin/settings/PaymentDetailsTab"
 import { MarketingWalletTab } from "@/components/admin/settings/MarketingWalletTab"
 import { OrganizationRulesTab } from "@/components/admin/settings/OrganizationRulesTab"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Building2, CreditCard, Wallet, FileText, Settings2, Sparkles } from "lucide-react"
+import { Building2, CreditCard, Wallet, FileText, Settings2, Sparkles, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-export default function OrganizationSettingsPage() {
+function OrganizationSettingsContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const [activeTab, setActiveTab] = useState('organizations')
@@ -91,3 +91,16 @@ export default function OrganizationSettingsPage() {
         </div>
     )
 }
+
+export default function OrganizationSettingsPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] dark:bg-gray-950">
+                <Loader2 className="h-8 w-8 text-indigo-600 animate-spin" />
+            </div>
+        }>
+            <OrganizationSettingsContent />
+        </Suspense>
+    )
+}
+

@@ -14,24 +14,24 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "EduManage - Educational Management System",
-  description: "Modern Next.js application for educational management. Built with TypeScript, Tailwind CSS, and shadcn/ui.",
+  title: "EduManage - Multi-tenant Education Management System",
+  description: "Multi-tenant education management system for coaching centers, institutes, and academies.",
   keywords: ["EduManage", "Next.js", "TypeScript", "Tailwind CSS", "shadcn/ui", "education", "management", "React"],
   authors: [{ name: "Development Team" }],
   icons: {
     icon: "/favicon.ico", // Using default favicon
   },
   openGraph: {
-    title: "EduManage",
-    description: "Educational management with modern React stack",
+    title: "EduManage - Multi-tenant Education Management System",
+    description: "Multi-tenant education management system for coaching centers, institutes, and academies.",
     url: "http://localhost:3000",
     siteName: "EduManage",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "EduManage",
-    description: "Educational management with modern React stack",
+    title: "EduManage - Multi-tenant Education Management System",
+    description: "Multi-tenant education management system for coaching centers, institutes, and academies.",
   },
 };
 

@@ -8,6 +8,7 @@
 import { useState, useEffect } from 'react'
 import { SidebarContent } from '@/components/admin/Sidebar'
 import { useAuth, useUIStore } from '@/hooks'
+import { useAuthStore } from '@/lib/stores'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { TopNav } from '@/components/admin/TopNav'
 
@@ -26,8 +27,13 @@ export default function AdminLayout({
   const [mounted, setMounted] = useState(false)
   useEffect(() => {
     setMounted(true)
-    fetchUser()
-  }, [])
+    fetchUser().then(() => {
+      const state = useAuthStore.getState()
+      if (!state.isAuthenticated && !state.isLoading) {
+        window.location.href = '/login'
+      }
+    })
+  }, [fetchUser])
 
   if (!mounted) {
     return (

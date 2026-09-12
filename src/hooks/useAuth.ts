@@ -8,29 +8,33 @@ import { useAuthStore } from '@/lib/stores'
 
 export function useAuth() {
     const user = useAuthStore((state) => state.user)
+    const token = useAuthStore((state) => state.token)
     const isLoading = useAuthStore((state) => state.isLoading)
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
     const login = useAuthStore((state) => state.login)
     const logout = useAuthStore((state) => state.logout)
     const fetchUser = useAuthStore((state) => state.fetchUser)
     const setUser = useAuthStore((state) => state.setUser)
+    const setToken = useAuthStore((state) => state.setToken)
+    const reset = useAuthStore((state) => state.reset)
 
-    // Auto-fetch user on mount if not already loaded
+    // Auto-fetch user on mount if not already loaded and token is available
     useEffect(() => {
-        // Only fetch if we don't have a user and we haven't checked yet (isLoading is true by default)
-        // OR simply fetch on mount if no user.
-        if (!user) {
+        if (!user && (token || (typeof document !== 'undefined' && document.cookie.includes('session=')))) {
             fetchUser()
         }
-    }, [fetchUser]) // Only depend on fetchUser (stable)
+    }, [user, token, fetchUser])
 
     return {
         user,
+        token,
         isLoading,
         isAuthenticated,
         login,
         logout,
         fetchUser,
-        setUser
+        setUser,
+        setToken,
+        reset
     }
 }

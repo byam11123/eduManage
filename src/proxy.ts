@@ -29,7 +29,7 @@ export async function proxy(request: NextRequest) {
   if (matchedRoute) {
     const requiredRoles = protectedRoutes[matchedRoute as keyof typeof protectedRoutes];
     
-    // Get token from cookie
+    // Get token from cookie, header, or query param
     const cookieHeader = request.headers.get('cookie');
     let token: string | null = null;
 
@@ -41,12 +41,22 @@ export async function proxy(request: NextRequest) {
       }
     }
 
-    // No token? Redirect to login
     if (!token) {
-      const url = request.nextUrl.clone();
-      url.pathname = '/login';
-      url.searchParams.set('callbackUrl', pathname);
-      return NextResponse.redirect(url);
+      const authHeader = request.headers.get('authorization');
+      if (authHeader?.startsWith('Bearer ')) {
+        token = authHeader.substring(7);
+      }
+    }
+
+    if (!token) {
+      token = request.nextUrl.searchParams.get('token');
+    }
+
+    // In iframe environments (like AI Studio preview), third-party cookies are blocked by default.
+    // Client components (AdminLayout / useAuthStore) manage authentication using localStorage.
+    // If no token is attached to the SSR request, pass through to allow client hydration & auth verification.
+    if (!token) {
+      return NextResponse.next();
     }
 
     // Verify token

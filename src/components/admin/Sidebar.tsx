@@ -26,7 +26,8 @@ import {
     Settings,
     Share2,
     LayoutGrid,
-    Compass
+    Compass,
+    BarChart3
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -131,7 +132,9 @@ export function SidebarContent({ isMobile = false }: { isMobile?: boolean }) {
         },
         { title: 'Staff', url: '/admin/staff', icon: UserCheck, moduleId: 'staff' },
         { title: 'Referrals', url: '/admin/referrals', icon: Share2, moduleId: 'referrals' },
+        { title: 'Reports', url: '/admin/reports', icon: BarChart3, moduleId: 'reports' },
         { title: 'Users & Roles', url: '/admin/users', icon: UserCog, moduleId: 'settings' },
+        { title: 'Settings', url: '/admin/settings', icon: Settings, moduleId: 'settings' },
     ]
 
     const upcomingNavItems: NavItem[] = [
@@ -142,7 +145,6 @@ export function SidebarContent({ isMobile = false }: { isMobile?: boolean }) {
         { title: 'Forms', url: '/admin/forms', icon: FileText, moduleId: 'forms' },
         { title: 'Expenses', url: '/admin/expenses', icon: Wallet, moduleId: 'expenses' },
         { title: 'Certificate', url: '/admin/certificate', icon: Award, moduleId: 'certificate' },
-        { title: 'Settings', url: '/admin/settings/organization', icon: Settings, moduleId: 'settings' },
     ]
 
     // RBAC Filter

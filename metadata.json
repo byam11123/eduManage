@@ -1,0 +1,6 @@
+{
+  "name": "EduManage",
+  "description": "Multi-tenant education management system for coaching centers, institutes, and academies.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -112,8 +112,8 @@ export async function POST(request: NextRequest) {
     const cookieStore = await cookies()
     cookieStore.set('session', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: true,
+      sameSite: 'none',
       maxAge: remember ? 30 * 24 * 60 * 60 : 7 * 24 * 60 * 60, // 30 days if remember, else 7 days (matches JWT expiry)
       path: '/',
     })
@@ -151,6 +151,7 @@ export async function POST(request: NextRequest) {
         permissions: permissions.map(p => p.module),
         defaultBranchId
       },
+      token,
       hasOrganization: !!organizationId,
       redirectTo
     })

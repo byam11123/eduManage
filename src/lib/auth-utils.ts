@@ -48,7 +48,7 @@ export function isValidEmail(email: string): boolean {
 }
 
 // JWT Token utilities
-const JWT_SECRET = process.env.NEXTAUTH_SECRET || 'your-secret-key-change-in-production'
+const JWT_SECRET = process.env.NEXTAUTH_SECRET || 'your-nextauth-secret-change-in-production'
 const JWT_SECRET_ENCODED = new TextEncoder().encode(JWT_SECRET)
 const JWT_EXPIRY = '7d' // Token expires in 7 days
 
